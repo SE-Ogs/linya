@@ -1,0 +1,31 @@
+# Node modules
+node_modules
+
+# Composer vendor directory
+vendor
+
+# Laravel storage (except public uploads if needed)
+storage/app/public
+storage/framework
+storage/logs
+
+# Git
+.git
+.gitignore
+
+# Environment files
+.env
+.env.*
+
+# OS and editor files
+*.swp
+*.swo
+*.DS_Store
+Thumbs.db
+
+# NPM logs
+npm-debug.log
+
+# Docker files
+Dockerfile
+docker-compose.yml 
