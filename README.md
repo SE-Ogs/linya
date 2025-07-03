@@ -39,18 +39,33 @@ Before you can run this project, make sure you have the following installed on y
    # or manually copy the .env file you received into the project root
    ```
 
-5. **Run database migrations**
+5. **Modify .env**
 
-   Make sure your database is configured in your `.env` file, then run:
+    Generate an APP_KEY and modify DB .env 
 
    ```bash
-   php artisan migrate
+   php artisan key:generate
    ```
 
-6. **Start the project**
+    DB_CONNECTION=pgsql
+    DB_HOST=db
+    DB_PORT=5432
+    DB_DATABASE=laravel
+    DB_USERNAME=laravel
+    DB_PASSWORD=laravel
+
+7. **Start the project**
 
    You can now start the project using Docker Compose:
 
    ```bash
    docker-compose up --build
+   ```
+
+8. **Run database migrations**
+
+   Make sure your database is configured in your `.env` file and linya container is running, then run:
+
+   ```bash
+   docker-compose exec app php artisan migrate
    ```
