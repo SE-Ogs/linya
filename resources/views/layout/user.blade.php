@@ -14,6 +14,7 @@
 
     <body>
         <aside>
+            @include('partials.dashboard_header')
             @include('partials.sidebar')
         </aside>
     </body>
