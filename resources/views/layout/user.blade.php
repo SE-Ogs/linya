@@ -15,6 +15,8 @@
 
 
     <aside id="sidebar" class="fixed left-0 top-0 z-50 transition-transform duration-300 transform -translate-x-full">
+        @include('partials.dashboard_header')
+
         @include('partials.sidebar')
     </aside>
 
