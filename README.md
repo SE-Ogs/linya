@@ -69,3 +69,11 @@ Before you can run this project, make sure you have the following installed on y
    ```bash
    docker-compose exec app php artisan migrate
    ```
+
+9. **Connect pgadmin to database**
+
+   Go to localhost:5050 and login with 
+    user: admin@admin.com 
+    password: admin
+
+    Press Add New Server and set name to whatever, but ENSURE that in Connection, Host Name/Address is set to db, and Username and Password is both set to laravel. Enable save password too.
