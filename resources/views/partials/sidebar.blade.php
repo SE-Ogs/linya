@@ -1,4 +1,4 @@
-<div class="bg-[#23222E] w-95 h-screen text-white p-4">
+<div class="bg-[#23222E] w-95 h-screen text-white p-3">
     <div class="relative w-full max-w-xs py-5 mx-auto">
         <input type="text" placeholder="Search..."
             class="w-full pl-10 pr-4 py-2 border text-black border-black bg-[#F8F6F2] rounded-[30px] focus:outline-none focus:ring-2 focus:ring-blue-500" />
@@ -9,9 +9,9 @@
         </svg>
     </div>
 
-    <ul class="space-y-2 mt-4 ml-4">
-        <li>
-            <a href="/home" class="flex items-center space-x-2 mb-5 text-[20px]">
+    <ul class="space-y-2 ml-1">
+        <li class="hover:bg-[#434158] rounded-[30px] pl-3 pt-2 pb-2 transition duration-300">
+            <a href="/home" class="flex items-center space-x-2  text-[20px]">
                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
                     stroke="currentColor" class="w-6 h-6">
                     <path stroke-linecap="round" stroke-linejoin="round" d="m2.25 12 8.954-8.955c.44-.439 1.152-.439 1.591 0L21.75 12M4.5 9.75v10.125c0
@@ -24,19 +24,19 @@
             </a>
         </li>
 
-        <li>
-            <a href="/profile" class="flex items-center space-x-2 mb-5 text-[20px]">
+        <li class="hover:bg-[#434158] rounded-[30px] pl-3 pt-2 pb-2 transition duration-300">
+            <a href="/profile" class="flex items-center space-x-2 text-[20px]">
                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
                     stroke="currentColor" class="size-6">
                     <path stroke-linecap="round" stroke-linejoin="round"
                         d="M15.75 6a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0ZM4.501 20.118a7.5 7.5 0 0 1 14.998 0A17.933 17.933 0 0 1 12 21.75c-2.676 0-5.216-.584-7.499-1.632Z" />
                 </svg>
 
-                <span>Help & Support</span>
+                <span>Contact Us</span>
             </a>
         </li>
 
-        <li>
+        <li class="hover:bg-[#434158] rounded-[30px] pl-3 pt-2 pb-2 transition duration-300">
             <a href="/profile" class="flex items-center space-x-2 text-[20px]">
                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
                     stroke="currentColor" class="size-6">
@@ -51,15 +51,15 @@
         </li>
     </ul>
 
-    <div class="mt-6 ml-4 text-[12px]">
+    <div class="mt-3 ml-4 text-[12px]">
         <p>Sections</p>
     </div>
 
-    <hr class="w-70 ml-4 mt-2 mb-5">
+    <hr class="w-80 ml-4 mt-2 mb-2">
 
-    <ul class="space-y-2 mt-4 ml-4">
-        <li>
-            <a href="/home" class="flex items-center space-x-2 mb-5 text-[20px]">
+    <ul class="space-y-2 ml-1">
+        <li class="hover:bg-[#434158] rounded-[30px] pl-3 pt-2 pb-2 transition duration-300">
+            <a href="/home" class="flex items-center space-x-2  text-[20px]">
                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
                     stroke="currentColor" class="size-6">
                     <path stroke-linecap="round" stroke-linejoin="round"
@@ -70,8 +70,8 @@
             </a>
         </li>
 
-        <li>
-            <a href="/profile" class="flex items-center space-x-2 mb-5 text-[20px]">
+        <li class="hover:bg-[#434158] rounded-[30px] pl-3 pt-2 pb-2 transition duration-300">
+            <a href="/profile" class="flex items-center space-x-2 text-[20px]">
                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
                     stroke="currentColor" class="size-6">
                     <path stroke-linecap="round" stroke-linejoin="round"
@@ -82,20 +82,23 @@
             </a>
         </li>
 
-        <li>
-            <a href="/profile" class="flex items-center space-x-2 mb-5 text-[20px]">
+        <li class="hover:bg-[#434158] rounded-[30px] pl-3 pt-2 pb-2 transition duration-300">
+            <a href="/profile" class="flex items-center space-x-2  text-[20px]">
                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
                     stroke="currentColor" class="size-6">
                     <path stroke-linecap="round" stroke-linejoin="round"
-                        d="M9.53 16.122a3 3 0 0 0-5.78 1.128 2.25 2.25 0 0 1-2.4 2.245 4.5 4.5 0 0 0 8.4-2.245c0-.399-.078-.78-.22-1.128Zm0 0a15.998 15.998 0 0 0 3.388-1.62m-5.043-.025a15.994 15.994 0 0 1 1.622-3.395m3.42 3.42a15.995 15.995 0 0 0 4.764-4.648l3.876-5.814a1.151 1.151 0 0 0-1.597-1.597L14.146 6.32a15.996 15.996 0 0 0-4.649 4.763m3.42 3.42a6.776 6.776 0 0 0-3.42-3.42" />
+                        d="M6.827 6.175A2.31 2.31 0 0 1 5.186 7.23c-.38.054-.757.112-1.134.175C2.999 7.58 2.25 8.507 2.25 9.574V18a2.25 2.25 0 0 0 2.25 2.25h15A2.25 2.25 0 0 0 21.75 18V9.574c0-1.067-.75-1.994-1.802-2.169a47.865 47.865 0 0 0-1.134-.175 2.31 2.31 0 0 1-1.64-1.055l-.822-1.316a2.192 2.192 0 0 0-1.736-1.039 48.774 48.774 0 0 0-5.232 0 2.192 2.192 0 0 0-1.736 1.039l-.821 1.316Z" />
+                    <path stroke-linecap="round" stroke-linejoin="round"
+                        d="M16.5 12.75a4.5 4.5 0 1 1-9 0 4.5 4.5 0 0 1 9 0ZM18.75 10.5h.008v.008h-.008V10.5Z" />
                 </svg>
+
 
                 <span>Multimedia Arts & Design</span>
             </a>
         </li>
 
-        <li>
-            <a href="/profile" class="flex items-center space-x-2 mb-5 text-[20px]">
+        <li class="hover:bg-[#434158] rounded-[30px] pl-3 pt-2 pb-2 transition duration-300">
+            <a href="/profile" class="flex items-center space-x-2  text-[20px]">
                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
                     stroke="currentColor" class="size-6">
                     <path stroke-linecap="round" stroke-linejoin="round"
@@ -106,7 +109,7 @@
             </a>
         </li>
 
-        <li>
+        <li class="hover:bg-[#434158] rounded-[30px] pl-3 pt-2 pb-2 transition duration-300">
             <a href="/profile" class="flex items-center space-x-2 text-[20px]">
                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
                     stroke="currentColor" class="size-6">
@@ -119,15 +122,15 @@
         </li>
     </ul>
 
-    <div class="mt-6 ml-4 text-[12px]">
+    <div class="mt-3 ml-4 text-[12px]">
         <p>Special Events</p>
     </div>
 
-    <hr class="w-70 ml-4 mt-2 mb-5">
+    <hr class="w-80 ml-4 mt-2 mb-2">
 
-    <ul class="space-y-2 mt-4 ml-4">
-        <li>
-            <a href="/home" class="flex items-center space-x-2 mb-5 text-[20px]">
+    <ul class="space-y-2 ml-1">
+        <li class="hover:bg-[#434158] rounded-[30px] pl-3 pt-2 pb-2 transition duration-300">
+            <a href="/home" class="flex items-center space-x-2 text-[20px]">
                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
                     stroke="currentColor" class="size-6">
                     <path stroke-linecap="round" stroke-linejoin="round"
@@ -138,8 +141,8 @@
             </a>
         </li>
 
-        <li>
-            <a href="/profile" class="flex items-center space-x-2 mb-5 text-[20px]">
+        <li class="hover:bg-[#434158] rounded-[30px] pl-3 pt-2 pb-2 transition duration-300">
+            <a href="/profile" class="flex items-center space-x-2 text-[20px]">
                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
                     stroke="currentColor" class="size-6">
                     <path stroke-linecap="round" stroke-linejoin="round"
@@ -151,8 +154,8 @@
             </a>
         </li>
 
-        <li>
-            <a href="/profile" class="flex items-center space-x-2 mb-5 text-[20px]">
+        <li class="hover:bg-[#434158] rounded-[30px] pl-3 pt-2 pb-2 transition duration-300">
+            <a href="/profile" class="flex items-center space-x-2 text-[20px]">
                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
                     stroke="currentColor" class="size-6">
                     <path stroke-linecap="round" stroke-linejoin="round"
@@ -166,8 +169,23 @@
         </li>
     </ul>
 
-    <hr class="w-70 ml-4 mt-2 mb-5">
+    <hr class="w-80 ml-4 mt-3 mb-5">
 
+    <div class="flex items-center justify-between w-full max-w-xs rounded-[10px] ml-4 mt-3">
+        <div class="flex items-center space-x-2">
+            <img src="/images/placeholder.jpg" alt="Profile" class="w-10 h-10 rounded-full object-cover" />
+            <span>Spyke Matthew Lim</span>
+        </div>
+        <button class="text-white">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
+                fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                stroke-linejoin="round" class="lucide lucide-log-out">
+                <path d="m16 17 5-5-5-5" />
+                <path d="M21 12H9" />
+                <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
+            </svg>
+        </button>
+    </div>
 
 
 
