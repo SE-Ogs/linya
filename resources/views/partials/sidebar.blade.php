@@ -11,7 +11,7 @@
 
     <ul class="space-y-2 ml-1">
         <li class="hover:bg-[#434158] rounded-[30px] pl-3 pt-2 pb-2 transition duration-300">
-            <a href="/home" class="flex items-center space-x-2  text-[20px]">
+            <a href="/home" class="flex items-center space-x-2  text-[20px] md:text-[18px]">
                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
                     stroke="currentColor" class="w-6 h-6">
                     <path stroke-linecap="round" stroke-linejoin="round" d="m2.25 12 8.954-8.955c.44-.439 1.152-.439 1.591 0L21.75 12M4.5 9.75v10.125c0
@@ -24,8 +24,8 @@
             </a>
         </li>
 
-        <li class="hover:bg-[#434158] rounded-[30px] pl-3 pt-2 pb-2 transition duration-300">
-            <a href="/profile" class="flex items-center space-x-2 text-[20px]">
+        <li class="hover:bg-[#434158] rounded-[30px] pl-3 pt-2 pb-2 transition duration-300" id="contactUs">
+            <a class="flex items-center space-x-2 text-[20px] md:text-[18px]">
                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
                     stroke="currentColor" class="size-6">
                     <path stroke-linecap="round" stroke-linejoin="round"
@@ -37,7 +37,7 @@
         </li>
 
         <li class="hover:bg-[#434158] rounded-[30px] pl-3 pt-2 pb-2 transition duration-300">
-            <a href="/profile" class="flex items-center space-x-2 text-[20px]">
+            <a href="/profile" class="flex items-center space-x-2 text-[20px] md:text-[18px]">
                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
                     stroke="currentColor" class="size-6">
                     <path stroke-linecap="round" stroke-linejoin="round"
@@ -59,7 +59,7 @@
 
     <ul class="space-y-2 ml-1">
         <li class="hover:bg-[#434158] rounded-[30px] pl-3 pt-2 pb-2 transition duration-300">
-            <a href="/home" class="flex items-center space-x-2  text-[20px]">
+            <a href="/home" class="flex items-center space-x-2  text-[20px] md:text-[18px]">
                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
                     stroke="currentColor" class="size-6">
                     <path stroke-linecap="round" stroke-linejoin="round"
@@ -71,7 +71,7 @@
         </li>
 
         <li class="hover:bg-[#434158] rounded-[30px] pl-3 pt-2 pb-2 transition duration-300">
-            <a href="/profile" class="flex items-center space-x-2 text-[20px]">
+            <a href="/profile" class="flex items-center space-x-2 text-[20px] md:text-[18px]">
                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
                     stroke="currentColor" class="size-6">
                     <path stroke-linecap="round" stroke-linejoin="round"
@@ -83,7 +83,7 @@
         </li>
 
         <li class="hover:bg-[#434158] rounded-[30px] pl-3 pt-2 pb-2 transition duration-300">
-            <a href="/profile" class="flex items-center space-x-2  text-[20px]">
+            <a href="/profile" class="flex items-center space-x-2  text-[20px] md:text-[18px]">
                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
                     stroke="currentColor" class="size-6">
                     <path stroke-linecap="round" stroke-linejoin="round"
@@ -98,7 +98,7 @@
         </li>
 
         <li class="hover:bg-[#434158] rounded-[30px] pl-3 pt-2 pb-2 transition duration-300">
-            <a href="/profile" class="flex items-center space-x-2  text-[20px]">
+            <a href="/profile" class="flex items-center space-x-2  text-[20px] md:text-[18px]">
                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
                     stroke="currentColor" class="size-6">
                     <path stroke-linecap="round" stroke-linejoin="round"
@@ -110,7 +110,7 @@
         </li>
 
         <li class="hover:bg-[#434158] rounded-[30px] pl-3 pt-2 pb-2 transition duration-300">
-            <a href="/profile" class="flex items-center space-x-2 text-[20px]">
+            <a href="/profile" class="flex items-center space-x-2 text-[20px] md:text-[18px]">
                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
                     stroke="currentColor" class="size-6">
                     <path stroke-linecap="round" stroke-linejoin="round"
@@ -130,7 +130,7 @@
 
     <ul class="space-y-2 ml-1">
         <li class="hover:bg-[#434158] rounded-[30px] pl-3 pt-2 pb-2 transition duration-300">
-            <a href="/home" class="flex items-center space-x-2 text-[20px]">
+            <a href="/home" class="flex items-center space-x-2 text-[20px] md:text-[18px]">
                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
                     stroke="currentColor" class="size-6">
                     <path stroke-linecap="round" stroke-linejoin="round"
@@ -142,7 +142,7 @@
         </li>
 
         <li class="hover:bg-[#434158] rounded-[30px] pl-3 pt-2 pb-2 transition duration-300">
-            <a href="/profile" class="flex items-center space-x-2 text-[20px]">
+            <a href="/profile" class="flex items-center space-x-2 text-[20px] md:text-[18px]">
                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
                     stroke="currentColor" class="size-6">
                     <path stroke-linecap="round" stroke-linejoin="round"
@@ -155,7 +155,7 @@
         </li>
 
         <li class="hover:bg-[#434158] rounded-[30px] pl-3 pt-2 pb-2 transition duration-300">
-            <a href="/profile" class="flex items-center space-x-2 text-[20px]">
+            <a href="/profile" class="flex items-center space-x-2 text-[20px] md:text-[18px]">
                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
                     stroke="currentColor" class="size-6">
                     <path stroke-linecap="round" stroke-linejoin="round"
