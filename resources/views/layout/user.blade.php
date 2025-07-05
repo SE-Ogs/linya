@@ -48,7 +48,10 @@
 
     <footer>
         @include('partials.footer')
+
     </footer>
+
+    @include('partials.contact_us')
 
 </body>
 
