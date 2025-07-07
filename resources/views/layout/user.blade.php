@@ -42,7 +42,7 @@
     </div>
 
     <main class="flex-grow">
-
+        @include ('partials.dashboard_content')
     </main>
 
 
