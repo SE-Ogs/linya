@@ -7,5 +7,5 @@ Route::get('/', function () {
 });
 
 Route::get('/dashboard', function(){
-    return view('layout.dashboard');
+    return view('layout.user');
 });
