@@ -228,7 +228,8 @@
             <h2 class="text-2xl font-bold text-gray-800 mb-6">Blogs</h2>
 
             <!-- Carousel container -->
-            <div class="overflow-x-auto flex flex-nowrap space-x-4">
+            <div class="overflow-x-auto flex flex-nowrap space-x-4 custom-scrollbar">
+
                 <!-- Card 1 -->
                 <div class="flex-shrink-0 bg-gray-200 rounded p-6">
                     <h3 class="text-lg font-bold mb-2">Short Title</h3>
