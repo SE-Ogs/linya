@@ -1,6 +1,6 @@
 @import "tailwindcss";
-@import url('https://fonts.googleapis.com/css2?family=Lexend:wght@100..900&display=swap');
-@import url('https://fonts.googleapis.com/css2?family=Lexend:wght@100..900&family=Noto+Sans:ital,wght@0,100..900;1,100..900&display=swap');
+@import url("https://fonts.googleapis.com/css2?family=Noto+Sans:ital,wght@0,100..900;1,100..900&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Lexend:wght@100..900&display=swap");
 @plugin 'tailwind-scrollbar' {
     nocompatible: true;
 }
@@ -39,7 +39,7 @@
     background: #ccc; /* Gray track color */
     outline: none;
     opacity: 0.7;
-    transition: opacity .2s;
+    transition: opacity 0.2s;
     border-radius: 2px; /* Slightly rounded track */
 }
 
@@ -49,14 +49,16 @@
 
 /*Custom Fonts*/
 
-h1, h2, h3, h4{
+h1,
+h2,
+h3,
+h4 {
     font-family: "Lexend", sans-serif;
     font-optical-sizing: auto;
+    font-style: normal;
 }
 
-p{
+p {
     font-family: "Noto Sans", sans-serif;
     font-optical-sizing: auto;
 }
-
-
