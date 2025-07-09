@@ -49,12 +49,12 @@
 
 /*Custom Fonts*/
 
-.h1, .h2, .h3, .h4{
+h1, h2, h3, h4{
     font-family: "Lexend", sans-serif;
     font-optical-sizing: auto;
 }
 
-.p{
+p{
     font-family: "Noto Sans", sans-serif;
     font-optical-sizing: auto;
 }
