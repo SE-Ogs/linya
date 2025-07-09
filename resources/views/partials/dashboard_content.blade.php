@@ -5,12 +5,13 @@
             <div id="left_side" class="flex-1">
                 <div id="posts" class="bg-white flex flex-col gap-6">
                     <!-- Main Post -->
-                    <div id="main_post" class="relative h-96 rounded-lg overflow-hidden main-post-bg shadow-lg">
+                    <div id="main_post" class="relative h-96 rounded-lg overflow-hidden">
                         <div class="absolute inset-0 gradient-overlay">
                             <img src="/images/placeholder.jpg" alt="placeholder image"
                                 class="w-full h-full object-cover object-center">
                         </div>
-                        <div class="relative z-10 h-full flex flex-col justify-between p-8 text-white">
+                        <div class="absolute inset-0 bg-gradient-to-t from-black/70 via-black/30 to-transparent"></div>
+                        <div class="relative z-10 h-full flex flex-col justify-end p-8 text-white">
                             <div>
                                 <div class="bg-indigo-600 rounded-full px-4 py-1 text-xs font-semibold w-fit mb-4">
                                     Software Engineering
@@ -53,8 +54,7 @@
                             class="flex-1 bg-white border border-gray-200 rounded-lg overflow-hidden shadow-sm">
                             <!-- image -->
                             <div class="sub-post-bg1">
-                                <img src="/images/placeholder.jpg" alt="placeholder image"
-                                    class="w-full h-48 object-cover">
+                                <img src="/images/placeholder.jpg" alt="placeholder image"class="w-full h-48 object-cover">
                             </div>
                             <div class="px-6 pb-6">
                                 <div
