@@ -50,25 +50,32 @@
                     <!-- Sub Posts -->
                     <div id="sub_posts" class="bg-white flex flex-col lg:flex-row gap-6">
                         <!-- Sub Post 1 -->
-                        <div id="sub_post1"
-                            class="flex-1 bg-white border border-gray-200 rounded-lg overflow-hidden shadow-sm flex flex-col">
-                            <!-- image -->
-                            <div class="sub-post-bg1">
+                        <div
+                            class="flex-1 bg-white border border-gray-200 rounded-lg overflow-hidden shadow-sm flex flex-col min-h-[500px]">
+                            <!-- Image -->
+                            <div class="h-48 overflow-hidden">
                                 <img src="/images/placeholder.jpg" alt="placeholder image"
-                                    class="w-full h-48 object-cover">
+                                    class="w-full h-full object-cover" />
                             </div>
+                            <!-- Content -->
                             <div class="flex flex-col flex-1 px-6 pb-6 pt-6">
                                 <div
                                     class="bg-indigo-600 rounded-full px-3 py-1 text-xs font-semibold text-white w-fit mb-4">
                                     Software Engineering
                                 </div>
-                                <h3 class="text-xl font-bold text-gray-800 mb-4 leading-tight">
+
+                                <!-- Title with fixed height -->
+                                <h3 class="text-xl font-bold text-gray-800 leading-tight  h-25 overflow-hidden">
                                     Student Research Team Develops Sustainable Energy Solution
                                 </h3>
-                                <p class="text-gray-600 text-base leading-relaxed mb-6">
-                                    Engineering students create breakthrough technology that could revolutionize
-                                    renewable energy storage on campus.
+
+                                <!-- Paragraph with fixed height -->
+                                <p class="text-gray-600 text-base leading-relaxed overflow-hidden h-35">
+                                    Engineering students create breakthrough technology that could
+                                    revolutionize renewable energy storage on campus.
                                 </p>
+
+                                <!-- Footer pinned to bottom -->
                                 <div class="flex justify-between items-center text-sm text-gray-500 mt-auto">
                                     <span>Matt Xavier Viduya</span>
                                     <span>December 14, 2024</span>
@@ -76,26 +83,33 @@
                             </div>
                         </div>
 
-
                         <!-- Sub Post 2 -->
-                        <div id="sub_post2"
-                            class="flex-1 bg-white border border-gray-200 rounded-lg overflow-hidden shadow-sm flex flex-col">
-                            <div class="sub-post-bg2">
+                        <div
+                            class="flex-1 bg-white border border-gray-200 rounded-lg overflow-hidden shadow-sm flex flex-col min-h-[500px]">
+                            <!-- Image -->
+                            <div class="h-48 overflow-hidden">
                                 <img src="/images/placeholder.jpg" alt="placeholder image"
-                                    class="w-full h-48 object-cover">
+                                    class="w-full h-full object-cover" />
                             </div>
-                            <div class="flex flex-col px-6 pb-6 pt-6 flex-1">
+                            <!-- Content -->
+                            <div class="flex flex-col flex-1 px-6 pb-6 pt-6">
                                 <div
                                     class="bg-red-800 rounded-full px-3 py-1 text-xs font-semibold text-white w-fit mb-4">
                                     Multi Media Arts
                                 </div>
-                                <h3 class="text-xl font-bold text-gray-800 mb-4 leading-tight">
+
+                                <!-- Title with fixed height -->
+                                <h3 class="text-xl font-bold text-gray-800 leading-tight h-25 overflow-hidden">
                                     Digital Arts Festival Showcases Student Creativity
                                 </h3>
-                                <p class="text-gray-600 text-base leading-relaxed mb-6">
-                                    Annual exhibition brings together innovative digital artwork from students across
-                                    all disciplines.
+
+                                <!-- Paragraph with fixed height -->
+                                <p class="text-gray-600 text-base leading-relaxed overflow-hidden h-35">
+                                    Annual exhibition brings together innovative digital artwork from
+                                    students across all disciplines.
                                 </p>
+
+                                <!-- Footer pinned to bottom -->
                                 <div class="flex justify-between items-center text-sm text-gray-500 mt-auto">
                                     <span>Edwell Cotejar</span>
                                     <span>December 13, 2024</span>
@@ -103,6 +117,7 @@
                             </div>
                         </div>
                     </div>
+
                 </div>
             </div>
 
