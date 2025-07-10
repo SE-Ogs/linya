@@ -1,4 +1,4 @@
-<div class="bg-[#23222E] w-95 h-screen text-white p-3">
+<div class="bg-[#23222E] w-95 h-screen text-white p-3 overflow-auto scrollbar-none">
     <div class="relative w-full max-w-xs py-5 mx-auto">
         <input type="text" placeholder="Search..."
             class="w-full pl-10 pr-4 py-2 border text-black border-black bg-[#F8F6F2] rounded-[30px] focus:outline-none focus:ring-2 focus:ring-blue-500" />
