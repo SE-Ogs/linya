@@ -52,4 +52,26 @@ document.addEventListener("DOMContentLoaded", function () {
             eyeOpen.classList.toggle("hidden", !isPassword);
         });
     }
+
+    // 👑 Admin sidebar toggle (IF NEEDED)
+    // const adminSidebar = document.getElementById("admin_sidebar");
+    // const toggleAdminBtn = document.getElementById("toggleAdminSidebar");
+
+    // if(toggleAdminBtn && adminSidebar){
+    // toggleAdminBtn.addEventListener("click", function (e){
+    //     adminSidebar.classList.toggle("-translate-x-full");
+    //     e.stopPropagation();
+    // });
+    // adminSidebar.addEventListener("click", function (e) {
+    //     e.stopPropagation();
+    // });
+
+    // document.addEventListener("click", function (e) {
+    //     if (!adminSidebar.contains(e.target) && !toggleAdminBtn.contains(e.target)) {
+    //         adminSidebar.classList.add("-translate-x-full");
+    //     }
+    // });
+// }
 });
+
+
