@@ -1,13 +1,16 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use App\Models\Article;
 
 Route::get('/', function () {
-    return view('layout.user');
+    $articles = Article::with('tags')->latest()->get();
+    return view('layout.user', compact('articles'));
 });
 
 Route::get('/dashboard', function(){
-    return view('layout.user');
+    $articles = Article::with('tags')->latest()->get();
+    return view('layout.user', compact('articles'));
 });
 
 Route::get('/login', function(){
