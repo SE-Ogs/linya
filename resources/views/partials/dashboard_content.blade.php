@@ -19,7 +19,7 @@
                                 <h1 class="text-3xl lg:text-4xl font-bold leading-tight mb-4">
                                     Campus Innovation Lab Launches Student Startup Incubator
                                 </h1>
-                                <p class="text-gray-200 text-lg leading-relaxed">
+                                <p class="text-gray-200 text-lg leading-relaxed mb-5">
                                     The new program will provide funding, mentorship, and workspace for student
                                     entrepreneurs looking to turn their ideas into reality.
                                 </p>
