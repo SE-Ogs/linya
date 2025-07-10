@@ -65,7 +65,7 @@
                                 <h3 class="text-xl font-bold text-gray-800 mb-4 leading-tight">
                                     Student Research Team Develops Sustainable Energy Solution
                                 </h3>
-                                <p class="text-gray-600 text-base leading-relaxed">
+                                <p class="text-gray-600 text-base leading-relaxed mb-6">
                                     Engineering students create breakthrough technology that could revolutionize
                                     renewable energy storage on campus.
                                 </p>
@@ -92,7 +92,7 @@
                                 <h3 class="text-xl font-bold text-gray-800 mb-4 leading-tight">
                                     Digital Arts Festival Showcases Student Creativity
                                 </h3>
-                                <p class="text-gray-600 text-base leading-relaxed">
+                                <p class="text-gray-600 text-base leading-relaxed mb-6">
                                     Annual exhibition brings together innovative digital artwork from students across
                                     all disciplines.
                                 </p>
