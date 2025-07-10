@@ -21,5 +21,6 @@ class DatabaseSeeder extends Seeder
         ]);
 
         $this->call(TagsSeeder::class);
+        $this->call(ArticlesSeeder::class);
     }
 }
