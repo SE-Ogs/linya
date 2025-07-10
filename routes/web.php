@@ -11,7 +11,11 @@ Route::get('/dashboard', function(){
 });
 
 Route::get('/login', function(){
-    return view('layout.login');
+    return view('layout.login-and-signup', ['show' => 'login']);
+});
+
+Route::get('/signup', function(){
+    return view('layout.login-and-signup', ['show' => 'signup']);
 });
 
 Route::get('/add-article', [\App\Http\Controllers\ArticleController::class, 'create'])->name('articles.create');

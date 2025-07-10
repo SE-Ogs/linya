@@ -1,17 +1,4 @@
-<!DOCTYPE html>
-<html lang="en">
-
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login</title>
-
-    @vite('resources/css/app.css')
-    @vite('resources/js/app.js')
-</head>
-
-<body class="bg-white min-h-screen flex items-center justify-center">
-    <div class="w-full h-screen flex">
+<div class="w-full h-screen flex">
         <!-- Left Side -->
         <div class="flex-1 flex items-center justify-center">
             <div class="w-full max-w-140 mx-auto">
@@ -19,10 +6,10 @@
                 <br>
                 <form class="flex flex-col gap-7">
                     <input type="text" name="username" id="username" autocomplete="off" placeholder="Username"
-                        class="rounded-2xl bg-[#E6E5E1] px-6 py-4 text-base placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-orange-400 font-normal" />
+                        class="rounded-2xl bg-[#E6E5E1] px-6 py-5 text-base placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-orange-400 font-normal" />
                     <div class="relative">
                         <input type="password" name="password" id="password" placeholder="Password"
-                            class="rounded-2xl bg-[#E6E5E1] px-6 py-4 text-base placeholder-gray-500 w-full focus:outline-none focus:ring-2 focus:ring-orange-400 font-normal pr-12" />
+                            class="rounded-2xl bg-[#E6E5E1] px-6 py-5 text-base placeholder-gray-500 w-full focus:outline-none focus:ring-2 focus:ring-orange-400 font-normal pr-12" />
                         <button type="button" id="togglePassword" tabindex="-1"
                             class="absolute right-4 top-1/2 -translate-y-1/2 cursor-pointer">
                             <svg id="eyeClosed" width="24" height="24" viewBox="0 0 48 48" fill="none"
@@ -43,7 +30,7 @@
                         </button>
                     </div>
                     <button type="button"
-                        class="bg-orange-400 text-white font-bold text-lg rounded-3xl py-3 mt-2 mb-1 transition active:scale-98 active:bg-orange-500 hover:scale-101">Login</button>
+                        class="bg-orange-400 text-white font-bold text-lg rounded-3xl py-4 mt-2 mb-1 transition active:scale-98 active:bg-orange-500 hover:scale-101">Login</button>
                     <a href="#"
                         class="text-orange-400 text-base underline transition hover:text-orange-500 hover:scale-102 w-fit">Forgot
                         your password?</a>
@@ -53,12 +40,9 @@
         <!-- Right Side -->
         <div class="flex-1 rightside bg-[#23222E] flex flex-col items-center justify-center">
             <div class="text-white text-6xl font-regular mb-8">New to Linya?</div>
-            <button type="button"
+            <button type="button" id="toSignupBtn"
                 class="border-2 border-white text-white text-xl font-bold rounded-full px-12 py-3 transition hover:bg-white hover:text-[#23222E] hover:scale-101 active:scale-98">
                 Create Account
             </button>
         </div>
     </div>
-</body>
-
-</html>
