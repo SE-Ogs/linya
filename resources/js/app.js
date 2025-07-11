@@ -53,25 +53,90 @@ document.addEventListener("DOMContentLoaded", function () {
         });
     }
 
-    // 👑 Admin sidebar toggle (IF NEEDED)
-    // const adminSidebar = document.getElementById("admin_sidebar");
-    // const toggleAdminBtn = document.getElementById("toggleAdminSidebar");
+    // 👑 Admin sidebar toggle with content adjustment
+    const adminSidebar = document.getElementById("admin_sidebar");
+    const toggleAdminBtn = document.getElementById("toggleAdminSidebar");
+    const mainContent = document.getElementById("main-content");
+    const adminHeader = document.getElementById("admin_header");
 
-    // if(toggleAdminBtn && adminSidebar){
-    // toggleAdminBtn.addEventListener("click", function (e){
-    //     adminSidebar.classList.toggle("-translate-x-full");
-    //     e.stopPropagation();
-    // });
-    // adminSidebar.addEventListener("click", function (e) {
-    //     e.stopPropagation();
-    // });
+    function adjustContentLayout() {
+        if (adminSidebar && mainContent && adminHeader) {
+            const isSidebarHidden = adminSidebar.classList.contains("-translate-x-full");
 
-    // document.addEventListener("click", function (e) {
-    //     if (!adminSidebar.contains(e.target) && !toggleAdminBtn.contains(e.target)) {
-    //         adminSidebar.classList.add("-translate-x-full");
-    //     }
-    // });
-// }
+            if (isSidebarHidden) {
+                // Sidebar is hidden - make content full width
+                mainContent.classList.remove("ml-64");
+                mainContent.classList.add("ml-0");
+                adminHeader.classList.remove("ml-64");
+                adminHeader.classList.add("ml-0");
+            } else {
+                // Sidebar is visible - add left margin
+                mainContent.classList.remove("ml-0");
+                mainContent.classList.add("ml-64");
+                adminHeader.classList.remove("ml-0");
+                adminHeader.classList.add("ml-64");
+            }
+        }
+    }
+
+    if (toggleAdminBtn && adminSidebar) {
+        toggleAdminBtn.addEventListener("click", function (e) {
+            adminSidebar.classList.toggle("-translate-x-full");
+            // Adjust content layout after sidebar toggle
+            setTimeout(adjustContentLayout, 50); // Small delay to ensure sidebar animation starts
+            e.stopPropagation();
+        });
+
+        adminSidebar.addEventListener("click", function (e) {
+            e.stopPropagation();
+        });
+
+        document.addEventListener("click", function (e) {
+            if (!adminSidebar.contains(e.target) && !toggleAdminBtn.contains(e.target)) {
+                adminSidebar.classList.add("-translate-x-full");
+                setTimeout(adjustContentLayout, 50);
+            }
+        });
+
+        // Initialize layout on page load
+        adjustContentLayout();
+    }
+
+    // 🏷️ Tag toggle functionality
+    function toggleTag(label) {
+        const checkbox = label.querySelector('input[type="checkbox"]');
+        const tagDisplay = label.querySelector('.tag-display');
+        const plusIcon = label.querySelector('.plus-icon');
+        const closeIcon = label.querySelector('.close-icon');
+
+        checkbox.checked = !checkbox.checked;
+
+        if (checkbox.checked) {
+            // Selected state (dark like your image)
+            tagDisplay.classList.remove('bg-gray-100', 'text-gray-700', 'border-gray-200', 'hover:bg-gray-200');
+            tagDisplay.classList.add('bg-gray-800', 'text-white', 'border-gray-800');
+            plusIcon.classList.add('hidden');
+            closeIcon.classList.remove('hidden');
+        } else {
+            // Unselected state (light)
+            tagDisplay.classList.remove('bg-gray-800', 'text-white', 'border-gray-800');
+            tagDisplay.classList.add('bg-gray-100', 'text-gray-700', 'border-gray-200', 'hover:bg-gray-200');
+            plusIcon.classList.remove('hidden');
+            closeIcon.classList.add('hidden');
+        }
+    }
+
+    // Add click handlers to tag checkboxes
+    document.querySelectorAll('.tag-checkbox').forEach(label => {
+        label.addEventListener('click', function (e) {
+            e.preventDefault();
+            toggleTag(this);
+        });
+
+        // Initialize checked tags
+        const checkbox = label.querySelector('input[type="checkbox"]');
+        if (checkbox.checked) {
+            toggleTag(label);
+        }
+    });
 });
-
-

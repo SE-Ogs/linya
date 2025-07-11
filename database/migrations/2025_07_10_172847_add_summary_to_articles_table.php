@@ -8,17 +8,17 @@ return new class extends Migration {
     /**
      * Run the migrations.
      */
-    public function up(): void
-    {
-        Schema::table('articles', function (Blueprint $table) {
-            $table->string('summary')->after('title');
-        });
-    }
+    // public function up(): void
+    // {
+    //     Schema::table('articles', function (Blueprint $table) {
+    //         $table->string('summary')->after('title');
+    //     });
+    // }
 
-    public function down(): void
-    {
-        Schema::table('articles', function (Blueprint $table) {
-            $table->dropColumn('summary');
-        });
-    }
+    // public function down(): void
+    // {
+    //     Schema::table('articles', function (Blueprint $table) {
+    //         $table->dropColumn('summary');
+    //     });
+    // }
 };
