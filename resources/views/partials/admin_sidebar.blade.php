@@ -17,6 +17,6 @@
             <div class="py-2 px-3 text-base font-semibold">Blog Analytics</div>
             <a href="#" class="block pl-6 py-2 text-sm font-normal hover:underline">Article Management</a>
         </div>
-        <a href="#" class="py-2 px-3 rounded hover:bg-[#35344a] transition text-base font-medium">Comment Management</a>
+        <a href="{{ route('admin.comments') }}" class="py-2 px-3 rounded hover:bg-[#35344a] transition text-base font-medium">Comment Management</a>  <!-- Routes to the comment management article page for now -->
     </nav>
 </aside>
