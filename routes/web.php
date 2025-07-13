@@ -3,16 +3,15 @@
 use Illuminate\Support\Facades\Route;
 use App\Models\Article;
 
-Route::get('/', function () {
-    $articles = Article::with('tags')->latest()->get();
-    return view('admin-panel.comment-manage-article');  
+Route::get('/', function () {                    // This route will be deleted
+    $articles = Article::with('tags')->latest()->get();  // I just added this so localhost:8000 will display my page
+    return view('admin-panel.user-manage');  
 });
 
 // Route::get('/', function () {
 //     $articles = Article::with('tags')->latest()->get();
-//     return view('layout.user', compact('articles'));  // default: layout.user --- uncomment this after testing
+//     return view('layout.user', compact('articles'));  // default view value: layout.user --- uncomment this route after testing
 // });
-
 
 Route::get('/dashboard', function(){
     $articles = Article::with('tags')->latest()->get();
@@ -37,4 +36,14 @@ Route::get('/comment-manage-searchbar', [SearchBarController::class, 'index'])->
 
 use App\Http\Controllers\CommentManageController;
 Route::get('/admin/comments', [CommentManageController::class, 'index'])->name('admin.comments');
+Route::get('/articles/{slug}', [CommentManageController::class, 'show'])->name('comment.manage.show');
 
+use App\Http\Controllers\UserManagementController;
+Route::get('/admin/users', [UserManagementController::class, 'index'])->name('user.management');
+// Dummy routes below for testing purposes, update these routes once database is operational
+Route::prefix('users')->group(function () {
+    Route::get('{id}/edit', [UserManagementController::class, 'edit'])->name('users.edit');
+    Route::post('{id}/report', [UserManagementController::class, 'report'])->name('users.report');
+    Route::patch('{id}/suspend', [UserManagementController::class, 'suspend'])->name('users.suspend');
+    Route::delete('{id}', [UserManagementController::class, 'destroy'])->name('users.destroy');
+});

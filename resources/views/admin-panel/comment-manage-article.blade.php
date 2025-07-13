@@ -240,27 +240,34 @@
         <!-- List of Posts (maximum of 5 posts per page) -->
         <div class="ml-64 mt-6 px-8 space-y-4">
             @forelse ($results as $post)
-                <div class="flex items-start gap-4 bg-white rounded-2xl shadow p-4 overflow-hidden">
-                    <!-- Thumbnail -->
-                    <div class="w-32 h-24 flex-shrink-0 mr-4">
-                        <img src="{{ $post->image_url ?? 'https://via.placeholder.com/150' }}" alt="Post Image" class="w-full h-full object-cover rounded-xl">
-                    </div>
+                @php
+                    $slug = \Illuminate\Support\Str::slug($post->title);
+                    $url = route('comment.manage.show', ['slug' => $slug]);
+                @endphp
 
-                    <!-- Post Details -->
-                    <div class="flex-1">
-                        <h2 class="text-lg font-semibold text-gray-800 truncate">{{ $post->title }}</h2>
-                        <p class="text-sm text-gray-600 leading-snug mt-1 line-clamp-2">
-                            {{ $post->excerpt }}
-                        </p>
-                    </div>
+                <a href="{{ $url }}" class="block hover:bg-gray-50 transition duration-200 rounded-2xl">
+                    <div class="flex items-start gap-4 bg-white rounded-2xl shadow p-4 overflow-hidden">
+                        <!-- Thumbnail -->
+                        <div class="w-32 h-24 flex-shrink-0 mr-4">
+                            <img src="{{ $post->image_url ?? 'https://via.placeholder.com/150' }}" alt="Post Image" class="w-full h-full object-cover rounded-xl">
+                        </div>
 
-                    <!-- Comment Count -->
-                    <div class="ml-2 mt-6 text-center">
-                        <p class="text-xs text-gray-500 font-medium">Total Comments:</p>
-                        <p class="text-lg font-bold text-gray-800">{{ $post->comments_count }}</p>
+                        <!-- Post Details -->
+                        <div class="flex-1">
+                            <h2 class="text-lg font-semibold text-gray-800 truncate">{{ $post->title }}</h2>
+                            <p class="text-sm text-gray-600 leading-snug mt-1 line-clamp-2">
+                                {{ $post->excerpt }}
+                            </p>
+                        </div>
+
+                        <!-- Comment Count -->
+                        <div class="ml-2 mt-6 text-center">
+                            <p class="text-xs text-gray-500 font-medium">Total Comments:</p>
+                            <p class="text-lg font-bold text-gray-800">{{ $post->comments_count }}</p>
+                        </div>
                     </div>
-                </div>
-            @empty
+                </a>
+                @empty
                 <div class="text-gray-500 text-center py-12">
                     No posts found.
                 </div>
