@@ -38,3 +38,6 @@ Route::get('/comment-manage-searchbar', [SearchBarController::class, 'index'])->
 use App\Http\Controllers\CommentManageController;
 Route::get('/admin/comments', [CommentManageController::class, 'index'])->name('admin.comments');
 
+use App\Http\Controllers\PostManageController;
+Route::get('/admin/posts', [PostManageController::class, 'index'])->name('admin.posts');
+
