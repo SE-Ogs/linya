@@ -17,7 +17,8 @@ class ArticleFactory extends Factory
         return [
             'title' => $this->faker->sentence(),
             'article' => $this->faker->paragraphs(3, true),
+            'summary' => $this->faker->paragraph(),
             'status' => $this->faker->randomElement(['pending', 'approved', 'published', 'rejected']),
         ];
     }
-} 
+}
