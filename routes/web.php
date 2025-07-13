@@ -47,3 +47,8 @@ Route::prefix('users')->group(function () {
     Route::patch('{id}/suspend', [UserManagementController::class, 'suspend'])->name('users.suspend');
     Route::delete('{id}', [UserManagementController::class, 'destroy'])->name('users.destroy');
 });
+// End of Christian J.'s added routes
+
+use App\Http\Controllers\PostManageController;
+Route::get('/admin/posts', [PostManageController::class, 'index'])->name('admin.posts');
+
