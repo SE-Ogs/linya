@@ -10,6 +10,9 @@ document.addEventListener("DOMContentLoaded", function () {
     const togglePassword = document.getElementById("togglePassword");
     const eyeClosed = document.getElementById("eyeClosed");
     const eyeOpen = document.getElementById("eyeOpen");
+    const searchOpen = document.getElementById("search-popup");
+    const searchBar = document.getElementById("searchBar");
+
 
     // ✅ Sidebar toggle only if elements exist
     if (toggleBtn && sidebar) {
@@ -52,6 +55,28 @@ document.addEventListener("DOMContentLoaded", function () {
             eyeOpen.classList.toggle("hidden", !isPassword);
         });
     }
+
+    // Toggle search popup if search bar is focused
+     if (searchBar && searchOpen) {
+    searchBar.addEventListener("focus", () => {
+      searchOpen.classList.remove("hidden");
+      searchOpen.classList.add("flex");
+    });
+
+    searchBar.addEventListener("blur", () => {
+      setTimeout(() => {
+        searchOpen.classList.add("hidden");
+        searchOpen.classList.remove("flex");
+      }, 150);
+    });
+
+    searchOpen.addEventListener("mousedown", (e) => {
+      e.preventDefault(); // keeps input focused when clicking inside
+    });
+  } else {
+    console.log("Search elements not found");
+  }
+
 
     // 👑 Admin sidebar toggle with content adjustment
     const adminSidebar = document.getElementById("admin_sidebar");
