@@ -5,14 +5,9 @@ use App\Models\Article;
 use App\Http\Controllers\UserAuthController;
 
 Route::get('/', function () {
-    $articles = Article::with('tags')->latest()->get();
-    return view('admin-panel.comment-manage-article');  
+    return redirect("/dashboard");
 });
 
-// Route::get('/', function () {
-//     $articles = Article::with('tags')->latest()->get();
-//     return view('layout.user', compact('articles'));  // default: layout.user --- uncomment this after testing
-// });
 
 
 Route::get('/dashboard', function(){

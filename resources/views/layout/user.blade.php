@@ -26,9 +26,11 @@
             <button type="button" id="signup"
                 class="px-5 py-2 hover:bg-[#4338CA] hover:text-white border-[#4338CA] transition duration-300 border rounded-[6px] text-[14px] text-[#4338CA] cursor-pointer">Sign
                 Up</button>
-            <button type="button" id="login"
-                class="px-5 py-2 hover:bg-[#FF8334] hover:text-white border-[#4338CA] transition duration-300 rounded-[6px] text-[14px] text-[#4B5563] cursor-pointer">Log
-                In</button>
+            <a href="{{route('login')}}">
+                <button type="button" id="login"
+                    class="px-5 py-2 hover:bg-[#FF8334] hover:text-white border-[#4338CA] transition duration-300 rounded-[6px] text-[14px] text-[#4B5563] cursor-pointer">Log
+                    In</button>
+            </a>
         </div>
     </div>
 
