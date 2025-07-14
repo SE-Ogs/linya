@@ -58,7 +58,7 @@ h4 {
     font-style: normal;
 }
 
-p {
+p, li{
     font-family: "Noto Sans", sans-serif;
     font-optical-sizing: auto;
 }
