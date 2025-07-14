@@ -1,4 +1,8 @@
 <body class="bg-gray-50">
+    @php
+        use App\Services\HelperFunctionService;
+    @endphp
+
     <!-- Check if we should show a single article -->
     @if(request()->has('article_id'))
         @php
@@ -19,8 +23,12 @@
                 </a>
 
                 @if($article->tags->count())
-                    <div class="bg-indigo-600 rounded-full px-3 py-1 text-xs font-semibold text-white w-fit mb-4">
-                        {{ $article->tags->first()->name }}
+                    <div class="flex flex-wrap gap-2 mb-4">
+                        @foreach($article->tags as $tag)
+                            <div class="{{ HelperFunctionService::getTagColor($tag->name) }} rounded-full px-3 py-1 text-xs font-semibold text-white">
+                                {{ HelperFunctionService::abbreviateTag($tag->name) }}
+                            </div>
+                        @endforeach
                     </div>
                 @endif
 
@@ -69,15 +77,19 @@
                                 <div class="relative z-10 h-full flex flex-col justify-end p-8 text-white">
                                     <div>
                                         @if($main->tags->count())
-                                            <div class="bg-indigo-600 rounded-full px-4 py-1 text-xs font-semibold w-fit mb-4">
-                                                {{ $main->tags->first()->name }}
+                                            <div class="flex flex-wrap gap-2 mb-4">
+                                                @foreach($main->tags as $tag)
+                                                    <div class="{{ HelperFunctionService::getTagColor($tag->name) }} rounded-full px-4 py-1 text-xs font-semibold">
+                                                        {{ HelperFunctionService::abbreviateTag($tag->name) }}
+                                                    </div>
+                                                @endforeach
                                             </div>
                                         @endif
                                         <h1 class="text-3xl lg:text-4xl font-bold leading-tight mb-4">
                                             {{ $main->title }}
                                         </h1>
                                         <p class="text-gray-200 text-lg leading-relaxed">
-                                            {{ Str::limit($main->article, 150) }}
+                                            {{ $main->summary}}
                                         </p>
                                     </div>
                                     <div class="flex items-center gap-4 text-sm text-gray-300">
@@ -111,17 +123,21 @@
                                     <div>
                                         <img src="/images/placeholder.jpg" alt="placeholder image" class="w-full h-48 object-cover">
                                     </div>
-                                    <div class="px-6 pb-6">
+                                    <div class="px-6 pb-6 min-h-[4.5rem]">
                                         @if($sub->tags->count())
-                                            <div class="bg-indigo-600 rounded-full px-3 py-1 text-xs font-semibold text-white w-fit mb-4 mt-3">
-                                                {{ $sub->tags->first()->name }}
+                                            <div class="flex flex-wrap gap-2 mb-4 mt-3">
+                                                @foreach($sub->tags as $tag)
+                                                    <div class="{{ HelperFunctionService::getTagColor($tag->name) }} rounded-full px-3 py-1 text-xs font-semibold text-white">
+                                                        {{ HelperFunctionService::abbreviateTag($tag->name) }}
+                                                    </div>
+                                                @endforeach
                                             </div>
                                         @endif
-                                        <h3 class="text-xl font-bold text-gray-800 mb-4 leading-tight">
+                                        <h3 class="text-xl font-bold text-gray-800 mb-4 leading-tight min-h-[3rem]">
                                             {{ $sub->title }}
                                         </h3>
-                                        <p class="text-gray-600 text-base leading-relaxed mb-5">
-                                            {{ Str::limit($sub->article, 100) }}
+                                        <p class="text-gray-600 text-base leading-relaxed mb-5 min-h-[10rem]">
+                                            {{ $sub->summary }}
                                         </p>
                                         <div class="flex justify-between items-center text-sm text-gray-500">
                                             <p>{{ $sub->author->name ?? 'Unknown Author' }}</p>
@@ -259,10 +275,24 @@
 
                 <!-- Carousel container -->
                 <div class="overflow-x-auto flex flex-nowrap space-x-4 scrollbar-thin scrollbar-thumb-gray-400 scrollbar-track-gray-100 hover:scrollbar-thumb-gray-600 p-7">
-                    @foreach($articles->skip(3) as $blog)
-                        <a href="?article_id={{ $blog->id }}" class="flex-shrink-0 bg-gray-200 rounded p-6">
-                            <h3 class="text-lg font-bold mb-2">{{ $blog->title }}</h3>
-                            <p class="text-sm text-gray-600">{{ Str::limit($blog->article, 80) }}</p>
+                    @foreach($articles->skip(3)->take(8) as $blog)
+                        <a href="?article_id={{ $blog->id }}" class="flex-shrink-0 bg-gray-200 rounded p-6 w-full max-w-90 h-auto flex flex-col">
+                            <div>
+                                <img src="/images/placeholder.jpg" alt="placeholder image" class="w-full h-24 object-cover">
+                            </div>
+                            <div class="min-h-[4.5rem]">
+                                <h3 class="text-lg font-bold mb-2 line-clamp-2">{{ $blog->title }}</h3>
+                            </div>
+                            @if($blog->tags->count())
+                                <div class="flex flex-row gap-2 mb-4">
+                                    @foreach($blog->tags as $tag)
+                                        <div class="{{ HelperFunctionService::getTagColor($tag->name) }} rounded-full px-5 py-0.5 text-[0.75rem] font-semibold text-white">
+                                            {{ HelperFunctionService::abbreviateTag($tag->name) }}
+                                        </div>
+                                    @endforeach
+                                </div>
+                            @endif
+                            <p class="text-sm text-gray-600 flex-1 line-clamp-4 overflow-hidden">{{ Str::limit($blog->summary, 120) }}</p>
                         </a>
                     @endforeach
                 </div>
