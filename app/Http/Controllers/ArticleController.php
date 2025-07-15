@@ -59,4 +59,25 @@ class ArticleController extends Controller
         $this->articleService->deleteArticle($id);
         return response()->json(null, 204);
     }
+
+    public function preview(\Illuminate\Http\Request $request)
+    {
+
+        $articleData = $request->all();
+        $tags = Tag::find($articleData['tags'] ?? []);
+
+        return view('article-management.preview_article', [
+            'title' => $articleData['title'] ?? '',
+            'summary' => $articleData['summary'] ?? '',
+            'article' => $articleData['article'] ?? '',
+            'tags' => $articleData['tags'] ?? '',
+            'tagModels' => $tags,
+        ]);
+    }
+    
+    public function backtoCreate(Request $request): RedirectResponse
+    {
+        return redirect()->route('articles.create')
+            ->withInput($request->all());
+    }
 }
