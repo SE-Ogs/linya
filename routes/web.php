@@ -11,7 +11,7 @@ Route::get('/', function () {
 
 Route::get('/dashboard', function(){
     $articles = Article::with('tags')
-        ->where('status', 'approved')
+        ->where('status', 'published')
         ->orderByDesc('views')
         ->get();
     return view('layout.user', compact('articles'));
