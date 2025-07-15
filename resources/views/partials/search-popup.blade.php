@@ -6,7 +6,7 @@
     <hr class="mb-2 mt-2">
     </hr>
 
-    <ul>
+    <ul class="text-black/30">
         <li class="flex items-center space-x-2 pt-2"><svg xmlns="http://www.w3.org/2000/svg"
                  fill="none"
                  viewBox="0 0 24 24"
