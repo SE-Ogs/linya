@@ -15,9 +15,10 @@ class StoreArticleRequest extends FormRequest
     {
         return [
             'title' => 'required|string|max:255',
+            'summary' => 'required|string|max:255',
             'article' => 'required|string',
             'tags' => 'required|array',
             'tags.*' => 'exists:tags,id',
         ];
     }
-} 
+}

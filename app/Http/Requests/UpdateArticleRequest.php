@@ -15,10 +15,11 @@ class UpdateArticleRequest extends FormRequest
     {
         return [
             'title' => 'sometimes|required|string|max:255',
+            'summary' => 'required|string|max:255',
             'article' => 'sometimes|required|string',
             'status' => 'sometimes|required|in:pending,approved,published,rejected',
             'tags' => 'sometimes|array',
             'tags.*' => 'exists:tags,id',
         ];
     }
-} 
+}

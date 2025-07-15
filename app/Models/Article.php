@@ -11,6 +11,8 @@ class Article extends Model
 
     protected $fillable = [
         'title',
+        'summary',
+        'status',
         'article',
         'status',
     ];
@@ -19,4 +21,4 @@ class Article extends Model
     {
         return $this->belongsToMany(Tag::class);
     }
-} 
+}
