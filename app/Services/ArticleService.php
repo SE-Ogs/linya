@@ -25,6 +25,8 @@ class ArticleService
 
     public function createArticle(array $data)
     {
+        $data['views'] = 0;
+
         if (!isset($data['status'])) {
             $data['status'] = 'published'; // TODO CHANGE TO PENDING
         }
@@ -40,4 +42,4 @@ class ArticleService
     {
         return $this->articleRepository->delete($id);
     }
-} 
+}

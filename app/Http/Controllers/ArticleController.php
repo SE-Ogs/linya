@@ -21,15 +21,19 @@ class ArticleController extends Controller
 
     public function index(): JsonResponse
     {
-        $articles = $this->articleService->listArticles();
+        $articles = Article::with('tags')
+            ->where('status', 'approved')
+            ->orderByDesc('views')
+            ->get();
         $dtos = $articles->map(fn($article) => ArticleDTO::fromModel($article));
         return response()->json($dtos);
     }
 
-    public function show($id): JsonResponse
+    public function show($id)
     {
         $article = $this->articleService->getArticle($id);
-        return response()->json(ArticleDTO::fromModel($article));
+        $article->increment('views');
+        return view('article-management.show_article', compact('article'));
     }
 
     public function create(): View
