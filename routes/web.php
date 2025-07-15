@@ -3,6 +3,7 @@
 use Illuminate\Support\Facades\Route;
 use App\Models\Article;
 use App\Http\Controllers\UserAuthController;
+use App\Http\Controllers\ArticleController;
 
 Route::get('/', function () {
     return redirect("/dashboard");
@@ -24,6 +25,7 @@ Route::get('/add-article', [\App\Http\Controllers\ArticleController::class, 'cre
 
 Route::post('/articles', [\App\Http\Controllers\ArticleController::class, 'store'])->name('articles.store');
 Route::get('/articles/{id}', [\App\Http\Controllers\ArticleController::class, 'show'])->name('articles.show');
+Route::post('/articles/preview', [\App\Http\Controllers\ArticleController::class, 'preview'])->name('articles.preview');
 
 // Christian J. added these routes
 use App\Http\Controllers\SearchBarController;

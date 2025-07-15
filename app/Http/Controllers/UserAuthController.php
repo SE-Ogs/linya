@@ -42,4 +42,22 @@ class UserAuthController extends Controller
         $request->session()->regenerateToken();
         return redirect('/login');
     }
+
+    public function preview(Request $request)
+    {
+        // Handle the preview logic here
+        // For example, you might want to return a view with the article data
+        $articleData = $request->all(); // Get all input data for preview
+
+        $article = (object) [
+            'title' => $articleData['title'] ?? '',
+            'content' => $articleData['content'] ?? '',
+            'tags' => $articleData['tags'] ?? [],
+            'status' => 'preview', // Set status to preview
+            'author_id' => Auth() -> user(),
+            'created_at' => now(), // Assuming the user is logged in
+        ];
+        
+        return view('article-management.preview', compact('articleData'));
+    }
 }

@@ -109,10 +109,15 @@
             <!-- Submit Button -->
             <div class="flex justify-end w-full space-x-3">
                 <button type="button"
+                    id="previewButton"
+                    name="action"
+                    value="preview"
                     class="border border-[#482942] text-[#482942] font-semibold py-1 px-8 rounded-[50px] bg-white hover:bg-[#f5f0f7] transition duration-200 ease-in-out transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-[#482942] focus:ring-offset-2">
                     Preview
                 </button>
                 <button type="submit"
+                    name="action"
+                    value="publish"
                     class="bg-[#482942] hover:bg-[#3a2136] text-white font-semibold py-1 px-8 rounded-[50px] transition duration-200 ease-in-out transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-[#482942] focus:ring-offset-2">
                     Publish
                 </button>
@@ -161,6 +166,17 @@
             document.getElementById('article').value = content;
             this.submit();
         });
+
+        document.querySelector('form').addEventListener('submit', function (e) {
+            const content = editor.getRayEditorContent();
+            document.getElementById('article').value = content;
+        });
+
+        document.getElementById('previewButton').addEventListener('click', function () {
+            const form = this.closest('form');
+            form.action = "{{ route('articles.preview') }}";
+            form.submit();
+        })
     </script>
 </body>
 
