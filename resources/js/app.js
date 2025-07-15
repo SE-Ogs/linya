@@ -59,14 +59,14 @@ document.addEventListener("DOMContentLoaded", function () {
     // Toggle search popup if search bar is focused
      if (searchBar && searchOpen) {
     searchBar.addEventListener("focus", () => {
-      searchOpen.classList.remove("hidden");
-      searchOpen.classList.add("flex");
+     searchOpen.classList.remove('opacity-0', 'scale-95', 'pointer-events-none');
+     searchOpen.classList.add('opacity-100', 'scale-100');
     });
 
     searchBar.addEventListener("blur", () => {
       setTimeout(() => {
-        searchOpen.classList.add("hidden");
-        searchOpen.classList.remove("flex");
+        searchOpen.classList.add('opacity-0', 'scale-95', 'pointer-events-none');
+        searchOpen.classList.remove('opacity-100', 'scale-100');
       }, 150);
     });
 
