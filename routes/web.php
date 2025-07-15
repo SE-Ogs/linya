@@ -8,10 +8,11 @@ Route::get('/', function () {
     return redirect("/dashboard");
 });
 
-
-
 Route::get('/dashboard', function(){
-    $articles = Article::with('tags')->latest()->get();
+    $articles = Article::with('tags')
+        ->where('status', 'approved')
+        ->orderByDesc('views')
+        ->get();
     return view('layout.user', compact('articles'));
 });
 
@@ -22,6 +23,7 @@ Route::post('/login', [UserAuthController::class, 'login']);
 Route::get('/add-article', [\App\Http\Controllers\ArticleController::class, 'create'])->name('articles.create');
 
 Route::post('/articles', [\App\Http\Controllers\ArticleController::class, 'store'])->name('articles.store');
+Route::get('/articles/{id}', [\App\Http\Controllers\ArticleController::class, 'show'])->name('articles.show');
 
 // Christian J. added these routes
 use App\Http\Controllers\SearchBarController;
