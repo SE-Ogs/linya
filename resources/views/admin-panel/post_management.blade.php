@@ -9,7 +9,7 @@
     <script src="https://unpkg.com/alpinejs" defer></script>
 </head>
 
-<body class="font-['Lexend'] bg-[#F5F5F5] flex h-screen overflow-hidden">
+<body class="bg-[#F5F5F5] flex h-screen overflow-hidden">
 
 <!-- Sidebar -->
 <aside class="w-72 bg-[#2C2C34] text-white flex-shrink-0 h-full sticky top-0 flex flex-col">
@@ -62,9 +62,9 @@
         <!-- Filters -->
         <div class="flex w-full mb-5 space-x-0">
             <template x-for="statusOption in statusOptions" :key="statusOption">
-                <button @click="activeStatus = statusOption" 
-                    :class="activeStatus === statusOption 
-                        ? 'flex-1 py-2 bg-blue-600 text-white rounded-none' 
+                <button @click="activeStatus = statusOption"
+                    :class="activeStatus === statusOption
+                        ? 'flex-1 py-2 bg-blue-600 text-white rounded-none'
                         : 'flex-1 py-2 border border-gray-300 rounded-none text-sm hover:bg-blue-50 transition'">
                     <span x-text="statusOption"></span>
                 </button>

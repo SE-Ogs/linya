@@ -4,6 +4,7 @@ use App\Http\Controllers\RecentSearchController;
 use Illuminate\Support\Facades\Route;
 use App\Models\Article;
 use App\Http\Controllers\UserAuthController;
+use App\Http\Controllers\ArticleController;
 
 Route::get('/', function () {
     return redirect("/dashboard");
@@ -11,7 +12,7 @@ Route::get('/', function () {
 
 Route::get('/dashboard', function(){
     $articles = Article::with('tags')
-        ->where('status', 'approved')
+        ->where('status', 'published')
         ->orderByDesc('views')
         ->get();
     return view('layout.user', compact('articles'));
@@ -26,10 +27,24 @@ Route::get('/recent-searches', [RecentSearchController::class, 'index'])->name('
 Route::post('/recent-searches', [RecentSearchController::class, 'store'])->name('recent-searches.store');
 Route::delete('/recent-searches', [RecentSearchController::class, 'clear']);
 
+Route::get('/resetpass', function(){
+    return view('partials.reset_password');
+});
+
+Route::get('/resetsuccess', function(){
+    return view('partials.reset_success');
+});
+
+Route::get('/reset-password', function () {
+    return view('partials.reset_password'); // or 'partials.reset_password' if that's the folder
+})->name('password.request');
+
+
 Route::get('/add-article', [\App\Http\Controllers\ArticleController::class, 'create'])->name('articles.create');
 
 Route::post('/articles', [\App\Http\Controllers\ArticleController::class, 'store'])->name('articles.store');
 Route::get('/articles/{id}', [\App\Http\Controllers\ArticleController::class, 'show'])->name('articles.show');
+Route::post('/articles/preview', [\App\Http\Controllers\ArticleController::class, 'preview'])->name('articles.preview');
 
 // Christian J. added these routes
 use App\Http\Controllers\SearchBarController;
