@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\RecentSearchController;
 use Illuminate\Support\Facades\Route;
 use App\Models\Article;
 use App\Http\Controllers\UserAuthController;
@@ -19,6 +20,11 @@ Route::get('/dashboard', function(){
 Route::get('/login', [UserAuthController::class, 'showLogin'])->name('login');
 Route::get('/signup', [UserAuthController::class, 'showSignup'])->name('signup');
 Route::post('/login', [UserAuthController::class, 'login']);
+
+// Route for recent searches
+Route::get('/recent-searches', [RecentSearchController::class, 'index'])->name('recent-searches.index');
+Route::post('/recent-searches', [RecentSearchController::class, 'store'])->name('recent-searches.store');
+Route::delete('/recent-searches', [RecentSearchController::class, 'clear']);
 
 Route::get('/add-article', [\App\Http\Controllers\ArticleController::class, 'create'])->name('articles.create');
 
