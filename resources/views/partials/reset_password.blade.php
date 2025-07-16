@@ -1,4 +1,4 @@
-@extends('partials.auth_split_layout')
+@extends('layout.auth_split_layout')
 
 @section('title', 'Reset Password')
 
@@ -14,7 +14,7 @@
     <div class="text-4xl font-black mb-2 text-black">Don’t forget next time!</div>
     <p class="text-gray-600 mb-8">Enter below your new credentials.</p>
 
-    <form method="POST" action="{{ route('password.update') }}" class="flex flex-col gap-6">
+    <form method="POST" action="/dev-placeholder" class="flex flex-col gap-6">
         @csrf
 
         <input type="password" name="password" placeholder="Password"
@@ -39,4 +39,3 @@
         </button>
     </a>
 @endsection
-=

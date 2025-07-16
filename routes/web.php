@@ -22,8 +22,17 @@ Route::get('/signup', [UserAuthController::class, 'showSignup'])->name('signup')
 Route::post('/login', [UserAuthController::class, 'login']);
 
 Route::get('/resetpass', function(){
-    return view('layout.reset_password');
+    return view('partials.reset_password');
 });
+
+Route::get('/resetsuccess', function(){
+    return view('partials.reset_success');
+});
+
+Route::get('/reset-password', function () {
+    return view('partials.reset_password'); // or 'partials.reset_password' if that's the folder
+})->name('password.request');
+
 
 
 Route::get('/add-article', [\App\Http\Controllers\ArticleController::class, 'create'])->name('articles.create');
