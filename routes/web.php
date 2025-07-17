@@ -24,6 +24,11 @@ Route::get('/settings', [SettingsController::class, 'showSettings'])->name('sett
 Route::get('/login', [UserAuthController::class, 'showLogin'])->name('login');
 Route::get('/signup', [UserAuthController::class, 'showSignup'])->name('signup');
 Route::post('/login', [UserAuthController::class, 'login']);
+Route::post('/signup', [UserAuthController::class, 'signup']);
+Route::get('/set-display-name', [UserAuthController::class, 'showDisplayName']);
+Route::post('/set-display-name', [UserAuthController::class, 'storeDisplayName']);
+Route::post('/clear-signup-data', [UserAuthController::class, 'clearSignupData'])->name('clear-signup-data'); 
+
 Route::post('/logout', [UserAuthController::class, 'logout'])->name('logout');
 
 // Route for recent searches
