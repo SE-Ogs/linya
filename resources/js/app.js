@@ -10,9 +10,15 @@ document.addEventListener("DOMContentLoaded", function () {
     const togglePassword = document.getElementById("togglePassword");
     const eyeClosed = document.getElementById("eyeClosed");
     const eyeOpen = document.getElementById("eyeOpen");
+    const passwordInputSignup = document.getElementById("password-signup");
+    const togglePasswordSignup = document.getElementById("togglePassword-signup");
+    const eyeClosedSignup = document.getElementById("eyeClosed-signup");
+    const eyeOpenSignup = document.getElementById("eyeOpen-signup");
+
     const searchOpen = document.getElementById("search-popup");
     const searchBar = document.getElementById("searchBar");
 
+    
 
     // ✅ Sidebar toggle only if elements exist
     if (toggleBtn && sidebar) {
@@ -53,6 +59,14 @@ document.addEventListener("DOMContentLoaded", function () {
             passwordInput.type = isPassword ? "text" : "password";
             eyeClosed.classList.toggle("hidden", isPassword);
             eyeOpen.classList.toggle("hidden", !isPassword);
+        });
+    } // signup password toggle
+    if (togglePasswordSignup && passwordInputSignup && eyeClosedSignup && eyeOpenSignup) {
+        togglePasswordSignup.addEventListener("click", function () {
+            const isPassword = passwordInputSignup.type === "password";
+            passwordInputSignup.type = isPassword ? "text" : "password";
+            eyeClosedSignup.classList.toggle("hidden", isPassword);
+            eyeOpenSignup.classList.toggle("hidden", !isPassword);
         });
     }
 

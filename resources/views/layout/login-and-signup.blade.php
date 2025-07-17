@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login</title>
+    <title>Linya</title>
 
     @vite('resources/css/app.css')
     @vite('resources/js/app.js')
@@ -19,17 +19,23 @@
         <div class="w-screen flex-shrink-0 h-screen">
             @include('partials.signup')
         </div>
+        <div class="w-screen flex-shrink-0 h-screen">
+            @include('partials.set_displayname')
+        </div>
     </div>
     <script>
         document.addEventListener('DOMContentLoaded', function () {
             const container = document.getElementById('authContainer');
             const toSignupBtn = document.getElementById('toSignupBtn');
             const toLoginBtn = document.getElementById('toLoginBtn');
+            const signupForm = document.querySelector('form[action="/signup"]');
 
             // Set initial transform based on URL
             function setTransformFromPath(path) {
                 if (path.endsWith('/signup')) {
                     container.style.transform = 'translateX(-100vw)';
+                } else if (path.endsWith('/set-display-name')) {
+                    container.style.transform = 'translateX(-200vw)';
                 } else {
                     container.style.transform = 'translateX(0)';
                 }

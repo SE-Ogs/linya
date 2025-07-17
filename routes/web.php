@@ -20,10 +20,10 @@ Route::get('/dashboard', function(){
 Route::get('/login', [UserAuthController::class, 'showLogin'])->name('login');
 Route::get('/signup', [UserAuthController::class, 'showSignup'])->name('signup');
 Route::post('/login', [UserAuthController::class, 'login']);
-
-Route::get('/resetpass', function(){
-    return view('partials.reset_password');
-});
+Route::post('/signup', [UserAuthController::class, 'signup']);
+Route::get('/set-display-name', [UserAuthController::class, 'showDisplayName']);
+Route::post('/set-display-name', [UserAuthController::class, 'storeDisplayName']);
+Route::post('/clear-signup-data', [UserAuthController::class, 'clearSignupData'])->name('clear-signup-data'); 
 
 Route::get('/resetsuccess', function(){
     return view('partials.reset_success');
