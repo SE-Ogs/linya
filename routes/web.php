@@ -5,6 +5,7 @@ use Illuminate\Support\Facades\Route;
 use App\Models\Article;
 use App\Http\Controllers\UserAuthController;
 use App\Http\Controllers\ArticleController;
+use App\Http\Controllers\SettingsController;
 
 Route::get('/', function () {
     return redirect("/dashboard");
@@ -17,6 +18,8 @@ Route::get('/dashboard', function(){
         ->get();
     return view('layout.user', compact('articles'));
 });
+
+Route::get('/settings', [SettingsController::class, 'showSettings'])->name('settings');
 
 Route::get('/login', [UserAuthController::class, 'showLogin'])->name('login');
 Route::get('/signup', [UserAuthController::class, 'showSignup'])->name('signup');
