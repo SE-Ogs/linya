@@ -12,6 +12,13 @@ document.addEventListener("DOMContentLoaded", function () {
     const eyeOpen = document.getElementById("eyeOpen");
     const searchOpen = document.getElementById("search-popup");
     const searchBar = document.getElementById("searchBar");
+    const logoutModal = document.getElementById("logoutModal");
+    const logoutButton = document.getElementById("logoutButton");
+
+    const adminSidebar = document.getElementById("admin_sidebar");
+    const toggleAdminBtn = document.getElementById("toggleAdminSidebar");
+    const mainContent = document.getElementById("main-content");
+    const adminHeader = document.getElementById("admin_header");
 
     // ✅ Sidebar toggle only if elements exist
     if (toggleBtn && sidebar) {
@@ -172,11 +179,16 @@ document.addEventListener("DOMContentLoaded", function () {
         console.log("Search elements not found");
     }
 
+    if (logoutButton) {
+        logoutButton.addEventListener("click", toggleLogoutModal);
+    }
+
+    function toggleLogoutModal() {
+        logoutModal.classList.remove("hidden");
+        logoutModal.classList.add("flex");
+    }
+
     // 👑 Admin sidebar toggle with content adjustment
-    const adminSidebar = document.getElementById("admin_sidebar");
-    const toggleAdminBtn = document.getElementById("toggleAdminSidebar");
-    const mainContent = document.getElementById("main-content");
-    const adminHeader = document.getElementById("admin_header");
 
     function adjustContentLayout() {
         if (adminSidebar && mainContent && adminHeader) {

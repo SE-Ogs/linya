@@ -21,6 +21,7 @@ Route::get('/dashboard', function(){
 Route::get('/login', [UserAuthController::class, 'showLogin'])->name('login');
 Route::get('/signup', [UserAuthController::class, 'showSignup'])->name('signup');
 Route::post('/login', [UserAuthController::class, 'login']);
+Route::post('/logout', [UserAuthController::class, 'logout'])->name('logout');
 
 // Route for recent searches
 Route::get('/recent-searches', [RecentSearchController::class, 'index'])->name('recent-searches.index');
