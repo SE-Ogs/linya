@@ -5,6 +5,8 @@
         <meta charset="UTF-8">
         <meta name="viewport"
               content="width=device-width, initial-scale=1.0">
+        <meta name="csrf-token"
+              content="{{ csrf_token() }}">
 
         <title>Linya</title>
 
@@ -29,18 +31,20 @@
                 </svg>
 
             </button>
-            <div class="m-4 space-x-1">
-                <button type="button"
-                        id="signup"
-                        class="cursor-pointer rounded-[6px] border border-[#4338CA] px-5 py-2 text-[14px] text-[#4338CA] transition duration-300 hover:bg-[#4338CA] hover:text-white">Sign
-                    Up</button>
-                <a href="{{ route('login') }}">
+            @guest
+                <div class="m-4 space-x-1">
                     <button type="button"
-                            id="login"
-                            class="cursor-pointer rounded-[6px] border-[#4338CA] px-5 py-2 text-[14px] text-[#4B5563] transition duration-300 hover:bg-[#FF8334] hover:text-white">Log
-                        In</button>
-                </a>
-            </div>
+                            id="signup"
+                            class="cursor-pointer rounded-[6px] border border-[#4338CA] px-5 py-2 text-[14px] text-[#4338CA] transition duration-300 hover:bg-[#4338CA] hover:text-white">Sign
+                        Up</button>
+                    <a href="{{ route('login') }}">
+                        <button type="button"
+                                id="login"
+                                class="cursor-pointer rounded-[6px] border-[#4338CA] px-5 py-2 text-[14px] text-[#4B5563] transition duration-300 hover:bg-[#FF8334] hover:text-white">Log
+                            In</button>
+                    </a>
+                </div>
+            @endguest
         </div>
 
         <aside id="sidebar"
@@ -63,6 +67,7 @@
         </footer>
 
         @include('partials.contact_us')
+        @include('partials.are_you_sure_modal')
 
         @vite('resources/js/app.js')
 

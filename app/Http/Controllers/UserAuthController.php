@@ -114,7 +114,7 @@ class UserAuthController extends Controller
         Auth::logout();
         $request->session()->invalidate();
         $request->session()->regenerateToken();
-        return redirect('/login');
+        return redirect('/dashboard');
     }
 
     public function preview(Request $request)
@@ -128,10 +128,10 @@ class UserAuthController extends Controller
             'content' => $articleData['content'] ?? '',
             'tags' => $articleData['tags'] ?? [],
             'status' => 'preview', // Set status to preview
-            'author_id' => Auth() -> user(),
+            'author_id' => Auth::user(),
             'created_at' => now(), // Assuming the user is logged in
         ];
-        
+
         return view('article-management.preview', compact('articleData'));
     }
 }

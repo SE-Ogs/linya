@@ -20,7 +20,7 @@
 
     <ul class="ml-1 space-y-2">
         <li class="rounded-[30px] pb-2 pl-3 pt-2 transition duration-300 hover:bg-[#434158]">
-            <a href="/home"
+            <a href="/dashboard"
                class="flex items-center space-x-2 text-[20px] md:text-[18px]">
                 <svg xmlns="http://www.w3.org/2000/svg"
                      fill="none"
@@ -42,7 +42,7 @@
             </a>
         </li>
 
-        <li class="rounded-[30px] pb-2 pl-3 pt-2 transition duration-300 hover:bg-[#434158]"
+        <li class="rounded-[30px] pb-2 pl-3 pt-2 transition duration-300 hover:cursor-pointer hover:bg-[#434158]"
             id="contactUs">
             <a class="flex items-center space-x-2 text-[20px] md:text-[18px]">
                 <svg xmlns="http://www.w3.org/2000/svg"
@@ -63,7 +63,7 @@
         </li>
 
         <li class="rounded-[30px] pb-2 pl-3 pt-2 transition duration-300 hover:bg-[#434158]">
-            <a href="/profile"
+            <a href="/settings"
                class="flex items-center space-x-2 text-[20px] md:text-[18px]">
                 <svg xmlns="http://www.w3.org/2000/svg"
                      fill="none"
@@ -249,29 +249,56 @@
 
     <hr class="mb-5 ml-4 mt-3 w-80">
 
-    <div class="ml-4 mt-3 flex w-full max-w-xs items-center justify-between rounded-[10px]">
-        <div class="flex items-center space-x-2">
-            <img src="/images/placeholder.jpg"
-                 alt="Profile"
-                 class="h-10 w-10 rounded-full object-cover" />
-            <span>Spyke Matthew Lim</span>
+    @auth
+        <div class="ml-4 mt-3 flex w-full max-w-xs items-center justify-between rounded-[10px]">
+            <div class="flex items-center space-x-2">
+                <img src="/images/placeholder.jpg"
+                     alt="Profile"
+                     class="h-10 w-10 rounded-full object-cover" />
+                <span>@auth {{ Auth::user()->name }} @endauth
+                </span>
+            </div>
+            <button type="button"
+                    id="logoutButton"
+                    class="text-white hover:cursor-pointer hover:opacity-20 active:opacity-10">
+                <svg xmlns="http://www.w3.org/2000/svg"
+                     width="24"
+                     height="24"
+                     viewBox="0 0 24 24"
+                     fill="none"
+                     stroke="currentColor"
+                     stroke-width="2"
+                     stroke-linecap="round"
+                     stroke-linejoin="round"
+                     class="lucide lucide-log-out">
+                    <path d="m16 17 5-5-5-5" />
+                    <path d="M21 12H9" />
+                    <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
+                </svg>
+            </button>
         </div>
-        <button class="text-white">
-            <svg xmlns="http://www.w3.org/2000/svg"
-                 width="24"
-                 height="24"
-                 viewBox="0 0 24 24"
-                 fill="none"
-                 stroke="currentColor"
-                 stroke-width="2"
-                 stroke-linecap="round"
-                 stroke-linejoin="round"
-                 class="lucide lucide-log-out">
-                <path d="m16 17 5-5-5-5" />
-                <path d="M21 12H9" />
-                <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
-            </svg>
-        </button>
-    </div>
+    @endauth
+
+    @guest
+        <div class="ml-4 mt-3 flex w-full max-w-xs items-center justify-between rounded-[10px]">
+            <div class="flex items-center space-x-2">
+                <svg xmlns="http://www.w3.org/2000/svg"
+                     fill="none"
+                     viewBox="0 0 24 24"
+                     stroke-width="1.5"
+                     stroke="currentColor"
+                     class="size-6">
+                    <path stroke-linecap="round"
+                          stroke-linejoin="round"
+                          d="M17.982 18.725A7.488 7.488 0 0 0 12 15.75a7.488 7.488 0 0 0-5.982 2.975m11.963 0a9 9 0 1 0-11.963 0m11.963 0A8.966 8.966 0 0 1 12 21a8.966 8.966 0 0 1-5.982-2.275M15 9.75a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
+                </svg>
+
+                <span>
+                    <p>Guest</p>
+                </span>
+            </div>
+
+        </div>
+    @endguest
 
 </div>
