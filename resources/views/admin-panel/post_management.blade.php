@@ -2,6 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>Linya CMS</title>
     @vite('resources/css/app.css')
 </head>
@@ -25,7 +26,6 @@
                     </svg>
                 </button>
             </div>
-
             <div id="postMgmtMenu" class="bg-orange-400 text-white rounded hidden">
                 <a href="/blog-analytics" class="block py-2 px-3 text-base font-semibold hover:underline">Blog Analytics</a>
                 <a href="/article-management" class="block pl-6 py-2 text-sm font-normal hover:underline">Article Management</a>
@@ -78,7 +78,28 @@
                 </div>
             </div>
 
-            <div id="postsContainer" class="space-y-4"></div>
+
+            <div id="postsContainer" class="space-y-4">
+                 @foreach ($articles as $article)
+        <div class="relative flex items-center justify-between bg-white p-6 rounded-xl shadow">
+            <div>
+                <h3 class="font-semibold text-xl">{{ $article->title }}</h3>
+                <p class="text-sm text-gray-500">{{ $article->summary }}</p>
+                <p class="text-xs text-gray-400">Tags: {{ $article->tags->pluck('name')->join(', ') }}</p>
+            </div>
+
+            <div class="flex items-center space-x-3">
+                <a href="{{ route('articles.edit', $article->id) }}" class="text-blue-500 hover:underline">Edit</a>
+
+                <form action="{{ route('articles.destroy', $article->id) }}" method="POST" onsubmit="return confirm('Are you sure you want to delete this article?')">
+                    @csrf
+                    @method('DELETE')
+                    <button type="submit" class="text-red-500 hover:underline">Delete</button>
+                </form>
+            </div>
+        </div>
+        @endforeach
+            </div>
 
         </div>
 
@@ -89,6 +110,8 @@
 @include('admin-panel.modals.edit-popup')
 
 <script>
+    window.articles = @json($articles);
+    window.tags = @json($tags);
 document.addEventListener('DOMContentLoaded', function () {
     const appState = {
         sidebarOpen: true,
@@ -98,10 +121,8 @@ document.addEventListener('DOMContentLoaded', function () {
         statusOptions: ['All', 'Pending Review', 'Approved', 'Published', 'Rejected'],
         tags: ['Software Engineering', 'Animation', 'Game Development', 'Real Estate', 'Multimedia Arts'],
         posts: [
-            { title: 'Valorant Tournament', author: 'Spyke Lim', status: 'Approved', tags: ['Game Development'], img: '/images/valorant.png' },
-            { title: 'Final Exam ADVAWEB', author: 'Edwell Cotajar', status: 'Published', tags: ['Software Engineering'], img: '/images/exam.png' },
-            { title: 'Grades Got Cooked', author: 'Judd Tagalog', status: 'Rejected', tags: ['Real Estate'], img: '/images/dog.png' },
-            { title: 'Top 10 Design Tips', author: 'Xavier Viduya', status: 'Pending Review', tags: ['Multimedia Arts'], img: '/images/chicken.png' }
+                posts: window.articles || [],
+                tags: window.tags.map(tag => tag.name) || []
         ]
     };
 
@@ -171,11 +192,21 @@ function renderPosts() {
                         </svg>
                     </button>
                     <div class="dropdown-menu absolute right-0 top-full mt-2 w-32 bg-white rounded shadow text-sm z-50 hidden">
-                        <button class="edit-btn block w-full text-left px-4 py-2 hover:bg-gray-100">Edit</button>
-                        <button class="delete-btn block w-full text-left px-4 py-2 hover:bg-gray-100">Delete</button>
-                    </div>
-                </div>
-            </div>
+                        <!-- Edit Form -->
+                        <form method="GET" action="{{ route('articles.edit', $article->id) }}">
+                            @csrf
+                            <button type="submit" class="block w-full text-left px-4 py-2 hover:bg-gray-100 text-blue-500">Edit</button>
+                        </form>
+
+                        <!-- Delete Form -->
+                         <form method="POST" action="{{ route('articles.destroy', $article->id) }}" onsubmit="return confirm('Are you sure you want to delete this article?')">
+                             @csrf
+                             @method('DELETE')
+                             <button type="submit" class="block w-full text-left px-4 py-2 hover:bg-gray-100 text-red-500">Delete</button>
+                             </form>
+                             </div>
+                        </div>
+                     </div>
         `;
         container.appendChild(div);
     });

@@ -56,4 +56,6 @@ Route::get('/admin/comments', [CommentManageController::class, 'index'])->name('
 
 use App\Http\Controllers\PostManageController;
 Route::get('/admin/posts', [PostManageController::class, 'index'])->name('admin.posts');
+Route::get('/admin/posts/{id}/edit', [PostManageController::class, 'edit'])->name('articles.edit');
+Route::delete('/admin/posts/{id}', [PostManageController::class, 'destroy'])->name('admin.posts.destroy');
 
