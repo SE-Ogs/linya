@@ -46,6 +46,9 @@ Route::get('/add-article', [\App\Http\Controllers\ArticleController::class, 'cre
 Route::post('/articles', [\App\Http\Controllers\ArticleController::class, 'store'])->name('articles.store');
 Route::get('/articles/{id}', [\App\Http\Controllers\ArticleController::class, 'show'])->name('articles.show');
 Route::post('/articles/preview', [\App\Http\Controllers\ArticleController::class, 'preview'])->name('articles.preview');
+Route::get('/articles/{id}/edit', [\App\Http\Controllers\ArticleController::class, 'edit'])->name('articles.edit');
+Route::put('/articles/{id}', [\App\Http\Controllers\ArticleController::class, 'update'])->name('articles.update');
+Route::delete('/articles/{id}', [\App\Http\Controllers\ArticleController::class, 'destroy'])->name('articles.destroy');
 
 // Christian J. added these routes
 use App\Http\Controllers\SearchBarController;
@@ -54,8 +57,32 @@ Route::get('/comment-manage-searchbar', [SearchBarController::class, 'index'])->
 use App\Http\Controllers\CommentManageController;
 Route::get('/admin/comments', [CommentManageController::class, 'index'])->name('admin.comments');
 
-use App\Http\Controllers\PostManageController;
-Route::get('/admin/posts', [PostManageController::class, 'index'])->name('admin.posts');
-Route::get('/admin/posts/{id}/edit', [PostManageController::class, 'edit'])->name('articles.edit');
-Route::delete('/admin/posts/{id}', [PostManageController::class, 'destroy'])->name('admin.posts.destroy');
+Route::get('/admin/posts', function (\Illuminate\Http\Request $request) {
+    $query = \App\Models\Article::with('tags');
+
+    // Apply filters
+    if ($request->filled('status') && $request->status !== 'All') {
+        $query->where('status', $request->status);
+    }
+
+    if ($request->filled('search')) {
+        $search = $request->search;
+        $query->where(function($q) use ($search) {
+            $q->where('title', 'like', "%{$search}%")
+              ->orWhere('summary', 'like', "%{$search}%");
+        });
+    }
+
+    if ($request->filled('tags')) {
+        $tagIds = $request->tags;
+        $query->whereHas('tags', function($q) use ($tagIds) {
+            $q->whereIn('tags.id', $tagIds);
+        });
+    }
+
+    $articles = $query->get();
+    $tags = \App\Models\Tag::all();
+
+    return view('admin-panel.post_management', compact('articles', 'tags'));
+})->name('admin.posts');
 
