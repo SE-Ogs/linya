@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\RecentSearchController;
 use Illuminate\Support\Facades\Route;
 use App\Models\Article;
 use App\Http\Controllers\UserAuthController;
@@ -20,6 +21,12 @@ Route::get('/dashboard', function(){
 Route::get('/login', [UserAuthController::class, 'showLogin'])->name('login');
 Route::get('/signup', [UserAuthController::class, 'showSignup'])->name('signup');
 Route::post('/login', [UserAuthController::class, 'login']);
+Route::post('/logout', [UserAuthController::class, 'logout'])->name('logout');
+
+// Route for recent searches
+Route::get('/recent-searches', [RecentSearchController::class, 'index'])->name('recent-searches.index');
+Route::post('/recent-searches', [RecentSearchController::class, 'store'])->name('recent-searches.store');
+Route::delete('/recent-searches', [RecentSearchController::class, 'clear']);
 
 Route::get('/resetpass', function(){
     return view('partials.reset_password');
@@ -32,7 +39,6 @@ Route::get('/resetsuccess', function(){
 Route::get('/reset-password', function () {
     return view('partials.reset_password'); // or 'partials.reset_password' if that's the folder
 })->name('password.request');
-
 
 
 Route::get('/add-article', [\App\Http\Controllers\ArticleController::class, 'create'])->name('articles.create');

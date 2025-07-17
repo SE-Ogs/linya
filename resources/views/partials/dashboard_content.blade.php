@@ -15,6 +15,8 @@
                         $main = $articles->first();
                         $subPosts = $articles->where('id', '!=', $main?->id)->sortByDesc('created_at')->take(2);
                         $blogs = $articles->whereNotIn('id', [$main?->id, ...$subPosts->pluck('id')])->sortByDesc('views')->take(8);
+                        $breakingNews = $articles->sortByDesc('created_at')->take(4);
+                        $mostRead = $articles->sortByDesc('views')->take(4);
                     @endphp
                     @if($main)
                         <a href="{{ route('articles.show', $main->id) }}" id="main_post" class="relative h-96 rounded-lg overflow-hidden cursor-pointer bg-gradient-to-br from-indigo-50 to-pink-50">
@@ -108,109 +110,39 @@
                         <div class="w-2 h-2 bg-red-500 rounded-full"></div>
                         <h2 class="text-lg font-bold text-gray-800">Breaking News</h2>
                     </div>
-
-                    <!-- News Item 1 -->
-                    <div class="py-4 border-b border-gray-100">
-                        <div
-                            class="border border-orange-400 text-orange-400 rounded-full px-3 py-1 text-xs font-semibold w-fit mb-2">
-                            General
+                    @foreach($breakingNews as $index => $article)
+                        <div class="py-4 {{ $index < 3 ? 'border-b border-gray-100' : '' }}">
+                            @if($article->tags->count())
+                                <div class="flex gap-2 mb-2">
+                                    @foreach($article->tags->take(2) as $tag)
+                                        <div class="border {{ HelperFunctionService::getTagBorderColor($tag->name) }} {{ HelperFunctionService::getTagTextColor($tag->name) }} rounded-full px-3 py-1 text-[0.5rem] font-semibold">
+                                        {{ $tag->name }}
+                                        </div>
+                                    @endforeach
+                                </div>
+                            @endif
+                            <h4 class="font-medium text-sm text-gray-800 mb-2 leading-tight">
+                                <a href="{{ route('articles.show', $article->id) }}">{{ $article->title }}</a>
+                            </h4>
+                            <div class="text-xs text-gray-500">{{ $article->created_at->diffForHumans() }}</div>
                         </div>
-                        <h4 class="font-medium text-sm text-gray-800 mb-2 leading-tight">
-                            New Study Spaces Open in Library Wing
-                        </h4>
-                        <div class="text-xs text-gray-500">2 hours ago</div>
-                    </div>
-
-                    <!-- News Item 2 -->
-                    <div class="py-4 border-b border-gray-100">
-                        <div
-                            class="border border-indigo-600 text-indigo-600 rounded-full px-3 py-1 text-xs font-semibold w-fit mb-2">
-                            Politics
-                        </div>
-                        <h4 class="font-medium text-sm text-gray-800 mb-2 leading-tight">
-                            Student Government Passes Sustainability Resolution
-                        </h4>
-                        <div class="text-xs text-gray-500">5 hours ago</div>
-                    </div>
-
-                    <!-- News Item 3 -->
-                    <div class="py-4 border-b border-gray-100">
-                        <div
-                            class="border border-indigo-600 text-indigo-600 rounded-full px-3 py-1 text-xs font-semibold w-fit mb-2">
-                            Software Engineering
-                        </div>
-                        <h4 class="font-medium text-sm text-gray-800 mb-2 leading-tight">
-                            Tech Conference Speakers Announced
-                        </h4>
-                        <div class="text-xs text-gray-500">1 day ago</div>
-                    </div>
-
-                    <!-- News Item 4 -->
-                    <div class="py-4">
-                        <div class="flex gap-2 mb-2">
-                            <div
-                                class="border border-yellow-400 text-yellow-400 rounded-full px-3 py-1 text-xs font-semibold">
-                                Animation
-                            </div>
-                            <div
-                                class="border border-red-700 text-red-700 rounded-full px-3 py-1 text-xs font-semibold">
-                                MMA
-                            </div>
-                        </div>
-                        <h4 class="font-medium text-sm text-gray-800 mb-2 leading-tight">
-                            Artist Tips
-                        </h4>
-                        <div class="text-xs text-gray-500">2 days ago</div>
-                    </div>
+                    @endforeach
                 </div>
 
                 <!-- Most Read -->
                 <div id="most_read" class="bg-white border border-gray-200 rounded-lg p-6 shadow-sm">
                     <h2 class="text-lg font-bold text-gray-800 mb-6">Most Read</h2>
-
-                    <!-- Most Read Item 1 -->
-                    <div class="flex items-start gap-4 py-3 border-b border-gray-100">
-                        <div class="text-2xl font-bold text-orange-400 min-w-fit">1</div>
-                        <div class="flex-1">
-                            <h4 class="font-medium text-sm text-gray-800 mb-1 leading-tight">
-                                Student Wins National Coding Competition
-                            </h4>
-                            <div class="text-xs text-gray-500">12 hours ago</div>
+                    @foreach($mostRead as $index => $article)
+                        <div class="flex items-start gap-4 py-3 {{ $index < 3 ? 'border-b border-gray-100' : '' }}">
+                            <div class="text-2xl font-bold text-orange-400 min-w-fit">{{ $index + 1 }}</div>
+                            <div class="flex-1">
+                                <h4 class="font-medium text-sm text-gray-800 mb-1 leading-tight">
+                                    <a href="{{ route('articles.show', $article->id) }}">{{ $article->title }}</a>
+                                </h4>
+                                <div class="text-xs text-gray-500">{{ $article->created_at->diffForHumans() }}</div>
+                            </div>
                         </div>
-                    </div>
-
-                    <!-- Most Read Item 2 -->
-                    <div class="flex items-start gap-4 py-3 border-b border-gray-100">
-                        <div class="text-2xl font-bold text-orange-400 min-w-fit">2</div>
-                        <div class="flex-1">
-                            <h4 class="font-medium text-sm text-gray-800 mb-1 leading-tight">
-                                Campus Sustainability Initiative Launches
-                            </h4>
-                            <div class="text-xs text-gray-500">18 hours ago</div>
-                        </div>
-                    </div>
-
-                    <!-- Most Read Item 3 -->
-                    <div class="flex items-start gap-4 py-3 border-b border-gray-100">
-                        <div class="text-2xl font-bold text-orange-400 min-w-fit">3</div>
-                        <div class="flex-1">
-                            <h4 class="font-medium text-sm text-gray-800 mb-1 leading-tight">
-                                New Research Lab Opens Next Month
-                            </h4>
-                            <div class="text-xs text-gray-500">1 day ago</div>
-                        </div>
-                    </div>
-
-                    <!-- Most Read Item 4 -->
-                    <div class="flex items-start gap-4 py-3">
-                        <div class="text-2xl font-bold text-orange-400 min-w-fit">4</div>
-                        <div class="flex-1">
-                            <h4 class="font-medium text-sm text-gray-800 mb-1 leading-tight">
-                                Student Art Exhibition Breaks Records
-                            </h4>
-                            <div class="text-xs text-gray-500">2 days ago</div>
-                        </div>
-                    </div>
+                    @endforeach
                 </div>
             </div>
         </div>
