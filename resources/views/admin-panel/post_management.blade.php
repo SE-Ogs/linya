@@ -86,7 +86,9 @@
 </div>
 
 @include('admin-panel.modals.delete-popup')
+
 @include('admin-panel.modals.edit-popup')
+
 
 <script>
 document.addEventListener('DOMContentLoaded', function () {

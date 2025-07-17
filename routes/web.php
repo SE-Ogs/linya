@@ -42,6 +42,7 @@ Route::get('/reset-password', function () {
 
 
 Route::get('/add-article', [\App\Http\Controllers\ArticleController::class, 'create'])->name('articles.create');
+Route::get('/edit-article', [\App\Http\Controllers\ArticleController::class, 'edit'])->name('articles.edit');
 
 Route::post('/articles', [\App\Http\Controllers\ArticleController::class, 'store'])->name('articles.store');
 Route::get('/articles/{id}', [\App\Http\Controllers\ArticleController::class, 'show'])->name('articles.show');
@@ -56,4 +57,5 @@ Route::get('/admin/comments', [CommentManageController::class, 'index'])->name('
 
 use App\Http\Controllers\PostManageController;
 Route::get('/admin/posts', [PostManageController::class, 'index'])->name('admin.posts');
+
 
