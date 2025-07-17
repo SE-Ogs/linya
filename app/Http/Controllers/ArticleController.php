@@ -9,6 +9,9 @@ use App\Http\Requests\UpdateArticleRequest;
 use Illuminate\Http\JsonResponse;
 use App\Models\Tag;
 use Illuminate\View\View;
+use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
+use App\Models\Article;
 
 class ArticleController extends Controller
 {
@@ -79,5 +82,11 @@ class ArticleController extends Controller
     {
         return redirect()->route('articles.create')
             ->withInput($request->all());
+    }
+
+    public function edit($id)
+    {
+        $article = Article::findOrFail($id);
+        return view('admin-panel.articles.edit', compact('article'));
     }
 }
