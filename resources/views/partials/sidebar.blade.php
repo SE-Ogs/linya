@@ -20,7 +20,7 @@
 
     <ul class="ml-1 space-y-2">
         <li class="rounded-[30px] pb-2 pl-3 pt-2 transition duration-300 hover:bg-[#434158]">
-            <a href="/home"
+            <a href="/dashboard"
                class="flex items-center space-x-2 text-[20px] md:text-[18px]">
                 <svg xmlns="http://www.w3.org/2000/svg"
                      fill="none"
@@ -42,7 +42,7 @@
             </a>
         </li>
 
-        <li class="rounded-[30px] pb-2 pl-3 pt-2 transition duration-300 hover:bg-[#434158]"
+        <li class="rounded-[30px] pb-2 pl-3 pt-2 transition duration-300 hover:cursor-pointer hover:bg-[#434158]"
             id="contactUs">
             <a class="flex items-center space-x-2 text-[20px] md:text-[18px]">
                 <svg xmlns="http://www.w3.org/2000/svg"
@@ -63,7 +63,7 @@
         </li>
 
         <li class="rounded-[30px] pb-2 pl-3 pt-2 transition duration-300 hover:bg-[#434158]">
-            <a href="/profile"
+            <a href="/settings"
                class="flex items-center space-x-2 text-[20px] md:text-[18px]">
                 <svg xmlns="http://www.w3.org/2000/svg"
                      fill="none"
