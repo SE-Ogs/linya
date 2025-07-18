@@ -66,4 +66,5 @@ Route::get('/admin/comments', [CommentManageController::class, 'index'])->name('
 use App\Http\Controllers\PostManageController;
 Route::get('/admin/posts', [PostManageController::class, 'index'])->name('admin.posts');
 
-
+use App\Http\Controllers\AdminDashboardController;
+Route::get('/admin/dashboard', [AdminDashboardController::class, 'index'])->name('admin.dashboard');
