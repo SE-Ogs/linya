@@ -11,7 +11,7 @@
 </head>
 
 <body class="bg-white min-h-screen overflow-x-hidden">
-    <div id="authContainer" class="flex w-[200vw] min-h-screen transition-transform duration-500"
+    <div id="authContainer" class="flex w-[200vw] min-h-screen transition-transform duration-800"
          style="transform: translateX({{ $show === 'signup' ? '-100vw' : '0' }});">
         <div class="w-screen flex-shrink-0 h-screen">
             @include('partials.login')

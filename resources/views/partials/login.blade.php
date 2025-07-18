@@ -3,12 +3,19 @@
         <div class="flex-1 flex items-center justify-center">
             <div class="w-full max-w-140 mx-auto">
                 <div class="text-6xl font-black mb-10 mt-8 text-black">Welcome!</div>
-                <br>
-                <form class="flex flex-col gap-7">
-                    <input type="text" name="username" id="username" autocomplete="off" placeholder="Username"
+                @if ($errors->any())
+                    <div class="mb-4 text-red-500 text-sm">
+                        @foreach ($errors->all() as $error)
+                            <div>{{ $error }}</div><br>
+                        @endforeach
+                    </div>
+                @endif
+                <form class="flex flex-col gap-7" method="POST" action="/login">
+                    @csrf
+                    <input type="text" name="username" id="username" autocomplete="off" placeholder="Username" required
                         class="rounded-2xl bg-[#E6E5E1] px-6 py-5 text-base placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-orange-400 font-normal" />
                     <div class="relative">
-                        <input type="password" name="password" id="password" placeholder="Password"
+                        <input type="password" name="password" id="password" placeholder="Password" required
                             class="rounded-2xl bg-[#E6E5E1] px-6 py-5 text-base placeholder-gray-500 w-full focus:outline-none focus:ring-2 focus:ring-orange-400 font-normal pr-12" />
                         <button type="button" id="togglePassword" tabindex="-1"
                             class="absolute right-4 top-1/2 -translate-y-1/2 cursor-pointer">
@@ -29,11 +36,12 @@
                             </svg>
                         </button>
                     </div>
-                    <button type="button"
+                    <button type="submit"
                         class="bg-orange-400 text-white font-bold text-lg rounded-3xl py-4 mt-2 mb-1 transition active:scale-98 active:bg-orange-500 hover:scale-101">Login</button>
-                    <a href="#"
-                        class="text-orange-400 text-base underline transition hover:text-orange-500 hover:scale-102 w-fit">Forgot
-                        your password?</a>
+                    <a href="{{ route('password.request') }}"
+                        class="text-orange-400 text-base underline transition hover:text-orange-500 hover:scale-102 w-fit">
+                        Forgot your password?
+                    </a>
                 </form>
             </div>
         </div>

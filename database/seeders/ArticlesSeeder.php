@@ -14,9 +14,10 @@ class ArticlesSeeder extends Seeder
     public function run(): void
     {
         $tags = Tag::all();
-        Article::factory(20)->create()->each(function ($article) use ($tags) {
+        Article::factory(100)->create()->each(function ($article) use ($tags) {
             // Attach 1-3 random tags to each article
-            $article->tags()->attach($tags->random(rand(1, min(3, $tags->count())))->pluck('id')->toArray());
+            $randomTags = $tags->random(rand(1, min(3, $tags->count())));
+            $article->tags()->attach($randomTags->pluck('id')->toArray());
         });
     }
-} 
+}

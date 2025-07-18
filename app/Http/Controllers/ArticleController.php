@@ -21,15 +21,19 @@ class ArticleController extends Controller
 
     public function index(): JsonResponse
     {
-        $articles = $this->articleService->listArticles();
+        $articles = Article::with('tags')
+            ->where('status', 'approved')
+            ->orderByDesc('views')
+            ->get();
         $dtos = $articles->map(fn($article) => ArticleDTO::fromModel($article));
         return response()->json($dtos);
     }
 
-    public function show($id): JsonResponse
+    public function show($id)
     {
         $article = $this->articleService->getArticle($id);
-        return response()->json(ArticleDTO::fromModel($article));
+        $article->increment('views');
+        return view('article-management.show_article', compact('article'));
     }
 
     public function create(): View
@@ -54,5 +58,26 @@ class ArticleController extends Controller
     {
         $this->articleService->deleteArticle($id);
         return response()->json(null, 204);
+    }
+
+    public function preview(\Illuminate\Http\Request $request)
+    {
+
+        $articleData = $request->all();
+        $tags = Tag::find($articleData['tags'] ?? []);
+
+        return view('article-management.preview_article', [
+            'title' => $articleData['title'] ?? '',
+            'summary' => $articleData['summary'] ?? '',
+            'article' => $articleData['article'] ?? '',
+            'tags' => $articleData['tags'] ?? '',
+            'tagModels' => $tags,
+        ]);
+    }
+    
+    public function backtoCreate(Request $request): RedirectResponse
+    {
+        return redirect()->route('articles.create')
+            ->withInput($request->all());
     }
 }

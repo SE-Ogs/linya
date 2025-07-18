@@ -1,199 +1,158 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <meta charset="UTF-8">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>Linya CMS</title>
-    @vite(['resources/css/app.css', 'resources/js/app.js'])
-    <script src="https://unpkg.com/alpinejs" defer></script>
+    @vite('resources/css/app.css')
 </head>
+<body class="bg-[#f4f4f4] font-lexend">
 
-<body class="font-['Lexend'] bg-[#F5F5F5] flex h-screen overflow-hidden">
-
-<!-- Sidebar -->
-<aside class="w-72 bg-[#2C2C34] text-white flex-shrink-0 h-full sticky top-0 flex flex-col">
-    <div class="p-6">
-        <img src="/images/linyaText.svg" class="mb-8 w-32" alt="Linya logo">
-        <ul class="space-y-1">
-            <li><a href="#" class="block px-4 py-2 hover:bg-[#FF884D] rounded">Dashboard</a></li>
-            <li><a href="#" class="block px-4 py-2 hover:bg-[#FF884D] rounded">User Management</a></li>
-            <li x-data="{ open: true }">
-                <button @click="open = !open" class="flex justify-between items-center w-full px-4 py-2 bg-[#FF884D]">
-                    <span>Post Management</span>
-                    <svg :class="{'rotate-180': open}" class="w-4 h-4 transition-transform duration-200" fill="none" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+<div id="app" class="flex min-h-screen">
+    <!-- Sidebar -->
+    <aside id="sidebar" class="bg-[#23222E] w-64 h-screen text-white flex flex-col p-4 font-lexend fixed top-0 left-0 z-50 transition-transform duration-300">
+        <div class="flex justify-center mb-8 mt-2">
+            <img src="/images/linyaText.svg" alt="LINYA Logo" class="h-10 w-auto" />
+        </div>
+        <nav class="flex flex-col gap-2">
+            <a href="/dashboard" class="py-2 px-3 rounded hover:bg-[#35344a] transition text-lg font-bold">Dashboard</a>
+            <a href="/user-management" class="py-2 px-3 rounded hover:bg-[#35344a] transition text-base font-medium">User Management</a>
+            <div class="bg-orange-400 text-white rounded">
+                <button id="postMgmtToggle" class="w-full flex items-center justify-between py-2 px-3 text-base font-semibold">
+                    Post Management
+                    <svg class="w-4 h-4 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
                     </svg>
                 </button>
-                <ul x-show="open" class="space-y-0">
-                    <li><a href="#" class="block bg-[#FF884D] pl-8 py-2 w-full">Blog Analytics</a></li>
-                    <li><a href="#" class="block bg-[#FF884D] pl-8 py-2 w-full">Article Management</a></li>
-                </ul>
-            </li>
-            <li><a href="#" class="block px-4 py-2 hover:bg-[#FF884D] rounded">Comment Management</a></li>
-        </ul>
-    </div>
-</aside>
-
-<!-- Main -->
-<div class="flex-1 flex flex-col h-full">
-
-    <!-- Header -->
-    <header class="bg-[#2C2C34] text-white flex justify-end items-center px-8 py-6 space-x-6">
-        <button class="relative focus:outline-none">
-            <svg class="w-6 h-6 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                      d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6 6 0 10-12 0v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"/>
-            </svg>
-            <span class="absolute top-0 right-0 inline-flex w-2 h-2 bg-red-500 rounded-full"></span>
-        </button>
-        <div class="flex items-center space-x-4">
-            <img src="/images/profile.jpg" class="w-10 h-10 rounded-full" alt="profile">
-            <div>
-                <div class="font-semibold text-lg">Jarod R.</div>
-                <div class="text-sm text-gray-300">Administrator</div>
             </div>
-        </div>
-    </header>
-
-    <!-- Content -->
-    <main x-data="cmsApp()" class="flex-1 overflow-y-auto custom-scrollbar p-8">
-
-        <!-- Filters -->
-        <div class="flex w-full mb-5 space-x-0">
-            <template x-for="statusOption in statusOptions" :key="statusOption">
-                <button @click="activeStatus = statusOption" 
-                    :class="activeStatus === statusOption 
-                        ? 'flex-1 py-2 bg-blue-600 text-white rounded-none' 
-                        : 'flex-1 py-2 border border-gray-300 rounded-none text-sm hover:bg-blue-50 transition'">
-                    <span x-text="statusOption"></span>
-                </button>
-            </template>
-        </div>
-
-        <div class="flex items-center justify-between mb-6">
-            <div class="flex space-x-3">
-                <input type="text" x-model="searchTerm" placeholder="Search post..." class="w-80 px-4 py-2 rounded-lg border focus:ring-2 focus:ring-blue-400 outline-none">
-                <button class="bg-gradient-to-r from-orange-500 to-orange-400 text-white px-5 py-2 rounded-lg shadow-md hover:from-orange-600 hover:to-orange-500 transition">
-                    + Add New Post
-                </button>
+            <div id="postMgmtMenu" class="bg-orange-400 text-white rounded hidden">
+                <a href="/blog-analytics" class="block py-2 px-3 text-base font-semibold hover:underline">Blog Analytics</a>
+                <a href="/article-management" class="block pl-6 py-2 text-sm font-normal hover:underline">Article Management</a>
             </div>
-            <div class="relative" x-data="{ open: false }">
-                <button @click="open = !open" type="button"
-                    class="flex items-center gap-2 px-4 py-2 text-sm text-gray-700 bg-white border border-gray-300 rounded-md shadow hover:bg-gray-100 focus:outline-none">
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                              d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2a1 1 0 01-.293.707L14 14.414V18a1 1 0 01-1.447.894l-4-2A1 1 0 018 16V14.414L3.293 6.707A1 1 0 013 6V4z" />
+            <a href="/comment-management" class="py-2 px-3 rounded hover:bg-[#35344a] transition text-base font-medium">Comment Management</a>
+        </nav>
+    </aside>
+
+    <!-- Main Content -->
+    <div id="mainContent" class="flex-1 flex flex-col transition-[margin] duration-300 ml-64">
+        <!-- Header -->
+        <header class="bg-[#23222E] text-white px-8 py-4 flex justify-between items-center shadow-md h-20">
+            <button id="sidebarToggle" class="p-2 bg-[#2C2B3C] hover:bg-[#35344a] transition">
+                <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>
+                </svg>
+            </button>
+            <div class="flex items-center space-x-4">
+                <button class="relative p-2 hover:bg-gray-700 rounded-full">
+                    <svg class="w-6 h-6 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"/>
                     </svg>
-                    Filter
+                    <span class="absolute -top-1 -right-1 bg-red-500 text-xs rounded-full h-5 w-5 flex items-center justify-center font-medium">3</span>
                 </button>
-                <div x-show="open" @click.away="open = false" class="absolute right-0 mt-2 w-64 bg-white shadow-lg rounded-lg p-4 z-10">
-                    <h3 class="font-bold mb-2">Tags</h3>
-                    <div class="space-y-1">
-                        <template x-for="tag in tags" :key="tag">
-                            <label class="flex items-center">
-                                <input type="checkbox" x-model="selectedTags" :value="tag" class="mr-2"> <span x-text="tag"></span>
-                            </label>
-                        </template>
+                <div class="flex items-center space-x-3">
+                    <div class="w-10 h-10 bg-gray-600 rounded-full flex items-center justify-center">
+                        <span class="text-white font-semibold text-sm">JR</span>
                     </div>
-                    <button @click="open = false" class="mt-4 w-full bg-[#2C2C34] text-white py-2 rounded">Apply</button>
+                    <div>
+                        <span class="font-semibold text-sm">Jarod R.</span>
+                        <p class="text-xs text-gray-400 font-noto">Administrator</p>
+                    </div>
                 </div>
             </div>
-        </div>
+        </header>
 
-        <!-- Posts -->
-        <div class="space-y-6">
-            <template x-for="post in filteredPosts" :key="post.title">
-                <div class="flex items-center p-4 bg-white rounded-lg shadow justify-between">
-                    <div class="flex items-center">
-                        <img :src="post.img" class="h-24 w-32 object-cover rounded-lg shadow-md mr-4">
+        <div class="p-6 space-y-6">
+            <form method="GET" action="{{ route('admin.posts') }}" class="flex flex-col gap-4">
+                <div id="statusFilters" class="flex space-x-2 bg-white rounded shadow overflow-hidden w-full">
+                    @php $statuses = ['All', 'Pending Review', 'Approved', 'Published', 'Rejected']; @endphp
+                    @foreach ($statuses as $status)
+                        <button type="submit" name="status" value="{{ $status }}" class="px-6 py-5 text-base font-semibold w-full {{ request('status', 'All') === $status ? 'bg-blue-600 text-white' : 'hover:bg-gray-100' }}">
+                            {{ $status }}
+                        </button>
+                    @endforeach
+                </div>
+                <div class="flex justify-between items-center">
+                    <div class="flex space-x-2">
+                        <input type="text" name="search" value="{{ request('search') }}" placeholder="Search post..." class="rounded-full px-6 py-3 border border-gray-300 focus:outline-none shadow-sm w-72">
+                        <button id="addPostBtn" type="button" class="px-5 py-3 bg-gradient-to-r from-orange-400 to-orange-500 text-white rounded-full hover:scale-105 transform transition">+ Add New Post</button>
+                    </div>
+                    <div class="relative">
+                        <button id="filterBtn" type="button" class="flex items-center gap-2 px-4 py-2 text-sm text-gray-700 bg-white border border-gray-300 rounded-md shadow hover:bg-gray-100 focus:outline-none">Filter</button>
+                        <div id="filterDropdown" class="absolute right-0 mt-2 w-48 bg-white border border-gray-200 rounded shadow z-50 p-2 space-y-2 hidden">
+                            @php $allTags = $tags->pluck('name')->toArray(); @endphp
+                            @foreach ($allTags as $tag)
+                                <button type="submit" name="tags[]" value="{{ $tag }}" class="w-full text-left px-3 py-1 text-sm rounded {{ in_array($tag, (array)request('tags', [])) ? 'bg-orange-400 text-white' : 'hover:bg-gray-100' }}">{{ $tag }}</button>
+                            @endforeach
+                        </div>
+                    </div>
+                </div>
+            </form>
+
+            <div id="postsContainer" class="space-y-4">
+                @forelse ($articles as $article)
+                    <div class="relative flex items-center justify-between bg-white p-6 rounded-xl shadow">
                         <div>
-                            <h3 class="text-lg font-bold" x-text="post.title"></h3>
-                            <p class="text-sm text-gray-600">Written by: <span x-text="post.author"></span></p>
+                            <h3 class="font-semibold text-xl">{{ $article->title }}</h3>
+                            <p class="text-sm text-gray-500">{{ $article->summary }}</p>
+                            <p class="text-xs text-gray-400">Tags: {{ $article->tags->pluck('name')->join(', ') }}</p>
+                        </div>
+                        <div class="flex items-center space-x-3">
+                            <button type="button" class="text-blue-500 hover:underline edit-btn" data-id="{{ $article->id }}">Edit</button>
+                            <button type="button" class="text-red-500 hover:underline delete-btn" data-id="{{ $article->id }}">Delete</button>
                         </div>
                     </div>
-                    <div class="flex items-center space-x-4">
-                        <div :class="statusClass(post.status)" class="px-4 py-2 rounded text-white font-semibold" x-text="post.status"></div>
-                        <div x-data="{ menuOpen: false }" class="relative">
-                            <button @click="menuOpen = !menuOpen">
-                                <svg class="w-6 h-6 text-gray-600" fill="currentColor" viewBox="0 0 20 20">
-                                    <path d="M10 6a1.5 1.5 0 100-3 1.5 1.5 0 000 3zM10 11a1.5 1.5 0 100-3 1.5 1.5 0 000 3zM10 16a1.5 1.5 0 100-3 1.5 1.5 0 000 3z"/>
-                                </svg>
-                            </button>
-                            <div x-show="menuOpen" @click.away="menuOpen = false" class="absolute right-0 mt-2 w-32 bg-white shadow-lg rounded-lg z-10">
-                                <a href="javascript:void(0)" @click="openEditPopup()" class="block px-4 py-2 hover:bg-gray-100">Edit</a>
-                                <button @click="openDeletePopup()" class="w-full text-left px-4 py-2 hover:bg-gray-100">Delete</button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </template>
+                @empty
+                    <div class="text-gray-500 text-center py-12">No posts found.</div>
+                @endforelse
+            </div>
         </div>
-
-    </main>
+    </div>
 </div>
-
 
 @include('admin-panel.modals.delete-popup')
 @include('admin-panel.modals.edit-popup')
 
 <script>
-function cmsApp() {
-    return {
-        searchTerm: '',
-        activeStatus: 'All',
-        selectedTags: [],
-        statusOptions: ['All', 'Pending Review', 'Approved', 'Published', 'Rejected'],
-        tags: ['Software Engineering', 'Animation', 'Game Development', 'Real Estate', 'Multimedia Arts'],
-        posts: [
-            { title: 'Valorant Tournament', author: 'Spyke Lim', status: 'Approved', tags: ['Game Development'], img: '/images/valorant.png' },
-            { title: 'Final Exam ADVAWEB', author: 'Edwell Cotajar', status: 'Published', tags: ['Software Engineering'], img: '/images/exam.png' },
-            { title: 'Grades Got Cooked', author: 'Judd Tagalog', status: 'Rejected', tags: ['Real Estate'], img: '/images/dog.png' },
-            { title: 'Top 10 Design Tips', author: 'Xavier Viduya', status: 'Pending Review', tags: ['Multimedia Arts'], img: '/images/chicken.png' },
-        ],
-        statusClass(status) {
-            switch(status) {
-                case 'Approved': return 'bg-green-400 drop-shadow-[0_5px_15px_rgba(34,197,94,0.6)]';
-                case 'Published': return 'bg-blue-500 drop-shadow-[0_5px_15px_rgba(59,130,246,0.6)]';
-                case 'Rejected': return 'bg-red-500 drop-shadow-[0_5px_15px_rgba(239,68,68,0.6)]';
-                case 'Pending Review': return 'bg-gradient-to-r from-orange-400 to-orange-500 drop-shadow-[0_5px_15px_rgba(249,115,22,0.6)]';
-            }
-            return 'bg-gray-400';
-        },
-        get filteredPosts() {
-            return this.posts.filter(post => {
-                const matchesStatus = this.activeStatus === 'All' || post.status === this.activeStatus;
-                const matchesSearch = post.title.toLowerCase().includes(this.searchTerm.toLowerCase()) || post.author.toLowerCase().includes(this.searchTerm.toLowerCase());
-                const matchesTags = this.selectedTags.length === 0 || this.selectedTags.some(tag => post.tags.includes(tag));
-                return matchesStatus && matchesSearch && matchesTags;
-            });
-        },
-        openDeletePopup() {
-            openModal('deleteModal');
-        },
-        openEditPopup() {
-            openModal('editModal');
+function openModal(id, postId = null) {
+    const modal = document.getElementById(id);
+    if (modal) {
+        modal.style.display = 'flex';
+        if (postId) {
+            modal.setAttribute('data-post-id', postId);
         }
     }
 }
-
-function openModal(id) {
-    document.getElementById(id).style.display = 'flex';
-}
-
-function closeModal(id) {
-    document.getElementById(id).style.display = 'none';
-}
-
-function confirmDelete() {
-    alert('Post Deleted!');
-    closeModal('deleteModal');
-}
-
-function confirmEdit() {
-    alert('Redirecting to Edit Page...');
-    closeModal('editModal');
-}
+window.closeModal = function(id) {
+    const modal = document.getElementById(id);
+    if (modal) {
+        modal.style.display = 'none';
+        modal.removeAttribute('data-post-id');
+    }
+};
+document.addEventListener('DOMContentLoaded', function () {
+    document.querySelectorAll('.edit-btn').forEach(btn => {
+        btn.addEventListener('click', function(e) {
+            e.preventDefault();
+            openModal('editModal', btn.getAttribute('data-id'));
+        });
+    });
+    document.querySelectorAll('.delete-btn').forEach(btn => {
+        btn.addEventListener('click', function(e) {
+            e.preventDefault();
+            openModal('deleteModal', btn.getAttribute('data-id'));
+        });
+    });
+    document.getElementById('filterBtn').addEventListener('click', function() {
+        document.getElementById('filterDropdown').classList.toggle('hidden');
+    });
+    document.getElementById('postMgmtToggle').addEventListener('click', function() {
+        document.getElementById('postMgmtMenu').classList.toggle('hidden');
+    });
+    document.getElementById('sidebarToggle').addEventListener('click', function() {
+        document.getElementById('sidebar').classList.toggle('-translate-x-full');
+        document.getElementById('mainContent').classList.toggle('ml-64');
+    });
+});
 </script>
 
 </body>
