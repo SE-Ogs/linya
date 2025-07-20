@@ -1,39 +1,8 @@
-<!-- BELOW IS NOT PART OF THE CODE, JUST MOCK DATA FOR TESTING PURPOSES. DELETE WHEN FINALIZING THE PAGE -->
 @php
-    use Illuminate\Pagination\LengthAwarePaginator;
+    use Illuminate\Support\Facades\Request;
 
-    $type = request('type', 'users');
-    $perPage = request('per_page', 10);
-    $currentPage = request()->input('page', 1);
-
-    $allUsers = collect([
-        (object)[ 'id' => 1, 'name' => 'Kluwi', 'email' => 'kluwi@iacademy.edu.ph', 'status' => 'Active', 'avatar' => 'https://i.pravatar.cc/40?img=1', 'role' => 'user' ],
-        (object)[ 'id' => 2, 'name' => 'Jamie', 'email' => 'jamie@iacademy.edu.ph', 'status' => 'Suspended', 'avatar' => 'https://i.pravatar.cc/40?img=2', 'role' => 'admin' ],
-        (object)[ 'id' => 3, 'name' => 'Deniella', 'email' => 'deniella@iacademy.edu.ph', 'status' => 'Banned', 'avatar' => 'https://i.pravatar.cc/40?img=3', 'role' => 'user' ],
-        (object)[ 'id' => 4, 'name' => 'Christian', 'email' => 'christian@iacademy.edu.ph', 'status' => 'Inactive', 'avatar' => 'https://i.pravatar.cc/40?img=4', 'role' => 'admin' ],
-        (object)[ 'id' => 5, 'name' => 'Alyssa', 'email' => 'alyssa@iacademy.edu.ph', 'status' => 'Active', 'avatar' => 'https://i.pravatar.cc/40?img=5', 'role' => 'user' ],
-        (object)[ 'id' => 6, 'name' => 'Nathan', 'email' => 'nathan@iacademy.edu.ph', 'status' => 'Active', 'avatar' => 'https://i.pravatar.cc/40?img=6', 'role' => 'user' ],
-        (object)[ 'id' => 7, 'name' => 'Isabelle', 'email' => 'isabelle@iacademy.edu.ph', 'status' => 'Suspended', 'avatar' => 'https://i.pravatar.cc/40?img=7', 'role' => 'admin' ],
-        (object)[ 'id' => 8, 'name' => 'Mark', 'email' => 'mark@iacademy.edu.ph', 'status' => 'Inactive', 'avatar' => 'https://i.pravatar.cc/40?img=8', 'role' => 'user' ],
-        (object)[ 'id' => 9, 'name' => 'Trisha', 'email' => 'trisha@iacademy.edu.ph', 'status' => 'Banned', 'avatar' => 'https://i.pravatar.cc/40?img=9', 'role' => 'admin' ],
-        (object)[ 'id' => 10, 'name' => 'Leo', 'email' => 'leo@iacademy.edu.ph', 'status' => 'Active', 'avatar' => 'https://i.pravatar.cc/40?img=10', 'role' => 'user' ],
-        (object)[ 'id' => 11, 'name' => 'Mae', 'email' => 'mae@iacademy.edu.ph', 'status' => 'Active', 'avatar' => 'https://i.pravatar.cc/40?img=11', 'role' => 'admin' ],
-        (object)[ 'id' => 12, 'name' => 'Kenji', 'email' => 'kenji@iacademy.edu.ph', 'status' => 'Suspended', 'avatar' => 'https://i.pravatar.cc/40?img=12', 'role' => 'user' ],
-        (object)[ 'id' => 13, 'name' => 'Yuna', 'email' => 'yuna@iacademy.edu.ph', 'status' => 'Banned', 'avatar' => 'https://i.pravatar.cc/40?img=13', 'role' => 'admin' ],
-        (object)[ 'id' => 14, 'name' => 'Zion', 'email' => 'zion@iacademy.edu.ph', 'status' => 'Inactive', 'avatar' => 'https://i.pravatar.cc/40?img=14', 'role' => 'user' ],
-        (object)[ 'id' => 15, 'name' => 'Haruki', 'email' => 'haruki@iacademy.edu.ph', 'status' => 'Active', 'avatar' => 'https://i.pravatar.cc/40?img=15', 'role' => 'admin' ],
-    ]);
-
-    $filteredUsers = $allUsers->filter(fn($user) => $user->role === ($type === 'admins' ? 'admin' : 'user'))->values();
-    $currentItems = $filteredUsers->slice(($currentPage - 1) * $perPage, $perPage)->values();
-
-    $users = new LengthAwarePaginator(
-        $currentItems,
-        $filteredUsers->count(),
-        $perPage,
-        $currentPage,
-        ['path' => request()->url(), 'query' => request()->query()]
-    );
+    $perPage = Request::get('per_page', 10);
+    $type = Request::get('type', 'users');
 @endphp
 
 <!DOCTYPE html>
@@ -106,6 +75,7 @@
         <!-- Search Bar -->
         <div class="ml-64 mt-6 px-8 relative flex items-center justify-between max-w-17xl">
             <form action="{{ route('search') }}" method="GET" class="w-full max-w-4xl mr-20">
+                <input type="hidden" name="type" value="users">
                 <div class="flex items-center bg-gray-100 rounded-full shadow px-6 py-3">
                     <svg class="w-5 h-5 text-gray-400 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-4.35-4.35M11 18a7 7 0 1 1 0-14 7 7 0 0 1 0 14z" />
@@ -203,11 +173,20 @@
 
                 <!-- Per Page Dropdown -->
                 <form method="GET" class="flex items-center w-full md:w-auto justify-end md:justify-start">
-                    <input type="hidden" name="type" value="{{ $type }}">
+                    @foreach(request()->except('per_page') as $key => $value)
+                        @if(is_array($value))
+                            @foreach($value as $v)
+                                <input type="hidden" name="{{ $key }}[]" value="{{ $v }}">
+                            @endforeach
+                        @else
+                            <input type="hidden" name="{{ $key }}" value="{{ $value }}">
+                        @endif
+                    @endforeach
+
                     <label for="per_page" class="mr-2 text-sm font-medium text-gray-700">Show per page:</label>
                     <select name="per_page" id="per_page" onchange="this.form.submit()" class="border border-gray-300 rounded px-2 py-1 text-sm">
                         @foreach ([5, 10, 15, 20] as $count)
-                            <option value="{{ $count }}" {{ request('per_page', 10) == $count ? 'selected' : '' }}>{{ $count }}</option>
+                            <option value="{{ $count }}" {{ request('per_page', 5) == $count ? 'selected' : '' }}>{{ $count }}</option>
                         @endforeach
                     </select>
                 </form>
@@ -250,9 +229,9 @@
                                 <td class="p-4 align-middle">
                                     <div class="flex justify-center gap-2">
                                         <!-- Edit -->
-                                        <a href="{{ route('users.edit', ['id' => $user->id]) }}" title="Edit Info">
+                                        <button type="button" title="Edit Info" onclick="openEditModal({{ $user->id }}, '{{ $user->name }}', '{{ $user->email }}')">
                                             <img src="{{ asset('images/icon-edit.png') }}" alt="Edit" class="w-5 h-5 hover:opacity-75">
-                                        </a>
+                                        </button>
 
                                         <!-- Report -->
                                         <form action="{{ route('users.report', ['id' => $user->id]) }}" method="POST">
@@ -286,17 +265,38 @@
                     </tbody>
                 </table>
             </div>
-            <!-- Shows if Action buttons are working. For testing purposes only, delete on final verison -->
-            @if (session('message'))
-                <div class="bg-blue-100 border border-blue-300 text-blue-700 px-4 py-2 rounded my-4">
-                    {{ session('message') }}
+            
+            <!-- Edit Modal -->
+            <div id="editModal" class="fixed inset-0 bg-black bg-opacity-40 hidden items-center justify-center z-50">
+                <div class="bg-white p-6 rounded-lg shadow-lg w-full max-w-md relative">
+                    <h2 class="text-xl font-bold mb-4">Edit User</h2>
+                    <form id="editUserForm" method="POST">
+                        @csrf
+                        @method('PATCH')
+                        <input type="hidden" name="user_id" id="editUserId">
+
+                        <div class="mb-4">
+                            <label for="editUserName" class="block text-sm font-medium text-gray-700">Name</label>
+                            <input type="text" id="editUserName" name="name" class="mt-1 block w-full border border-gray-300 rounded p-2" required>
+                        </div>
+
+                        <div class="mb-4">
+                            <label for="editUserEmail" class="block text-sm font-medium text-gray-700">Email</label>
+                            <input type="email" id="editUserEmail" name="email" class="mt-1 block w-full border border-gray-300 rounded p-2" required>
+                        </div>
+
+                        <div class="flex justify-end gap-2">
+                            <button type="button" onclick="closeEditModal()" class="px-4 py-2 bg-gray-300 rounded hover:bg-gray-400">Cancel</button>
+                            <button type="submit" class="px-4 py-2 bg-orange-500 text-white rounded hover:bg-orange-600">Update</button>
+                        </div>
+                    </form>
                 </div>
-            @endif
+            </div>
 
             <!-- Pagination -->
             <div class="ml-4 mt-4 px-8">
                 <div class="flex justify-center">
-                    {{ $users->links('pagination::comment-manage-article-tailwind') }}
+                    {{ $users->appends(request()->query())->links('pagination::comment-manage-article-tailwind') }}
                 </div>
             </div>
         </div>
@@ -308,6 +308,25 @@
                 sidebar.classList.toggle('translate-x-[-100%]');
                 header.classList.toggle('ml-0');
             });
+        </script>
+
+        <script>
+            function openEditModal(id, name, email) {
+                document.getElementById('editUserId').value = id;
+                document.getElementById('editUserName').value = name;
+                document.getElementById('editUserEmail').value = email;
+
+                const form = document.getElementById('editUserForm');
+                form.action = `/admin/users/${id}`; // PATCH route
+
+                document.getElementById('editModal').classList.remove('hidden');
+                document.getElementById('editModal').classList.add('flex');
+            }
+
+            function closeEditModal() {
+                document.getElementById('editModal').classList.remove('flex');
+                document.getElementById('editModal').classList.add('hidden');
+            }
         </script>
     </body>
 </html>
