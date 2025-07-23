@@ -1,138 +1,3 @@
-<!-- BELOW IS NOT PART OF THE CODE, JUST MOCK DATA FOR TESTING PURPOSES. DELETE WHEN FINALIZING THE PAGE -->
-@php
-    use Illuminate\Pagination\LengthAwarePaginator;
-
-    $mockData = collect([
-    (object)[
-        'title' => 'Astolfo: The Iconic Trap from Fate/Apocrypha',
-        'excerpt' => 'Astolfo continues to be one of the most beloved and recognizable femboys in anime history. Learn what makes him so iconic.',
-        'image_url' => 'https://wallpapers.com/images/high/astolfo-pictures-7cn21cvphffvrg6d.webp',
-        'comments_count' => 42
-    ],
-    (object)[
-        'title' => 'Felix Argyle: Re:Zero’s Adorable Knight',
-        'excerpt' => 'Felix, or Ferris, is a catboy knight that stole the hearts of Re:Zero fans. Here’s why everyone says “nya~”.',
-        'image_url' => 'https://i.pinimg.com/originals/7d/e4/5f/7de45f6cfa9f6d3672d77c53c76aef45.jpg',
-        'comments_count' => 36
-    ],
-    (object)[
-        'title' => 'Hideri Kanzaki: Blend S’ Idol-in-Training',
-        'excerpt' => 'Don’t let Hideri’s cute idol dreams fool you—he’s a boy with serious energy and comedic timing.',
-        'image_url' => 'https://i.pinimg.com/originals/b4/2c/63/b42c6349297d97e3dbb40317a9dc8184.jpg',
-        'comments_count' => 22
-    ],
-    (object)[
-        'title' => 'Ruka Urushibara: Steins;Gate’s Elegant Time-Traveler',
-        'excerpt' => 'Often mistaken for a girl, Ruka brings elegance and softness to the chaotic Steins;Gate crew.',
-        'image_url' => 'https://static.wikia.nocookie.net/steins-gate/images/e/e2/Ruka_Urushibara.png',
-        'comments_count' => 29
-    ],
-    (object)[
-        'title' => 'Nagisa Shiota: Assassination Classroom’s Hidden Threat',
-        'excerpt' => 'With his soft looks and deadly skills, Nagisa proves femboys can be cute and terrifying.',
-        'image_url' => 'https://i.pinimg.com/originals/0b/f1/0c/0bf10c80c739fc9bd231cc16cf916e5b.jpg',
-        'comments_count' => 34
-    ],
-    (object)[
-        'title' => 'Mari Kurihara: Prison School’s Secret Weapon',
-        'excerpt' => 'Some femboys fly under the radar, but Mari’s elegance and intelligence add complexity to the archetype.',
-        'image_url' => 'https://static.zerochan.net/Kurihara.Mari.full.1953566.jpg',
-        'comments_count' => 19
-    ],
-    (object)[
-        'title' => 'Trap Archetypes in Anime: More Than Just a Trope?',
-        'excerpt' => 'Femboys and "traps" have long been part of anime culture — but what makes them resonate with fans?',
-        'image_url' => 'https://i.pinimg.com/originals/96/9d/11/969d116b009bd973382d89e1c7db0711.jpg',
-        'comments_count' => 50
-    ],
-    (object)[
-        'title' => 'Top 10 Anime Femboys You Should Know',
-        'excerpt' => 'From Felix to Hideri, these anime characters blend gender presentation with serious fan appeal.',
-        'image_url' => 'https://i.pinimg.com/736x/ef/57/f5/ef57f5897df2e3c5b8c163cb2c50c53f.jpg',
-        'comments_count' => 77
-    ],
-    (object)[
-        'title' => 'Why Anime Loves Pretty Boys in Dresses',
-        'excerpt' => 'We explore why the femboy aesthetic is so beloved in anime—and what it says about modern fandom.',
-        'image_url' => 'https://pbs.twimg.com/media/FZkQuT7XkAEKDo3.jpg',
-        'comments_count' => 18
-    ],
-    (object)[
-        'title' => 'The Psychology of Femboy Popularity in Anime',
-        'excerpt' => 'It’s not just looks. Let’s unpack the emotional, aesthetic, and narrative power of femboy characters.',
-        'image_url' => 'https://cdn.donmai.us/sample/91/37/sample-9137c979a2b7c2bd4cbd6fc47b9200e6.jpg',
-        'comments_count' => 63
-    ],
-    (object)[
-        'title' => 'Felix Argyle: Re:Zero’s Adorable Knight',
-        'excerpt' => 'Felix, or Ferris, is a catboy knight that stole the hearts of Re:Zero fans. Here’s why everyone says “nya~”.',
-        'image_url' => 'https://i.pinimg.com/originals/7d/e4/5f/7de45f6cfa9f6d3672d77c53c76aef45.jpg',
-        'comments_count' => 36
-    ],
-    (object)[
-        'title' => 'Hideri Kanzaki: Blend S’ Idol-in-Training',
-        'excerpt' => 'Don’t let Hideri’s cute idol dreams fool you—he’s a boy with serious energy and comedic timing.',
-        'image_url' => 'https://i.pinimg.com/originals/b4/2c/63/b42c6349297d97e3dbb40317a9dc8184.jpg',
-        'comments_count' => 22
-    ],
-    (object)[
-        'title' => 'Ruka Urushibara: Steins;Gate’s Elegant Time-Traveler',
-        'excerpt' => 'Often mistaken for a girl, Ruka brings elegance and softness to the chaotic Steins;Gate crew.',
-        'image_url' => 'https://static.wikia.nocookie.net/steins-gate/images/e/e2/Ruka_Urushibara.png',
-        'comments_count' => 29
-    ],
-    (object)[
-        'title' => 'Nagisa Shiota: Assassination Classroom’s Hidden Threat',
-        'excerpt' => 'With his soft looks and deadly skills, Nagisa proves femboys can be cute and terrifying.',
-        'image_url' => 'https://i.pinimg.com/originals/0b/f1/0c/0bf10c80c739fc9bd231cc16cf916e5b.jpg',
-        'comments_count' => 34
-    ],
-    (object)[
-        'title' => 'Mari Kurihara: Prison School’s Secret Weapon',
-        'excerpt' => 'Some femboys fly under the radar, but Mari’s elegance and intelligence add complexity to the archetype.',
-        'image_url' => 'https://static.zerochan.net/Kurihara.Mari.full.1953566.jpg',
-        'comments_count' => 19
-    ],
-    (object)[
-        'title' => 'Trap Archetypes in Anime: More Than Just a Trope?',
-        'excerpt' => 'Femboys and "traps" have long been part of anime culture — but what makes them resonate with fans?',
-        'image_url' => 'https://i.pinimg.com/originals/96/9d/11/969d116b009bd973382d89e1c7db0711.jpg',
-        'comments_count' => 50
-    ],
-    (object)[
-        'title' => 'Top 10 Anime Femboys You Should Know',
-        'excerpt' => 'From Felix to Hideri, these anime characters blend gender presentation with serious fan appeal.',
-        'image_url' => 'https://i.pinimg.com/736x/ef/57/f5/ef57f5897df2e3c5b8c163cb2c50c53f.jpg',
-        'comments_count' => 77
-    ],
-    (object)[
-        'title' => 'Why Anime Loves Pretty Boys in Dresses',
-        'excerpt' => 'We explore why the femboy aesthetic is so beloved in anime—and what it says about modern fandom.',
-        'image_url' => 'https://pbs.twimg.com/media/FZkQuT7XkAEKDo3.jpg',
-        'comments_count' => 18
-    ],
-    (object)[
-        'title' => 'The Psychology of Femboy Popularity in Anime',
-        'excerpt' => 'It’s not just looks. Let’s unpack the emotional, aesthetic, and narrative power of femboy characters.',
-        'image_url' => 'https://cdn.donmai.us/sample/91/37/sample-9137c979a2b7c2bd4cbd6fc47b9200e6.jpg',
-        'comments_count' => 63
-    ],
-]);
-
-
-    $currentPage = request()->input('page', 1);
-    $perPage = 5;
-    $currentItems = $mockData->slice(($currentPage - 1) * $perPage, $perPage)->values();
-
-    $results = new LengthAwarePaginator(
-        $currentItems,
-        $mockData->count(),
-        $perPage,
-        $currentPage,
-        ['path' => request()->url(), 'query' => request()->query()]
-    );
-@endphp
-
 <!DOCTYPE html>
 <html lang="en">
     <head>
@@ -147,24 +12,64 @@
     </head>
 
     <body>
-        <!--- Admin Sidebar -->
-        <button id="toggleAdminSidebar" class="fixed top-4 left-4 z-50 p-2 bg-gray-800 text-white rounded">
-            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
-            </svg>
-        </button>
-
-        <aside id="admin_sidebar" class="fixed left-0 top-0 z-50 transition-transform duration-300 transform">
-            @include('partials.admin_sidebar')
+        <!-- Sidebar -->
+        <aside id="sidebar" class="bg-[#23222E] w-64 h-screen text-white flex flex-col p-4 font-lexend fixed top-0 left-0 z-50 transition-transform duration-300">
+            <div class="flex justify-center mb-8 mt-2">
+                <img src="/images/linyaText.svg" alt="LINYA Logo" class="h-10 w-auto" />
+            </div>
+            <nav class="flex flex-col gap-2">
+                <a href="/dashboard" class="py-2 px-3 rounded hover:bg-[#35344a] transition text-lg font-bold">Dashboard</a>
+                
+                <a href="/user-management" class="py-2 px-3 rounded hover:bg-[#35344a] transition text-base font-semibold">User Management</a>
+                
+                <div class="rounded">
+                    <button id="postMgmtToggle" class="w-full flex items-center justify-between py-2 px-3 text-base font-semibold hover:bg-[#35344a] transition">
+                        Post Management
+                        <svg class="w-4 h-4 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                        </svg>
+                    </button>
+                </div>
+                <div id="postMgmtMenu" class="bg-[#35344a] text-white rounded hidden">
+                    <a href="/blog-analytics" class="block py-2 px-3 text-base font-semibold hover:underline">Blog Analytics</a>
+                    <a href="/article-management" class="block pl-6 py-2 text-sm font-normal hover:underline">Article Management</a>
+                </div>
+                
+                <a href="/comment-management" class="py-2 px-3 rounded bg-orange-400 text-white transition text-base font-semibold">Comment Management</a>
+            </nav>
         </aside>
 
-        <div id="admin_header" class="transition-all duration-300 ml-64">
-            @include('partials.admin_header')
-        </div>
+        <!-- Header -->
+        <header class="bg-[#23222E] text-white px-8 py-4 flex justify-between items-center shadow-md h-20">
+            <button id="sidebarToggle" class="p-2 bg-[#2C2B3C] hover:bg-[#35344a] transition">
+                <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>
+                </svg>
+            </button>
+            <div class="flex items-center space-x-4">
+                <button class="relative p-2 hover:bg-gray-700 rounded-full">
+                    <svg class="w-6 h-6 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"/>
+                    </svg>
+                    <span class="absolute -top-1 -right-1 bg-red-500 text-xs rounded-full h-5 w-5 flex items-center justify-center font-medium">3</span>
+                </button>
+                <div class="flex items-center space-x-3">
+                    <div class="w-10 h-10 bg-gray-600 rounded-full flex items-center justify-center">
+                        <span class="text-white font-semibold text-sm">JR</span>
+                    </div>
+                    <div>
+                        <span class="font-semibold text-sm">Jarod R.</span>
+                        <p class="text-xs text-gray-400 font-noto">Administrator</p>
+                    </div>
+                </div>
+            </div>
+        </header>
 
         <!-- Search Bar -->
         <div class="ml-64 mt-6 px-8 relative flex items-center justify-between max-w-17xl">
             <form action="{{ route('search') }}" method="GET" class="w-full max-w-4xl mr-20">
+                <input type="hidden" name="type" value="comments">
+                <input type="hidden" name="per_page" value="5">
                 <div class="flex items-center bg-gray-100 rounded-full shadow px-6 py-3">
                     <svg class="w-5 h-5 text-gray-400 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-4.35-4.35M11 18a7 7 0 1 1 0-14 7 7 0 0 1 0 14z" />
@@ -239,28 +144,35 @@
 
         <!-- List of Posts (maximum of 5 posts per page) -->
         <div class="ml-64 mt-6 px-8 space-y-4">
-            @forelse ($results as $post)
-                <div class="flex items-start gap-4 bg-white rounded-2xl shadow p-4 overflow-hidden">
-                    <!-- Thumbnail -->
-                    <div class="w-32 h-24 flex-shrink-0 mr-4">
-                        <img src="{{ $post->image_url ?? 'https://via.placeholder.com/150' }}" alt="Post Image" class="w-full h-full object-cover rounded-xl">
-                    </div>
+            @forelse ($articles as $post)
+                @php
+                    $slug = \Illuminate\Support\Str::slug($post->title);
+                    $url = route('comment.manage.show', ['slug' => $slug]);
+                @endphp
 
-                    <!-- Post Details -->
-                    <div class="flex-1">
-                        <h2 class="text-lg font-semibold text-gray-800 truncate">{{ $post->title }}</h2>
-                        <p class="text-sm text-gray-600 leading-snug mt-1 line-clamp-2">
-                            {{ $post->excerpt }}
-                        </p>
-                    </div>
+                <a href="{{ $url }}" class="block hover:bg-gray-50 transition duration-200 rounded-2xl">
+                    <div class="flex items-start gap-4 bg-white rounded-2xl shadow p-4 overflow-hidden">
+                        <!-- Thumbnail -->
+                        <div class="w-32 h-24 flex-shrink-0 mr-4">
+                            <img src="{{ $post->image_url ?? 'https://via.placeholder.com/150' }}" alt="Post Image" class="w-full h-full object-cover rounded-xl">
+                        </div>
 
-                    <!-- Comment Count -->
-                    <div class="ml-2 mt-6 text-center">
-                        <p class="text-xs text-gray-500 font-medium">Total Comments:</p>
-                        <p class="text-lg font-bold text-gray-800">{{ $post->comments_count }}</p>
+                        <!-- Post Details -->
+                        <div class="flex-1">
+                            <h2 class="text-lg font-semibold text-gray-800 truncate">{{ $post->title }}</h2>
+                            <p class="text-sm text-gray-600 leading-snug mt-1 line-clamp-2">
+                                {{ $post->excerpt }}
+                            </p>
+                        </div>
+
+                        <!-- Comment Count -->
+                        <div class="ml-2 mt-6 text-center">
+                            <p class="text-xs text-gray-500 font-medium">Total Comments:</p>
+                            <p class="text-lg font-bold text-gray-800">{{ $post->comments_count }}</p>
+                        </div>
                     </div>
-                </div>
-            @empty
+                </a>
+                @empty
                 <div class="text-gray-500 text-center py-12">
                     No posts found.
                 </div>
@@ -269,7 +181,7 @@
 
         <!-- Page Navigation -->
         <div class="mt-8 px-8 flex justify-center lg:ml-64">
-            {{ $results->appends(request()->query())->links('pagination::comment-manage-article-tailwind') }}
+            {{ $articles->appends(request()->query())->links('pagination::comment-manage-article-tailwind') }}
         </div>
 
         <script>
