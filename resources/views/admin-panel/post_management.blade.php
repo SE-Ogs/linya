@@ -110,7 +110,9 @@
 </div>
 
 @include('admin-panel.modals.delete-popup')
+
 @include('admin-panel.modals.edit-popup')
+
 
 <script>
 function openModal(id, postId = null) {
