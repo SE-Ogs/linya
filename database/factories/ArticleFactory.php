@@ -19,8 +19,9 @@ class ArticleFactory extends Factory
             'title' => $this->faker->sentence(),
             'article' => $article,
             'summary' => substr($article,0,100),
-            'status' => $this->faker->randomElement(['pending', 'approved', 'published', 'rejected']),
+            'status' => $this->faker->randomElement(['Pending', 'Approved', 'Published', 'Rejected']),
             'views' => $this->faker->numberBetween(1,50),
+            'rejection_reason' => $this->faker->sentence()
         ];
     }
 }

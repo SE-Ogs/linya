@@ -16,8 +16,9 @@ return new class extends Migration {
             $table->string('title');
             $table->string('summary');
             $table->longText('article');
-            $table->enum('status', ['pending', 'approved', 'published', 'rejected'])->default('published');
+            $table->enum('status', ['Pending', 'Approved', 'Published', 'Rejected'])->default('published');
             $table->unsignedInteger('views');
+            $table->string('rejection_reason');
         });
     }
 
