@@ -3,14 +3,11 @@
 use App\Http\Controllers\RecentSearchController;
 use Illuminate\Support\Facades\Route;
 use App\Models\Article;
+use App\Models\Tag;
 use App\Http\Controllers\UserAuthController;
 use App\Http\Controllers\ArticleController;
 use App\Http\Controllers\DashboardSearchController;
 use App\Http\Controllers\SettingsController;
-
-// Route::get('/', function () {
-//     return redirect()->route('admin.comments');                   // FOR TESTING PURPOSES ONLY, NOT REALLY PART OF THE FINAL CODE
-// });
 
 Route::get('/', function () {
     return redirect("/dashboard");
@@ -20,10 +17,30 @@ Route::get('/', function () {
 
 Route::get('/dashboard', function(){
     $articles = Article::with('tags')
-        ->where('status', 'published')
+        ->where('status', 'Published')
         ->orderByDesc('views')
         ->get();
     return view('layout.user', compact('articles'));
+});
+
+Route::get('/dashboard/{tag_slug}', function($tag_slug){
+    // Find the tag by slug
+    $tag = Tag::where('slug', $tag_slug)->first();
+
+    if (!$tag) {
+        abort(404);
+    }
+
+    // Get articles that have this specific tag
+    $articles = Article::with('tags')
+        ->where('status', 'Published')
+        ->whereHas('tags', function($query) use ($tag) {
+            $query->where('tags.id', $tag->id);
+        })
+        ->orderByDesc('views')
+        ->get();
+
+    return view('layout.user', compact('articles', 'tag'));
 });
 
 Route::get('/settings', [SettingsController::class, 'showSettings'])->name('settings');

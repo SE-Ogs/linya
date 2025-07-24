@@ -3,6 +3,16 @@
         use App\Services\HelperFunctionService;
     @endphp
 
+    @if(isset($tag))
+        <div class="bg-white border-b border-gray-200 px-8 py-6 max-w-7xl mx-auto">
+            <div class="flex items-center justify-between">
+                <h1 class="text-3xl font-bold text-black">{{ $tag->name }}</h1>
+                <a href="/dashboard" class="text-blue-600 hover:text-blue-800 text-sm font-medium transition-colors duration-200">
+                    ← View All Articles
+                </a>
+            </div>
+        </div>
+    @endif
     <!-- Regular List View -->
     <div class="p-8 max-w-7xl mx-auto">
         <div id="content" class="bg-white flex flex-col lg:flex-row gap-20">
