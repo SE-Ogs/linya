@@ -5,6 +5,7 @@ use Illuminate\Support\Facades\Route;
 use App\Models\Article;
 use App\Http\Controllers\UserAuthController;
 use App\Http\Controllers\ArticleController;
+use App\Http\Controllers\DashboardSearchController;
 use App\Http\Controllers\SettingsController;
 
 // Route::get('/', function () {
@@ -14,6 +15,8 @@ use App\Http\Controllers\SettingsController;
 Route::get('/', function () {
     return redirect("/dashboard");
 });
+
+
 
 Route::get('/dashboard', function(){
     $articles = Article::with('tags')
@@ -31,14 +34,15 @@ Route::post('/login', [UserAuthController::class, 'login']);
 Route::post('/signup', [UserAuthController::class, 'signup']);
 Route::get('/set-display-name', [UserAuthController::class, 'showDisplayName']);
 Route::post('/set-display-name', [UserAuthController::class, 'storeDisplayName']);
-Route::post('/clear-signup-data', [UserAuthController::class, 'clearSignupData'])->name('clear-signup-data'); 
+Route::post('/clear-signup-data', [UserAuthController::class, 'clearSignupData'])->name('clear-signup-data');
 
 Route::post('/logout', [UserAuthController::class, 'logout'])->name('logout');
 
-// Route for recent searches
+// Route for recent searches and search function
 Route::get('/recent-searches', [RecentSearchController::class, 'index'])->name('recent-searches.index');
 Route::post('/recent-searches', [RecentSearchController::class, 'store'])->name('recent-searches.store');
 Route::delete('/recent-searches', [RecentSearchController::class, 'clear']);
+Route::get('/dashboard-search', [DashboardSearchController::class, 'search']);
 
 Route::get('/resetpass', function(){
     return view('partials.reset_password');
