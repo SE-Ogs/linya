@@ -247,15 +247,7 @@ if ($sort === 'oldest') {
 
 ?>
 
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Commenting Section with Replies & Likes/Dislikes</title>
-    <link rel="stylesheet" href="{{ asset('css/comment.css') }}">
-</head>
-<body>
+
 
     <div class="comment-section-container">
         <div class="add-comment-area-wrapper">
@@ -295,5 +287,3 @@ if ($sort === 'oldest') {
 
     <script src="{{ asset('js/comments.js') }}"></script>
 
-</body>
-</html>
