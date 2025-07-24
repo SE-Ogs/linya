@@ -202,51 +202,33 @@ document.addEventListener("DOMContentLoaded", function () {
 
     // 👑 Admin sidebar toggle with content adjustment
 
-    function adjustContentLayout() {
-        if (adminSidebar && mainContent && adminHeader) {
-            const isSidebarHidden =
-                adminSidebar.classList.contains("-translate-x-full");
+    document.addEventListener('DOMContentLoaded', () => {
+        const sidebarToggle = document.getElementById('sidebarToggle');
+        const sidebar = document.getElementById('sidebar');
+        const mainContent = document.getElementById('mainContent');
 
-            if (isSidebarHidden) {
-                // Sidebar is hidden - make content full width
-                mainContent.classList.remove("ml-64");
-                mainContent.classList.add("ml-0");
-                adminHeader.classList.remove("ml-64");
-                adminHeader.classList.add("ml-0");
-            } else {
-                // Sidebar is visible - add left margin
-                mainContent.classList.remove("ml-0");
-                mainContent.classList.add("ml-64");
-                adminHeader.classList.remove("ml-0");
-                adminHeader.classList.add("ml-64");
-            }
+        if (sidebarToggle) {
+            sidebarToggle.addEventListener('click', () => {
+                sidebar.classList.toggle('-translate-x-full');
+                mainContent.classList.toggle('ml-64');
+            });
         }
-    }
+    });
 
-    if (toggleAdminBtn && adminSidebar) {
-        toggleAdminBtn.addEventListener("click", function (e) {
-            adminSidebar.classList.toggle("-translate-x-full");
-            // Adjust content layout after sidebar toggle
-            setTimeout(adjustContentLayout, 50); // Small delay to ensure sidebar animation starts
-            e.stopPropagation();
+    document.addEventListener('DOMContentLoaded', function () {
+        // Add event listener to all edit buttons
+        document.querySelectorAll('.edit-btn').forEach(btn => {
+            btn.addEventListener('click', function (e) {
+                e.preventDefault();
+                const articleId = btn.getAttribute('data-id'); // Get the article ID
+                confirmEdit(articleId); // Pass the article ID to the confirmEdit function
+            });
         });
+    });
 
-        adminSidebar.addEventListener("click", function (e) {
-            e.stopPropagation();
-        });
-
-        document.addEventListener("click", function (e) {
-            if (
-                !adminSidebar.contains(e.target) &&
-                !toggleAdminBtn.contains(e.target)
-            ) {
-                adminSidebar.classList.add("-translate-x-full");
-                setTimeout(adjustContentLayout, 50);
-            }
-        });
-
-        // Initialize layout on page load
-        adjustContentLayout();
+    function confirmEdit(articleId) {
+        // Redirect to the edit page for the specific article
+        window.location.href = `/admin/articles/${articleId}/edit`;
     }
 
     // 🏷️ Tag toggle functionality

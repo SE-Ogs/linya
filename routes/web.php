@@ -70,13 +70,14 @@ Route::get('/reset-password', function () {
 })->name('password.request');
 
 Route::get('/add-article', [\App\Http\Controllers\ArticleController::class, 'create'])->name('articles.create');
-Route::get('/edit-article', [\App\Http\Controllers\ArticleController::class, 'edit'])->name('articles.edit');
+Route::get('/edit-article/{id}', [ArticleController::class, 'edit'])->name('articles.edit');
+Route::put('/edit-article/{id}', [ArticleController::class, 'update'])->name('articles.update');
 
 Route::post('/articles', [ArticleController::class, 'store'])->name('articles.store');
 Route::get('/articles/{id}', [ArticleController::class, 'show'])->name('articles.show');
 Route::post('/articles/preview', [ArticleController::class, 'preview'])->name('articles.preview');
-Route::get('/articles/{id}/edit', [ArticleController::class, 'edit'])->name('articles.edit');
-Route::put('/articles/{id}', [ArticleController::class, 'update'])->name('articles.update');
+// Route::get('/articles/{id}/edit', [ArticleController::class, 'edit'])->name('articles.edit');
+// Route::put('/articles/{id}', [ArticleController::class, 'update'])->name('articles.update');
 Route::delete('/articles/{id}', [ArticleController::class, 'destroy'])->name('articles.destroy');
 
 // Christian J. added these routes
