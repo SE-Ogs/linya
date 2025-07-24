@@ -118,6 +118,7 @@ function buildCommentTree(array $flatComments, $parentId = null) {
 
 // Renders the HTML for a single comment and prepares for its replies.
 function renderSingleComment($comment, $level = 0) {
+    // Defines the left margin for comment replies.
     $margin_left = min($level * 40, 160);
     ?>
     <div class="comment-wrapper" style="margin-left: <?php echo $margin_left; ?>px;" id="comment-<?php echo $comment['id']; ?>">
@@ -252,7 +253,7 @@ if ($sort === 'oldest') {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Commenting Section with Replies & Likes/Dislikes</title>
-    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="{{ asset('css/comment.css') }}">
 </head>
 <body>
 
@@ -292,7 +293,7 @@ if ($sort === 'oldest') {
         </div>
     </div>
 
-    <script src="script.js"></script>
+    <script src="{{ asset('js/comments.js') }}"></script>
 
 </body>
 </html>
