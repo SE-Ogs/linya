@@ -94,7 +94,7 @@
             </div>
         </div>
 
-        @include('partials.comments')
+         @include('partials.comments', ['comments' => $comments, 'sort' => $sort])
     </main>
 
     <footer>

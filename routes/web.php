@@ -7,6 +7,7 @@ use App\Models\Tag;
 use App\Http\Controllers\UserAuthController;
 use App\Http\Controllers\ArticleController;
 use App\Http\Controllers\SettingsController;
+use App\Http\Controllers\CommentController;
 
 Route::get('/', function () {
     return redirect("/dashboard");
@@ -132,3 +133,5 @@ Route::get('/admin/posts', function (\Illuminate\Http\Request $request) {
 
 use App\Http\Controllers\AdminDashboardController;
 Route::get('/admin/dashboard', [AdminDashboardController::class, 'index'])->name('admin.dashboard');
+
+Route::post('/comments', [CommentController::class, 'store'])->name('comments.store')->middleware('auth');

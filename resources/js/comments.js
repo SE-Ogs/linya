@@ -1,51 +1,39 @@
 document.addEventListener('DOMContentLoaded', () => {
+    // A single event listener on the body is more efficient than many on individual buttons
+    document.body.addEventListener('click', (event) => {
+        const replyButton = event.target.closest('.reply-button');
+        const toggleButton = event.target.closest('.toggle-replies-btn');
 
-    const replyButtons = document.querySelectorAll('.reply-button');
-
-    replyButtons.forEach(button => {
-        button.addEventListener('click', (event) => {
+        // Handle clicks on "Reply" buttons
+        if (replyButton) {
             event.preventDefault();
-
-            const commentId = button.dataset.commentId;
-            const replyFormContainer = document.getElementById(`reply-form-${commentId}`);
-
-            if (replyFormContainer) {
+            const commentId = replyButton.dataset.commentId;
+            const replyForm = document.getElementById(`reply-form-${commentId}`);
+            if (replyForm) {
+                // Hide all other forms before showing the new one
                 document.querySelectorAll('.reply-form-container').forEach(form => {
                     if (form.id !== `reply-form-${commentId}`) {
                         form.style.display = 'none';
                     }
                 });
-
-                if (replyFormContainer.style.display === 'none' || replyFormContainer.style.display === '') {
-                    replyFormContainer.style.display = 'block';
-                    const inputField = replyFormContainer.querySelector('input[type="text"]');
-                    if (inputField) {
-                        inputField.focus();
-                    }
-                } else {
-                    replyFormContainer.style.display = 'none';
+                // Toggle the target form
+                const isHidden = replyForm.style.display === 'none';
+                replyForm.style.display = isHidden ? 'block' : 'none';
+                if (isHidden) {
+                    replyForm.querySelector('input[name="comment_text"]').focus();
                 }
             }
-        });
-    });
+        }
 
-    const toggleRepliesButtons = document.querySelectorAll('.toggle-replies-btn');
-
-    toggleRepliesButtons.forEach(button => {
-        button.addEventListener('click', () => {
-            const commentId = button.dataset.commentId;
-            const repliesCount = button.dataset.repliesCount;
+        // Handle clicks on "See/Hide Replies" buttons
+        if (toggleButton) {
+            const commentId = toggleButton.dataset.commentId;
             const repliesContainer = document.getElementById(`replies-container-${commentId}`);
-
             if (repliesContainer) {
-                if (repliesContainer.classList.contains('hidden')) {
-                    repliesContainer.classList.remove('hidden');
-                    button.textContent = 'Hide Replies';
-                } else {
-                    repliesContainer.classList.add('hidden');
-                    button.textContent = `See Replies (${repliesCount})`;
-                }
+                const isHidden = repliesContainer.classList.contains('hidden');
+                repliesContainer.classList.toggle('hidden');
+                toggleButton.textContent = isHidden ? 'Hide Replies' : `See Replies (${toggleButton.dataset.repliesCount})`;
             }
-        });
+        }
     });
 });
