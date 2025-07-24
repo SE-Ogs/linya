@@ -67,3 +67,7 @@ li {
 .modal-lexend * {
     font-family: "Lexend", sans-serif !important;
 }
+
+body.sidebar-collapsed #adminWrapper {
+    padding-left: 0;
+}
