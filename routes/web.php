@@ -69,8 +69,6 @@ Route::middleware('guest')->group(function () {
     });
 });
 
-
-
 // ============================================================================
 // AUTHENTICATED ROUTES (Require Authentication)
 // ============================================================================
@@ -85,7 +83,7 @@ Route::middleware('auth')->group(function () {
 
     // User settings
     Route::get('/settings', [SettingsController::class, 'showSettings'])->name('settings');
-    Route::post('/settings', [UserManagementController::class, 'uploadProfilePicture'])->name('profile.picture.upload');
+    Route::post('/settings', [UserManagementController::class, 'update'])->name('settings.update');
 
     // Recent searches
     Route::get('/recent-searches', [RecentSearchController::class, 'index'])->name('recent-searches.index');
