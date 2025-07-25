@@ -27,10 +27,10 @@
                                      class="h-full w-full object-cover"
                                      id="profile-picture-preview">
                             </div>
-                            <!-- Hidden file input -->
-                            <form id="profile-picture-form" action="{{ route("settings.update") }}" method="POST" enctype="multipart/form-data">
+                            <!-- Avatar Upload Form -->
+                            <form id="profile-picture-form" action="{{ route('settings.update') }}" method="POST" enctype="multipart/form-data">
                                 @csrf
-                                <input type="hidden" name="_token" value="csrf-token-here">
+                                <input type="hidden" name="form_type" value="avatar">
                                 <input type="file"
                                     id="profile-picture-input"
                                     name="avatar"
@@ -46,9 +46,9 @@
                         </div>
                         <!-- Profile Form -->
                         <div class="flex-1">
-                            <form method="POST" action="{{ route("settings.update") }}">
+                            <form method="POST" action="{{ route('settings.update') }}">
                                 @csrf
-                                <input type="hidden" name="_token" value="csrf-token-here">
+                                <input type="hidden" name="form_type" value="profile_name">
                                 <div class="mb-6 gap-6">
                                     <div>
                                         <label class="mb-2 block text-sm font-medium text-gray-700">Display Name</label>
@@ -80,9 +80,9 @@
                     <!-- Change Password Section -->
                     <div class="mb-8">
                         <h3 class="mb-6 text-xl font-semibold">Change Password</h3>
-                        <form method="POST" action="{{ route("settings.update") }}">
+                        <form method="POST" action="{{ route('settings.update') }}">
                             @csrf
-                            <input type="hidden" name="_token" value="csrf-token-here">
+                            <input type="hidden" name="form_type" value="password">
                             <div class="mb-6 max-w-md">
                                 <label class="mb-2 block text-sm font-medium text-gray-700">Current Password</label>
                                 <input type="password"
@@ -120,9 +120,9 @@
                     <!-- Change Email -->
                     <div class="mb-8">
                         <h3 class="mb-6 text-xl font-semibold">Change Email</h3>
-                        <form method="POST" action="{{ route("settings.update") }}">
+                        <form method="POST" action="{{ route('settings.update') }}">
                             @csrf
-                            <input type="hidden" name="_token" value="csrf-token-here">
+                            <input type="hidden" name="form_type" value="email">
                             <div class="mb-6 max-w-md">
                                 <label class="mb-2 block text-sm font-medium text-gray-700">Current Password</label>
                                 <input type="password"
@@ -185,6 +185,7 @@
                                 </div>
                             </div>
                         </div>
+                    </div>
                     <!-- Section Divider -->
                     <div class="my-8 h-px bg-gray-200"></div>
                     <!-- Delete Account Button -->
@@ -193,10 +194,7 @@
                                 class="rounded-lg bg-red-600 px-6 py-3 font-medium text-white transition-colors hover:bg-red-700">
                             Delete Account
                         </button>
-                {{-- @else --}}
-                {{--     <div class="h-min w-[1010px] rounded-lg bg-white p-8 shadow-sm"> --}}
-                {{--         <h1 class="text-[18px] text-red-500">Please log in to access account settings!</h1> --}}
-                {{--     </div> --}}
+                    </div>
                 </div>
             </div>
         </div>
