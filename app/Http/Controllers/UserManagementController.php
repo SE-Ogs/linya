@@ -86,12 +86,12 @@ class UserManagementController extends Controller
     public function uploadProfilePicture(Request $request)
     {
         $request->validate([
-            'profile_picture' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048',
+            'avatar' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048',
         ]);
 
-        $path = $request->file('profile_picture')->store('profile_pictures', 'public');
+        $path = $request->file('avatar')->store('profile_pictures', 'public');
 
-        auth()->user()->update(['profile_picture' => $path]);
+        auth()->user()->update(['avatar' => $path]);
 
         return back()->with('success', 'Profile picture updated!');
     }

@@ -32,8 +32,8 @@
                             <div class="flex flex-col items-center">
                                 <div class="mb-4 h-32 w-32 overflow-hidden rounded-full bg-gray-300">
                                 <!-- Display current profile picture or default SVG -->
-                                    @if(auth()->user()->profile_picture)
-                                        <img src="{{ Storage::url(auth()->user()->profile_picture) }}"
+                                    @if(auth()->user()->avatar)
+                                        <img src="{{ Storage::url(auth()->user()->avatar) }}"
                                             alt="Profile"
                                             class="h-full w-full object-cover"
                                             id="profile-picture-preview">
@@ -50,7 +50,7 @@
                                 @csrf
                                     <input type="file"
                                         id="profile-picture-input"
-                                        name="profile_picture"
+                                        name="avatar"
                                         accept="image/*"
                                         class="hidden">
                                 </form>
