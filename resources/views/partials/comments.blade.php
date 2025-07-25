@@ -7,8 +7,10 @@
                 <div class="flex space-x-3 p-3 bg-white rounded-lg shadow-sm">
                     <img src="/images/placeholder.jpg" alt="Avatar" class="w-10 h-10 rounded-full bg-gray-200 flex-shrink-0">
                     <div class="flex-grow">
-                        {{-- ... (The inner HTML of a comment remains the same) ... --}}
-                        <div class="flex items-center space-x-2 text-sm">
+
+                    {{-- ... (The inner HTML of a comment) ... --}}
+
+                    <div class="flex items-center space-x-2 text-sm">
                             <span class="font-bold text-gray-900">{{ $comment['username'] }}</span>
                             <span class="text-gray-500">{{ $comment['time_ago'] }} ago</span>
                         </div>

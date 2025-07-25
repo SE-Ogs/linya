@@ -94,7 +94,11 @@
             </div>
         </div>
 
-         @include('partials.comments', ['comments' => $comments, 'sort' => $sort])
+        <!-- Comments Section -->
+         @include('partials.comments',
+         ['comments' => $comments,
+         'sort' => $sort])
+
     </main>
 
     <footer>
