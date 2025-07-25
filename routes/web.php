@@ -10,6 +10,7 @@ use App\Http\Controllers\UserAuthController;
 use App\Http\Controllers\UserManagementController;
 use App\Models\Article;
 use App\Models\Tag;
+use App\Http\Controllers\DashboardSearchController;
 use Illuminate\Support\Facades\Route;
 
 // Root redirect
@@ -22,6 +23,7 @@ Route::get('/', function () {
 // ============================================================================
 // Dashboard routes
 Route::get('/dashboard', function () {
+
     $articles = Article::with('tags')
         ->where('status', 'Published')
         ->orderByDesc('views')
@@ -89,6 +91,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/recent-searches', [RecentSearchController::class, 'index'])->name('recent-searches.index');
     Route::post('/recent-searches', [RecentSearchController::class, 'store'])->name('recent-searches.store');
     Route::delete('/recent-searches', [RecentSearchController::class, 'clear']);
+    Route::get('/dashboard-search', [DashboardSearchController::class, 'search']);
 
     // Article management
     Route::get('/add-article', [ArticleController::class, 'create'])->name('articles.create');

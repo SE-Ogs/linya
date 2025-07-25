@@ -185,7 +185,6 @@
                                 </div>
                             </div>
                         </div>
-                    </div>
                     <!-- Section Divider -->
                     <div class="my-8 h-px bg-gray-200"></div>
                     <!-- Delete Account Button -->
@@ -194,7 +193,10 @@
                                 class="rounded-lg bg-red-600 px-6 py-3 font-medium text-white transition-colors hover:bg-red-700">
                             Delete Account
                         </button>
-                    </div>
+                {{-- @else --}}
+                {{--     <div class="h-min w-[1010px] rounded-lg bg-white p-8 shadow-sm"> --}}
+                {{--         <h1 class="text-[18px] text-red-500">Please log in to access account settings!</h1> --}}
+                {{--     </div> --}}
                 </div>
             </div>
         </div>
