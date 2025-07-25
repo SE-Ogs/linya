@@ -115,14 +115,14 @@ Route::put('/articles/{id}', [ArticleController::class, 'update'])->name('articl
 Route::delete('/articles/{id}', [ArticleController::class, 'destroy'])->name('articles.destroy');
 
 // Christian J. added these routes
-use App\Http\Controllers\SearchBarController;
+
 Route::get('/comment-manage-searchbar', [SearchBarController::class, 'index'])->name('search');
 
-use App\Http\Controllers\CommentManageController;
+
 Route::get('/admin/comments', [CommentManageController::class, 'index'])->name('admin.comments');
 Route::get('/articles/{slug}', [CommentManageController::class, 'show'])->name('comment.manage.show');
 
-use App\Http\Controllers\UserManagementController;
+
 Route::get('/admin/users', [UserManagementController::class, 'index'])->name('user.management');
 
 Route::prefix('admin/users')->group(function () {
