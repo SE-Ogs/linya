@@ -93,6 +93,8 @@
                 </div>
             </div>
         </div>
+
+        @include('partials.comments')
     </main>
 
     <footer>

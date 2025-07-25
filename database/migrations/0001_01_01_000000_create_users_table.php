@@ -22,7 +22,7 @@ return new class extends Migration
             $table->timestamps();
             $table->boolean('isAdmin')->default(false);
             $table->string('status')->default('Active');
-            $table->string('avatar')->nullable();
+            $table->string('avatar')->nullable()->after('password');
             $table->string('role')->default('user'); // or use 'admin' and 'user'
         });
 

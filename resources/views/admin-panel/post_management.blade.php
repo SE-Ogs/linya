@@ -10,28 +10,38 @@
 
 <div id="app" class="flex min-h-screen">
     <!-- Sidebar -->
-    <aside id="sidebar" class="bg-[#23222E] w-64 h-screen text-white flex flex-col p-4 font-lexend fixed top-0 left-0 z-50 transition-transform duration-300">
-        <div class="flex justify-center mb-8 mt-2">
-            <img src="/images/linyaText.svg" alt="LINYA Logo" class="h-10 w-auto" />
-        </div>
-        <nav class="flex flex-col gap-2">
-            <a href="/dashboard" class="py-2 px-3 rounded hover:bg-[#35344a] transition text-lg font-bold">Dashboard</a>
-            <a href="/user-management" class="py-2 px-3 rounded hover:bg-[#35344a] transition text-base font-medium">User Management</a>
-            <div class="bg-orange-400 text-white rounded">
-                <button id="postMgmtToggle" class="w-full flex items-center justify-between py-2 px-3 text-base font-semibold">
-                    Post Management
-                    <svg class="w-4 h-4 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+<aside id="sidebar" class="bg-[#23222E] w-64 h-screen text-white flex flex-col p-4 font-lexend fixed top-0 left-0 z-50 transition-transform duration-300">
+    
+    <div class="flex justify-center mb-8 mt-2">
+        <img src="/images/linyaText.svg" alt="LINYA Logo" class="h-10 w-auto" />
+    </div>
+    <nav class="flex flex-col gap-2">
+        <a href="/admin/dashboard" class="py-2 px-3 rounded hover:bg-[#35344a] transition text-base font-medium">Dashboard</a>
+
+        <a href="/user-management" class="py-2 px-3 rounded hover:bg-[#35344a] transition text-base font-medium">User Management</a>
+
+        <!-- Highlighted Post Management row -->
+        <div class="bg-orange-400 text-white rounded">
+            <div class="w-full flex items-center justify-between py-2 px-3 text-lg font-bold">
+                <a href="/admin/posts" class="flex-1">Post Management</a>
+                <button id="postMgmtToggle" class="ml-2">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
                     </svg>
                 </button>
             </div>
-            <div id="postMgmtMenu" class="bg-orange-400 text-white rounded hidden">
-                <a href="/blog-analytics" class="block py-2 px-3 text-base font-semibold hover:underline">Blog Analytics</a>
-                <a href="/article-management" class="block pl-6 py-2 text-sm font-normal hover:underline">Article Management</a>
-            </div>
-            <a href="/comment-management" class="py-2 px-3 rounded hover:bg-[#35344a] transition text-base font-medium">Comment Management</a>
-        </nav>
-    </aside>
+
+        </div>
+
+        <div id="postMgmtMenu" class="bg-orange-400 text-white rounded hidden">
+            <a href="/blog-analytics" class="block py-2 px-3 text-base font-semibold hover:underline">Blog Analytics</a>
+            <a href="/article-management" class="block pl-6 py-2 text-sm font-normal hover:underline">Article Management</a>
+        </div>
+
+        <a href="/comment-management" class="py-2 px-3 rounded hover:bg-[#35344a] transition text-base font-medium">Comment Management</a>
+    </nav>
+</aside>
+
 
     <!-- Main Content -->
     <div id="mainContent" class="flex-1 flex flex-col transition-[margin] duration-300 ml-64">
@@ -74,7 +84,7 @@
                 <div class="flex justify-between items-center">
                     <div class="flex space-x-2">
                         <input type="text" name="search" value="{{ request('search') }}" placeholder="Search post..." class="rounded-full px-6 py-3 border border-gray-300 focus:outline-none shadow-sm w-72">
-                        <button id="addPostBtn" type="button" class="px-5 py-3 bg-gradient-to-r from-orange-400 to-orange-500 text-white rounded-full hover:scale-105 transform transition">+ Add New Post</button>
+                        <button id="addPostBtn" type="button" onclick="window.location.href='/add-article'" class="px-5 py-3 bg-gradient-to-r from-orange-400 to-orange-500 text-white rounded-full hover:scale-105 transform transition cursor-pointer">+ Add New Post</button>
                     </div>
                     <div class="relative">
                         <button id="filterBtn" type="button" class="flex items-center gap-2 px-4 py-2 text-sm text-gray-700 bg-white border border-gray-300 rounded-md shadow hover:bg-gray-100 focus:outline-none">Filter</button>
@@ -142,8 +152,15 @@
                         <button type="button" class="publish-btn px-3 py-1 bg-green-500 text-white rounded hover:bg-green-600" data-id="{{ $article->id }}">Publish</button>
                     @endif
 
-                    <button type="button" class="edit-btn px-3 py-1 bg-gray-200 rounded hover:bg-gray-300" data-id="{{ $article->id }}">Edit</button>
-                    <button type="button" class="delete-btn px-3 py-1 bg-red-500 text-white rounded hover:bg-red-600" data-id="{{ $article->id }}">Delete</button>
+                    <!-- Edit Button -->
+                    <button type="button" class="edit-btn px-3 py-1 bg-gray-200 rounded hover:bg-gray-300" onclick="openModal('editModal', {{ $article->id }})">
+                        Edit
+                    </button>
+
+                    <!-- Delete Button -->
+                    <button type="button" class="delete-btn px-3 py-1 bg-red-500 text-white rounded hover:bg-red-600" data-id="{{ $article->id }}">
+                        Delete
+                    </button>
                 </div>
             </div>
 
@@ -171,24 +188,36 @@
 function openModal(id, postId = null) {
     const modal = document.getElementById(id);
     if (modal) {
-        modal.style.display = 'flex';
+        modal.style.display = 'flex'; // Show the modal
         if (postId) {
-            modal.setAttribute('data-post-id', postId);
+            modal.setAttribute('data-post-id', postId); // Dynamically set the article ID
         }
     }
 }
-window.closeModal = function(id) {
+
+function closeModal(id) {
     const modal = document.getElementById(id);
     if (modal) {
         modal.style.display = 'none';
-        modal.removeAttribute('data-post-id');
+        modal.removeAttribute('data-post-id'); // Clear the article ID when closing the modal
     }
-};
+}
+
+function confirmEdit() {
+    const modal = document.getElementById('editModal');
+    const articleId = modal.getAttribute('data-post-id'); // Get the article ID from the modal
+    if (articleId) {
+        window.location.href = `/edit-article/${articleId}`; // Redirect to the correct edit page
+    }
+}
 document.addEventListener('DOMContentLoaded', function () {
-    document.querySelectorAll('.edit-btn').forEach(btn => {
-        btn.addEventListener('click', function(e) {
-            e.preventDefault();
-            openModal('editModal', btn.getAttribute('data-id'));
+    document.addEventListener('DOMContentLoaded', function () {
+        document.querySelectorAll('.edit-btn').forEach(btn => {
+            btn.addEventListener('click', function (e) {
+                e.preventDefault();
+                const articleId = btn.getAttribute('data-id'); // Get the article ID
+                openModal('editModal', articleId); // Open the modal with the article ID
+            });
         });
     });
     document.querySelectorAll('.delete-btn').forEach(btn => {
