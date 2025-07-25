@@ -180,8 +180,8 @@
                         </div>
                     </div>
                 @else
-                    <div>
-                        <h1>Please log in to access account settings!</h1>
+                    <div class="h-min w-[1010px] rounded-lg bg-white p-8 shadow-sm">
+                        <h1 class="text-[18px] text-red-500">Please log in to access account settings!</h1>
                     </div>
                 @endauth
             </div>

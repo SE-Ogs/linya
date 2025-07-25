@@ -11,7 +11,9 @@ document.addEventListener("DOMContentLoaded", function () {
     const eyeClosed = document.getElementById("eyeClosed");
     const eyeOpen = document.getElementById("eyeOpen");
     const passwordInputSignup = document.getElementById("password-signup");
-    const togglePasswordSignup = document.getElementById("togglePassword-signup");
+    const togglePasswordSignup = document.getElementById(
+        "togglePassword-signup",
+    );
     const eyeClosedSignup = document.getElementById("eyeClosed-signup");
     const eyeOpenSignup = document.getElementById("eyeOpen-signup");
 
@@ -65,7 +67,12 @@ document.addEventListener("DOMContentLoaded", function () {
             eyeOpen.classList.toggle("hidden", !isPassword);
         });
     } // signup password toggle
-    if (togglePasswordSignup && passwordInputSignup && eyeClosedSignup && eyeOpenSignup) {
+    if (
+        togglePasswordSignup &&
+        passwordInputSignup &&
+        eyeClosedSignup &&
+        eyeOpenSignup
+    ) {
         togglePasswordSignup.addEventListener("click", function () {
             const isPassword = passwordInputSignup.type === "password";
             passwordInputSignup.type = isPassword ? "text" : "password";
@@ -119,10 +126,35 @@ document.addEventListener("DOMContentLoaded", function () {
         });
 
         searchOpen.addEventListener("mousedown", (e) => {
-            e.preventDefault(); // keeps input focused when clicking inside
+            if (e.key === "Enter") {
+                e.preventDefault();
+                saveSearch(searchBar.value);
+                search(searchBar.value);
+            }
         });
 
         searchBar.addEventListener("input", () => {
+            const query = searchBar.value.trim();
+            console.log("Input listener fired. Query:", query);
+
+            if (query.length === 0) {
+                loadRecentSearches("");
+                clearSearch();
+                return;
+            }
+
+            const resultsContainer = document.getElementById(
+                "search-results-container",
+            );
+            const content = document.getElementById("content");
+
+            if (resultsContainer && content) {
+                resultsContainer.classList.remove("hidden");
+                content.classList.add("hidden");
+            }
+
+            console.log("Calling search()");
+            search(query);
             loadRecentSearches(searchBar.value);
         });
 
@@ -133,35 +165,132 @@ document.addEventListener("DOMContentLoaded", function () {
             }
         });
 
+        function search(query) {
+            const resultsContainer = document.getElementById(
+                "search-results-container",
+            );
+            const resultsGrid = document.getElementById("search-results");
+            const loadingText = document.getElementById("search-loading");
+            const content = document.getElementById("content");
+
+            if (!resultsContainer || !resultsGrid || !content || !loadingText)
+                return;
+
+            resultsContainer.classList.remove("hidden");
+            loadingText.classList.remove("hidden");
+            content.classList.add("hidden");
+
+            fetch(`/dashboard-search?q=${encodeURIComponent(query)}`)
+                .then((res) => res.json())
+                .then((data) => {
+                    resultsGrid.innerHTML = "";
+                    resultsGrid.classList.remove("hidden");
+
+                    if (data.length === 0) {
+                        resultsGrid.innerHTML = `<p class="text-gray-500 col-span-full">No results found.</p>`;
+                    } else {
+                        data.forEach((article) => {
+                            const card = document.createElement("a");
+                            card.href = `/articles/${article.id}`;
+                            card.className =
+                                "bg-white border border-gray-200 rounded-lg overflow-hidden shadow-sm p-6 hover:shadow-md transition";
+
+                            card.innerHTML = `<div class="relative h-96 cursor-pointer overflow-hidden rounded-lg bg-gradient-to-br from-indigo-50 to-pink-50">
+                                <div class="gradient-overlay absolute inset-0">
+                                <img src="${article.image_url || "/images/placeholder.jpg"}"
+                                    alt="${article.title}"
+                                    class="h-full w-full object-cover object-center">
+                                </div>
+                                <div class="absolute inset-0 bg-gradient-to-t from-black/70 via-black/30 to-transparent"></div>
+                                <div class="relative z-10 flex h-full flex-col justify-end p-8 text-white">
+                                <div>
+                                    <div class="mb-4 flex flex-wrap gap-2">
+                                    ${(article.tags || [])
+                                        .map(
+                                            (tag) => `
+                                        <div class="bg-indigo-600 rounded-full px-4 py-1 text-xs font-semibold">
+                                        ${tag.abbreviated_name || tag.name}
+                                        </div>
+                                    `,
+                                        )
+                                        .join("")}
+                                    </div>
+                                    <h1 class="mb-4 text-3xl font-bold leading-tight lg:text-4xl">${article.title}</h1>
+                                    <p class="text-lg leading-relaxed text-gray-200">${article.summary}</p>
+                                </div>
+                                <div class="flex items-center gap-4 text-sm text-gray-300 mt-4">
+                                    <div class="flex items-center gap-2">
+                                    <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
+                                        <circle cx="12" cy="7" r="4" />
+                                    </svg>
+                                    <span>${article.author_name || "Unknown Author"}</span>
+                                    </div>
+                                    <div class="flex items-center gap-2">
+                                    <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <rect x="3" y="4" width="18" height="18" rx="2" ry="2" />
+                                        <line x1="16" y1="2" x2="16" y2="6" />
+                                        <line x1="8" y1="2" x2="8" y2="6" />
+                                        <line x1="3" y1="10" x2="21" y2="10" />
+                                    </svg>
+                                    <span>${new Date(
+                                        article.created_at,
+                                    ).toLocaleDateString(undefined, {
+                                        year: "numeric",
+                                        month: "long",
+                                        day: "numeric",
+                                    })}</span>
+                                    </div>
+                                </div>
+                                </div>
+                            </div>`;
+
+                            resultsGrid.appendChild(card);
+                        });
+                    }
+
+                    loadingText.classList.add("hidden");
+                })
+                .catch((err) => {
+                    console.error("Search error: ", err);
+                    loadingText.textContent = "Something went wrong.";
+                });
+        }
+
         function loadRecentSearches(query) {
             if (!searchList) return;
+
             fetch(`/recent-searches?q=${encodeURIComponent(query)}`)
                 .then((res) => res.json())
                 .then((data) => {
                     searchList.innerHTML = "";
+
                     data.forEach((item) => {
                         const li = document.createElement("li");
                         li.className =
                             "flex cursor-pointer items-center space-x-2 rounded-2xl p-2 transition duration-300 hover:bg-blue-100";
                         li.innerHTML = `
-                            <svg xmlns="http://www.w3.org/2000/svg"
-                                fill="none"
-                                viewBox="0 0 24 24"
-                                stroke-width="1.5"
-                                stroke="currentColor"
-                                class="size-6">
-                            <path stroke-linecap="round" stroke-linejoin="round"
-                                d="M12 6v6h4.5m4.5 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
-                            </svg>
-                            <span>${item.query}</span>
-                        `;
+                    <svg xmlns="http://www.w3.org/2000/svg"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        stroke-width="1.5"
+                        stroke="currentColor"
+                        class="size-6">
+                    <path stroke-linecap="round" stroke-linejoin="round"
+                        d="M12 6v6h4.5m4.5 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
+                    </svg>
+                    <span>${item.query}</span>
+                `;
+
                         li.addEventListener("click", () => {
                             searchBar.value = item.query;
-                            saveSearch(item.query);
+                            saveSearch(item.query); // optional, if you're updating history
+                            search(item.query); // <-- THIS is the important addition
                         });
 
                         searchList.appendChild(li);
                     });
+
                     if (data.length === 0) {
                         const li = document.createElement("li");
                         li.className = "text-gray-400 p-2";
@@ -287,3 +416,40 @@ document.addEventListener("DOMContentLoaded", function () {
         }
     });
 });
+
+function clearSearch() {
+    console.log("clearSearch started");
+
+    const searchResults = document.getElementById("search-results");
+    const loadingText = document.getElementById("search-loading");
+    const resultsContainer = document.getElementById(
+        "search-results-container",
+    );
+    const dashboard = document.getElementById("content");
+    const searchInput = document.getElementById("searchBar");
+
+    if (searchResults) {
+        searchResults.innerHTML = ""; // only clear inner results, not the whole container
+        searchResults.classList.add("hidden");
+    }
+
+    if (loadingText) {
+        loadingText.classList.add("hidden");
+    }
+
+    if (resultsContainer) {
+        resultsContainer.classList.add("hidden");
+    }
+
+    if (dashboard) {
+        dashboard.classList.remove("hidden");
+    }
+
+    if (searchInput) {
+        searchInput.value = "";
+    }
+
+    console.log("clearSearch completed");
+}
+
+window.clearSearch = clearSearch;
