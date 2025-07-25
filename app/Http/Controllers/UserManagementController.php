@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Auth;
 
 class UserManagementController extends Controller
 {
@@ -25,7 +27,7 @@ class UserManagementController extends Controller
         if ($query) {
             $usersQuery->where(function ($q) use ($query) {
                 $q->where('name', 'ILIKE', "%{$query}%")
-                ->orWhere('email', 'ILIKE', "%{$query}%");
+                    ->orWhere('email', 'ILIKE', "%{$query}%");
             });
         }
 
@@ -79,5 +81,18 @@ class UserManagementController extends Controller
         $user->delete();
 
         return back()->with('message', "User {$user->id} has been deleted.");
+    }
+
+    public function uploadProfilePicture(Request $request)
+    {
+        $request->validate([
+            'profile_picture' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048',
+        ]);
+
+        $path = $request->file('profile_picture')->store('profile_pictures', 'public');
+
+        auth()->user()->update(['profile_picture' => $path]);
+
+        return back()->with('success', 'Profile picture updated!');
     }
 }

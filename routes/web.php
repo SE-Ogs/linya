@@ -49,6 +49,7 @@ Route::post('/signup', [UserAuthController::class, 'signup']);
 Route::get('/set-display-name', [UserAuthController::class, 'showDisplayName']);
 Route::post('/set-display-name', [UserAuthController::class, 'storeDisplayName']);
 Route::post('/clear-signup-data', [UserAuthController::class, 'clearSignupData'])->name('clear-signup-data');
+Route::post('/settings', [App\Http\Controllers\UserManagementController::class, 'uploadProfilePicture'])->name('profile.picture.upload')->middleware('auth');
 
 Route::post('/logout', [UserAuthController::class, 'logout'])->name('logout');
 
