@@ -4,22 +4,26 @@ namespace App\Http\Controllers;
 
 use App\Models\Article;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\DB;
 
-class DashboardSearchController extends Controller{
-    public function search(Request $request){
+class DashboardSearchController extends Controller
+{
+     public function search(Request $request) {
         $query = $request->input('q');
 
         $articles = Article::with('tags')
-            ->where('title', 'LIKE', "%{query}%")
-            ->orWhere('summary', 'LIKE', "%{query}%")
-            ->orWhereHas('tags', function ($tagQuery) use ($query){
-                $tagQuery->where('name', 'LIKE', "%{query}%");
-            })
-            ->where('status', 'published')
-            ->limit(10)
-            ->get();
+        ->where('status', 'Published')
+        ->where(function ($q2) use ($query) {
+            $q2->where(DB::raw('LOWER(title)'), 'LIKE', "%{$query}%")
+                ->orWhere(DB::raw('LOWER(summary)'), 'LIKE', "%{$query}%")
+                ->orWhereHas('tags', function ($tagQuery) use ($query) {
+                    $tagQuery->where(DB::raw('LOWER(name)'), 'LIKE', "%{$query}%");
+                });
+        })
+        ->limit(10)
+        ->get();
 
         return response()->json($articles);
-
     }
 }

@@ -77,7 +77,7 @@ class ArticleController extends Controller
             'tagModels' => $tags,
         ]);
     }
-    
+
     public function backtoCreate(Request $request): RedirectResponse
     {
         return redirect()->route('articles.create')
