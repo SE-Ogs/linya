@@ -14,7 +14,7 @@ services:
             - .:/var/www/html
             - persistent_storage:/var/www/html/storage/public
         ports:
-            - "9000:80"
+            - "8000:80"
         env_file:
             - .env
         depends_on:
