@@ -507,7 +507,11 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 document.addEventListener('DOMContentLoaded', () => {
-    const textarea = document.querySelector('textarea[name="comment_text"]');
+    // Use the id if present, otherwise fallback to name selector
+    let textarea = document.getElementById('comment-box');
+    if (!textarea) {
+        textarea = document.querySelector('textarea[name="comment_text"]');
+    }
     const counter = document.getElementById('char-count');
 
     if (textarea && counter) {
@@ -547,5 +551,115 @@ document.addEventListener('DOMContentLoaded', () => {
 
         // Set initial value
         updateCounter();
+    }
+
+    // Profanity filter for comment textarea
+    if (textarea) {
+        const profanityMap = {
+            "badword": "🐸",
+            "ugly": "🌸",
+            "stupid": "🍭",
+            "hate": "💖",
+            "fuck": "ദ്ദി(˵ •̀ ᴗ - ˵ ) ✧",
+            "shit": "˙ . ꒷ 🍰 . 𖦹˙—",
+            "asshole": "ᕙ(  •̀ ᗜ •́  )ᕗ",
+            "ass":"(⸝⸝๑﹏๑⸝⸝)",
+            "kys":"🎀🪞🩰🦢🕯️",
+            "faggot":"🫧",
+            "retarded": "▶︎ •၊၊||၊|။|||||||• 0:10",
+            "kill your self": "🌸˚˖⋆",
+            "bitch": "˙ . ꒷ 🍰 . 𖦹˙—",
+            "dick": "Ϟ(๑⚈ ․̫ ⚈๑)⋆",
+            "betch": "꧁ᬊᬁᴀɴɢᴇʟᬊ᭄꧂",
+            "nigga": "˙✧˖🌅📸 ༘ ⋆｡˚", //spyke ga type
+            "nigger": "˙⋆｡ﾟ☁︎｡⋆｡ ﾟ☾ ﾟ｡⋆",
+            "nazi": "𓆉𓆝 𓆟 𓆞 𓆝 𓆟𓇼",
+            "wtf": "* ੈ ♡ ⸝⸝🪐 ༘ ⋆",
+            "atay": "⁺˚⋆｡°✩₊✩°｡⋆˚⁺",
+            "bobo": "≽^•⩊•^≼" ,
+            "tanga": "₊ ⊹🪻 ✿˚. ᵎᵎ 🫐 ༘ ⋆｡˚",
+            "tangina": " *‧.₊˚*੭*ˊᵕˋ੭.*",
+            "putangina": "˙⋆.˚🦋༘⋆",
+            "sybau":"𖡼𖤣𖥧𖡼𓋼𖤣𖥧𓋼𓍊",
+            "syet": "⋆｡‧˚ʚ🍓ɞ˚‧｡⋆",
+            "puta": "₍^. .^₎⟆",
+            "sex": "˚.🎀༘⋆",
+            "kill": "༘⋆₊ ⊹★🔭๋࣭ ⭑⋆｡˚",
+        };
+
+        function replaceProfanity(text) {
+            let result = text;
+            for (const word in profanityMap) {
+                const regex = new RegExp(`\\b${word}\\b`, 'gi');
+                result = result.replace(regex, profanityMap[word]);
+            }
+            return result;
+        }
+
+        // Track if profanity was previously detected
+        let profanityWasPresent = false;
+
+        textarea.addEventListener('input', () => {
+            const originalValue = textarea.value;
+            let newValue = originalValue;
+            let profanityDetected = false;
+            Object.keys(profanityMap).forEach(badWord => {
+                const regex = new RegExp(`\\b${badWord}\\b`, 'gi');
+                if (regex.test(newValue)) {
+                    profanityDetected = true;
+                    newValue = newValue.replace(regex, profanityMap[badWord]);
+                }
+            });
+            if (newValue !== originalValue) {
+                textarea.value = newValue;
+                spookyAutoType();
+                textarea.setSelectionRange(newValue.length, newValue.length);
+                profanityWasPresent = true;
+            } else if (profanityWasPresent && !profanityDetected) {
+                // User erased the bad word, reverse the spooky message
+                spookyAutoType(true);
+                profanityWasPresent = false;
+            }
+            if (document.getElementById('char-count')) {
+                document.getElementById('char-count').textContent = `${newValue.length}/500`;
+            }
+        });
+
+        // Spooky typing effect function with reverse animation
+        function spookyAutoType(reverse = false) {
+            let warning = document.querySelector('.spooky-warning');
+            const message = "Not very punk rock of you to use that language, is it?";
+
+            // Create if it doesn't exist
+            if (!warning) {
+                warning = document.createElement('span');
+                warning.className = 'text-xs text-red-500 spooky-warning ml-2 block mt-1';
+                textarea.parentNode.appendChild(warning);
+            }
+
+            let index = reverse ? message.length : 0;
+
+            // Clear any existing interval
+            if (warning.spookyInterval) {
+                clearInterval(warning.spookyInterval);
+            }
+
+            // If reverse, start with full message
+            if (reverse) {
+                warning.textContent = message;
+            } else {
+                warning.textContent = "";
+            }
+
+            warning.spookyInterval = setInterval(() => {
+                if (!reverse && index < message.length) {
+                    warning.textContent += message[index++];
+                } else if (reverse && index >= 0) {
+                    warning.textContent = message.substring(0, index--);
+                } else {
+                    clearInterval(warning.spookyInterval);
+                }
+            }, 60);
+        }
     }
 });
