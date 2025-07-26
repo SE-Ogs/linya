@@ -1,4 +1,5 @@
 <div class="mb-20 w-full max-w-4xl mx-auto shadow-sm rounded-lg bg-white p-6">
+    <h2 class="text-xl font-semibold text-gray-800 mb-4">Comments</h2>
     <div class="add-comment-area-wrapper">
         <div class="comment-user-info">
             <img src="placeholder-avatar.png" alt="Your Avatar" class="user-avatar">
