@@ -525,6 +525,26 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         });
 
+        // Keyboard shortcut formatting: Ctrl+B, Ctrl+I, Ctrl+U
+        textarea.addEventListener('keydown', function (e) {
+            if ((e.ctrlKey || e.metaKey) && !e.shiftKey) {
+                const start = this.selectionStart;
+                const end = this.selectionEnd;
+                const selectedText = this.value.substring(start, end);
+
+                if (e.key === 'b') {
+                    e.preventDefault();
+                    this.setRangeText(`**${selectedText}**`, start, end, 'end');
+                } else if (e.key === 'i') {
+                    e.preventDefault();
+                    this.setRangeText(`*${selectedText}*`, start, end, 'end');
+                } else if (e.key === 'u') {
+                    e.preventDefault();
+                    this.setRangeText(`<u>${selectedText}</u>`, start, end, 'end');
+                }
+            }
+        });
+
         // Set initial value
         updateCounter();
     }
