@@ -45,15 +45,31 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
     // ✅ Contact modal only if elements exist
+    // NOTE: Alpine.js is recommended for modal transitions, but if using vanilla JS, add Tailwind classes for animation.
     if (contactBtn && contactModal) {
         contactBtn.addEventListener("click", function (e) {
+            // Add Tailwind transition classes for modal animation
             contactModal.classList.remove("hidden");
             contactModal.classList.add("flex");
+            // Ensure base transition classes are present
+            contactModal.classList.add("transition", "duration-300", "ease-out", "transform", "scale-95", "opacity-0");
+            // Force reflow to enable transition
+            void contactModal.offsetWidth;
+            // Animate to visible
+            contactModal.classList.remove("scale-95", "opacity-0");
+            contactModal.classList.add("scale-100", "opacity-100");
         });
 
         contactModal.addEventListener("click", function (e) {
             if (e.target === contactModal) {
-                contactModal.classList.add("hidden");
+                // Animate to hidden
+                contactModal.classList.remove("scale-100", "opacity-100");
+                contactModal.classList.add("scale-95", "opacity-0");
+                // Wait for transition before hiding
+                setTimeout(() => {
+                    contactModal.classList.add("hidden");
+                    contactModal.classList.remove("flex");
+                }, 300);
             }
         });
     }
