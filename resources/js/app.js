@@ -604,6 +604,7 @@ document.addEventListener('DOMContentLoaded', () => {
             "tang ina": "⊹ ࣪ ﹏𓊝﹏𓂁﹏⊹ ࣪ ˖",
             "kayata": "˗ˏˋ(ˊ•͈ω•͈ˋ)ˎˊ˗",
             "kayasa": "✩₊˚.⋆☾𓃦☽⋆⁺₊✧",
+            "piss": "🪼⋆｡𖦹°🫧⋆.ೃ࿔*:･",
         };
 
         function replaceProfanity(text) {
