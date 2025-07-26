@@ -10,7 +10,7 @@
                     name="comment_text"
                     maxlength="500"
                     placeholder="Add a comment"
-                    class="flex-grow px-3 py-2 text-sm border-none outline-none resize-none overflow-hidden leading-snug"
+                    class="flex-grow px-3 py-2 text-sm border-none outline-none resize-none overflow-hidden leading-snug transition-all duration-300 focus:outline-none focus:shadow-none"
                     rows="1"
                     required
                     oninput="this.style.height = 'auto'; this.style.height = this.scrollHeight + 'px';"
@@ -40,7 +40,7 @@
 
         @foreach ($filters as $key => $label)
             <a href="?sort={{ $key }}"
-               class="px-4 py-1.5 rounded-md text-sm font-medium transition-all duration-200 border
+               class="px-4 py-1.5 rounded-md text-sm font-medium transition-all duration-200 border hover:scale-105 transition-transform ease-in-out
                {{ ($sort ?? '') === $key
                    ? 'bg-blue-800 text-white border-blue-800 shadow-sm'
                    : 'bg-gray-100 text-gray-800 border-gray-300 hover:bg-blue-800 hover:text-white hover:border-blue-800' }}">
@@ -56,7 +56,9 @@
             </div>
         @else
             @foreach ($comments as $comment)
-                @include('partials.comment', ['comment' => $comment, 'level' => 0])
+                <div class="animate-fade-in transition-opacity duration-500">
+                    @include('partials.comment', ['comment' => $comment, 'level' => 0])
+                </div>
             @endforeach
         @endif
     </div>
@@ -64,4 +66,8 @@
 
 <script src="{{ asset('js/comments.js') }}"></script>
 
-
+{{-- Tailwind animation utilities used:
+     - fade-in: animates each comment into view
+     - hover:scale-105 on filter buttons
+     - transition + ring effects on textarea focus
+--}}
