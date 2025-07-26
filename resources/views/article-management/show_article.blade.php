@@ -94,6 +94,8 @@
             </div>
         </div>
 
+       @include('partials.ad_space')
+
         @include('partials.comments')
     </main>
 
