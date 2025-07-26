@@ -1,24 +1,31 @@
-<div class="mb-20 w-full max-w-4xl mx-auto shadow-sm rounded-lg bg-white p-6">
+<div class="mb-20 w-full max-w-4xl mx-auto shadow-sm rounded-lg bg-white p-4 sm:p-6 overflow-x-hidden">
     <h2 class="text-xl font-semibold text-gray-800 mb-4">Comments</h2>
     <div class="add-comment-area-wrapper">
         <div class="comment-user-info">
             <img src="placeholder-avatar.png" alt="Your Avatar" class="user-avatar">
         </div>
         <div class="add-comment-input-box border border-black rounded-[10px] bg-white flex items-center px-3 py-2 w-full">
-            <form action="" method="post" style="flex-grow: 1; display: flex;">
-                <input type="text"
-                name="comment_text"
-                placeholder="Add a comment"
-                class="flex-grow px-3 py-2 text-sm border-none outline-none"
-                required>
+            <form action="" method="post" class="flex flex-grow flex-wrap gap-2">
+                <textarea
+                    name="comment_text"
+                    maxlength="500"
+                    placeholder="Add a comment"
+                    class="flex-grow px-3 py-2 text-sm border-none outline-none resize-none overflow-hidden leading-snug"
+                    rows="1"
+                    required
+                    oninput="this.style.height = 'auto'; this.style.height = this.scrollHeight + 'px';"
+                ></textarea>
 
                 <button
-                type="submit"
-                name="submit_comment"
-                class="text-orange-500 hover:text-orange-600 text-xl ml-2">
-                 &#10148;
-            </button>
+                    type="submit"
+                    name="submit_comment"
+                    class="text-orange-500 hover:text-orange-600 text-xl ml-2">
+                    &#10148;
+                </button>
 
+                <div class="w-full text-right">
+                    <small id="char-count" class="text-gray-500">0/500</small>
+                </div>
             </form>
         </div>
     </div>
@@ -26,7 +33,7 @@
         <p class="error-message">{{ $error }}</p>
     @endif
 
-    <div class="comment-filters flex gap-2 my-4">
+    <div class="comment-filters flex gap-2 my-4 overflow-x-auto whitespace-nowrap scrollbar-hide">
         @php
             $filters = ['all' => 'All', 'newest' => 'Newest', 'oldest' => 'Oldest', 'most_liked' => 'Most Liked'];
         @endphp
@@ -56,3 +63,14 @@
 </div>
 
 <script src="{{ asset('js/comments.js') }}"></script>
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    const textarea = document.querySelector('textarea[name="comment_text"]');
+    const counter = document.getElementById('char-count');
+
+    textarea.addEventListener('input', () => {
+        counter.textContent = `${textarea.value.length}/500`;
+    });
+});
+</script>
