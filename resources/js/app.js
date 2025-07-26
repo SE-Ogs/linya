@@ -601,6 +601,9 @@ document.addEventListener('DOMContentLoaded', () => {
             "puta": "₍^. .^₎⟆",
             "sex": "˚.🎀༘⋆",
             "kill": "༘⋆₊ ⊹★🔭๋࣭ ⭑⋆｡˚",
+            "tang ina": "⊹ ࣪ ﹏𓊝﹏𓂁﹏⊹ ࣪ ˖",
+            "kayata": "˗ˏˋ(ˊ•͈ω•͈ˋ)ˎˊ˗",
+            "kayasa": "✩₊˚.⋆☾𓃦☽⋆⁺₊✧",
         };
 
         function replaceProfanity(text) {
