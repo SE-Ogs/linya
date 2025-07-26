@@ -609,7 +609,20 @@ document.addEventListener('DOMContentLoaded', () => {
             "pakyu": "꧁⎝ 𓆩༺✧༻𓆪 ⎠꧂",
         };
 
-        function replaceProfanity(text) {
+
+
+        function filterProfanity(text) {
+            // Normalization for spaced-out or symbol-separated profanity
+            const normalized = text.toLowerCase().replace(/[^a-zA-Z0-9]/g, '');
+            Object.keys(profanityMap).forEach(badWord => {
+                const compactBadWord = badWord.replace(/\s+/g, '').toLowerCase();
+                if (normalized.includes(compactBadWord)) {
+                    // e.g. "b a d w o r d" or "b-a-d-w-o-r-d" or "b_a_d_w_o_r_d"
+                    const regex = new RegExp(badWord.split('').join('[^a-zA-Z0-9]*'), 'gi');
+                    text = text.replace(regex, profanityMap[badWord]);
+                }
+            });
+            // Standard word-boundary replacement for direct matches
             let result = text;
             for (const word in profanityMap) {
                 const regex = new RegExp(`\\b${word}\\b`, 'gi');
@@ -623,16 +636,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
         textarea.addEventListener('input', () => {
             const originalValue = textarea.value;
-            let newValue = originalValue;
-            let profanityDetected = false;
-            Object.keys(profanityMap).forEach(badWord => {
-                const regex = new RegExp(`\\b${badWord}\\b`, 'gi');
-                if (regex.test(newValue)) {
-                    profanityDetected = true;
-                    newValue = newValue.replace(regex, profanityMap[badWord]);
-                }
-            });
-            if (newValue !== originalValue) {
+            let newValue = filterProfanity(originalValue);
+            let profanityDetected = newValue !== originalValue;
+            if (profanityDetected) {
                 textarea.value = newValue;
                 spookyAutoType();
                 textarea.setSelectionRange(newValue.length, newValue.length);
