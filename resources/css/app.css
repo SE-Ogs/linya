@@ -67,3 +67,43 @@ li {
 .modal-lexend * {
     font-family: "Lexend", sans-serif !important;
 }
+
+/* Tailwind utility-first equivalents for comment.css styles */
+@layer components {
+  .comment-section-container {
+    @apply max-w-[700px] mx-auto bg-white p-5 rounded-lg shadow;
+  }
+
+  .add-comment-area-wrapper {
+    @apply flex items-start mb-5;
+  }
+
+  .comment-user-info {
+    @apply flex flex-col items-center mr-4 w-[60px] text-center pt-[5px];
+  }
+
+  .comment-user-info .user-avatar {
+    @apply w-10 h-10 rounded-full bg-gray-300 mb-1;
+  }
+
+  .add-comment-input-box {
+    @apply flex items-center flex-grow bg-white border border-black rounded-[10px] p-[5px];
+  }
+
+  .add-comment-input-box input[type="text"] {
+    @apply flex-grow py-2 px-2 bg-transparent border-none outline-none text-sm;
+  }
+
+  .comment-filters {
+    @apply flex gap-2 mb-5 ml-[75px];
+  }
+
+  .comment-filters a {
+    @apply py-[3px] px-[15px] rounded text-gray-800 bg-gray-200 text-sm no-underline;
+  }
+
+  .comment-filters a.active,
+  .comment-filters a:hover {
+    @apply bg-blue-600 text-white;
+  }
+}
