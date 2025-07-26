@@ -64,13 +64,4 @@
 
 <script src="{{ asset('js/comments.js') }}"></script>
 
-<script>
-document.addEventListener('DOMContentLoaded', function () {
-    const textarea = document.querySelector('textarea[name="comment_text"]');
-    const counter = document.getElementById('char-count');
 
-    textarea.addEventListener('input', () => {
-        counter.textContent = `${textarea.value.length}/500`;
-    });
-});
-</script>
