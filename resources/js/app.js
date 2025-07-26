@@ -517,6 +517,14 @@ document.addEventListener('DOMContentLoaded', () => {
 
         textarea.addEventListener('input', updateCounter);
 
+        // Submit form on Enter (without Shift)
+        textarea.addEventListener('keydown', function (e) {
+            if (e.key === 'Enter' && !e.shiftKey) {
+                e.preventDefault();
+                this.closest('form').submit(); // Submit the form on Enter
+            }
+        });
+
         // Set initial value
         updateCounter();
     }
