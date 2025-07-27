@@ -8,7 +8,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
-class SearchBarController extends Controller
+class SearchFilterController extends Controller
 {
     /**
      * Handle search and filter logic
@@ -50,12 +50,23 @@ class SearchBarController extends Controller
 
         if ($type === 'comments') {
             $queryBuilder = DB::table('articles')
+                ->leftJoin('article_tag', 'articles.id', '=', 'article_tag.article_id')
+                ->leftJoin('tags', 'tags.id', '=', 'article_tag.tag_id')
                 ->select('articles.*')
                 ->when($query, function ($q) use ($query) {
-                    $q->where('articles.title', 'ILIKE', "%{$query}%")
-                    ->orWhere('articles.article', 'ILIKE', "%{$query}%");
+                    $q->where(function ($subQ) use ($query) {
+                        $subQ->where('articles.title', 'ILIKE', "%{$query}%")
+                            ->orWhere('articles.article', 'ILIKE', "%{$query}%");
+                    });
                 })
-                ->orderBy('articles.created_at', 'desc');
+                ->when($year, function ($q) use ($year) {
+                    $q->whereYear('articles.created_at', $year);
+                })
+                ->when(!empty($tags), function ($q) use ($tags) {
+                    $q->whereIn('tags.name', $tags);
+                })
+                ->orderBy('articles.created_at', 'desc')
+                ->distinct();
 
             $paginatedResults = $queryBuilder->paginate(10)->withQueryString();
 

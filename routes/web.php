@@ -52,8 +52,8 @@ Route::get('/reset-password', function () {
     return view('partials.reset_password'); // or 'partials.reset_password' if that's the folder
 })->name('password.request');
 
-Route::get('/add-article', [\App\Http\Controllers\ArticleController::class, 'create'])->name('articles.create');
-Route::get('/edit-article', [\App\Http\Controllers\ArticleController::class, 'edit'])->name('articles.edit');
+Route::get('/add-article', [ArticleController::class, 'create'])->name('articles.create');
+Route::get('/edit-article', [ArticleController::class, 'edit'])->name('articles.edit');
 
 Route::post('/articles', [ArticleController::class, 'store'])->name('articles.store');
 Route::get('/articles/{id}', [ArticleController::class, 'show'])->name('articles.show');
@@ -63,8 +63,8 @@ Route::put('/articles/{id}', [ArticleController::class, 'update'])->name('articl
 Route::delete('/articles/{id}', [ArticleController::class, 'destroy'])->name('articles.destroy');
 
 // Christian J. added these routes
-use App\Http\Controllers\SearchBarController;
-Route::get('/comment-manage-searchbar', [SearchBarController::class, 'index'])->name('search');
+use App\Http\Controllers\SearchFilterController;
+Route::get('/comment-manage-searchbar', [SearchFilterController::class, 'index'])->name('search');
 
 use App\Http\Controllers\CommentManageController;
 Route::get('/admin/comments', [CommentManageController::class, 'index'])->name('admin.comments');

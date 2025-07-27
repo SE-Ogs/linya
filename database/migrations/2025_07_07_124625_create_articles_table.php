@@ -10,15 +10,19 @@ return new class extends Migration {
      */
     public function up(): void
     {
+        // Articles table
         Schema::create('articles', function (Blueprint $table) {
             $table->id();
             $table->timestamps();
             $table->string('title');
-            $table->string('summary');
+            $table->text('summary');
             $table->longText('article');
             $table->enum('status', ['pending', 'approved', 'published', 'rejected'])->default('published');
-            $table->unsignedInteger('views');
+            $table->unsignedInteger('views')->default(0);
+            $table->unsignedInteger('comments_count')->default(0);
         });
+
+        
     }
 
     /**
@@ -26,6 +30,8 @@ return new class extends Migration {
      */
     public function down(): void
     {
+        Schema::dropIfExists('article_tag');
         Schema::dropIfExists('articles');
+        Schema::dropIfExists('tags');
     }
 };
