@@ -67,7 +67,6 @@ li {
 .modal-lexend * {
     font-family: "Lexend", sans-serif !important;
 }
-
 /* Tailwind utility-first equivalents for comment.css styles */
 @layer components {
   .comment-section-container {
@@ -107,3 +106,8 @@ li {
     @apply bg-blue-600 text-white;
   }
 }
+
+body.sidebar-collapsed #adminWrapper {
+    padding-left: 0;
+}
+
