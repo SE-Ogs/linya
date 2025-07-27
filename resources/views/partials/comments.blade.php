@@ -54,7 +54,7 @@
             @foreach ($filters as $key => $label)
                 <a href="?sort={{ $key }}"
                    class="px-4 py-1.5 rounded-md text-sm font-medium transition-all duration-200 border hover:scale-105 transition-transform ease-in-out
-                   {{ ($sort ?? '') === $key
+                   {{ ($sort ?? 'all') === $key
                        ? 'bg-blue-800 text-white border-blue-800 shadow-sm'
                        : 'bg-gray-100 text-gray-800 border-gray-300 hover:bg-blue-800 hover:text-white hover:border-blue-800' }}">
                     {{ $label }}
