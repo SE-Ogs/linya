@@ -92,7 +92,7 @@
 
     <ul class="ml-1 space-y-2">
         <li class="rounded-[30px] pb-2 pl-3 pt-2 transition duration-300 hover:bg-[#434158]">
-            <a href="/home"
+            <a href="/dashboard/animation"
                class="flex items-center space-x-2 text-[20px] md:text-[18px]">
                 <svg xmlns="http://www.w3.org/2000/svg"
                      fill="none"
@@ -110,7 +110,7 @@
         </li>
 
         <li class="rounded-[30px] pb-2 pl-3 pt-2 transition duration-300 hover:bg-[#434158]">
-            <a href="/profile"
+            <a href="/dashboard/software-engineering"
                class="flex items-center space-x-2 text-[20px] md:text-[18px]">
                 <svg xmlns="http://www.w3.org/2000/svg"
                      fill="none"
@@ -128,7 +128,7 @@
         </li>
 
         <li class="rounded-[30px] pb-2 pl-3 pt-2 transition duration-300 hover:bg-[#434158]">
-            <a href="/profile"
+            <a href="/dashboard/multimedia-arts"
                class="flex items-center space-x-2 text-[20px] md:text-[18px]">
                 <svg xmlns="http://www.w3.org/2000/svg"
                      fill="none"
@@ -149,7 +149,7 @@
         </li>
 
         <li class="rounded-[30px] pb-2 pl-3 pt-2 transition duration-300 hover:bg-[#434158]">
-            <a href="/profile"
+            <a href="/dashboard/game-development"
                class="flex items-center space-x-2 text-[20px] md:text-[18px]">
                 <svg xmlns="http://www.w3.org/2000/svg"
                      fill="none"
@@ -167,7 +167,7 @@
         </li>
 
         <li class="rounded-[30px] pb-2 pl-3 pt-2 transition duration-300 hover:bg-[#434158]">
-            <a href="/profile"
+            <a href="/dashboard/real-estate-management"
                class="flex items-center space-x-2 text-[20px] md:text-[18px]">
                 <svg xmlns="http://www.w3.org/2000/svg"
                      fill="none"
@@ -252,8 +252,7 @@
     @auth
         <div class="ml-4 mt-3 flex w-full max-w-xs items-center justify-between rounded-[10px]">
             <div class="flex items-center space-x-2">
-                <img src="/images/placeholder.jpg"
-                     alt="Profile"
+                <img src="{{ auth()->user()->avatar ? Storage::url(auth()->user()->avatar) : "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 128 128'%3E%3Ccircle cx='64' cy='64' r='64' fill='%23d1d5db'/%3E%3Cpath d='M64 32c-8.8 0-16 7.2-16 16s7.2 16 16 16 16-7.2 16-16-7.2-16-16-16zM64 96c-13.3 0-24-10.7-24-24v-8c0-8.8 7.2-16 16-16h16c8.8 0 16 7.2 16 16v8c0 13.3-10.7 24-24 24z' fill='%23374151'/%3E%3C/svg%3E" }}"
                      class="h-10 w-10 rounded-full object-cover" />
                 <span>@auth {{ Auth::user()->name }} @endauth
                 </span>

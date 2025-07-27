@@ -12,6 +12,7 @@ services:
         build: .
         volumes:
             - .:/var/www/html
+            - persistent_storage:/var/www/html/storage/public
         ports:
             - "8000:80"
         env_file:
@@ -39,6 +40,8 @@ services:
             - db
         volumes:
             - pgadmin-data:/var/lib/pgadmin
+
 volumes:
     dbdata:
     pgadmin-data:
+    persistent_storage:
