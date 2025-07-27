@@ -1,3 +1,4 @@
+
 <header class="bg-[#23222E] text-white px-6 py-3 flex items-center justify-between shadow-lg h-16 sticky top-0 z-40 font-lexend">
     <!-- Hamburger only visible when sidebar is collapsed -->
     <div class="flex items-center space-x-4">
@@ -5,6 +6,7 @@
             <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
             </svg>
+            <span class="absolute -top-1 -right-1 bg-red-500 text-xs rounded-full h-5 w-5 flex items-center justify-center font-medium">3</span>
         </button>
     </div>
 
@@ -28,11 +30,6 @@
                 <span class="font-semibold text-white text-sm">Jarod R.</span>
                 <span class="font-noto text-gray-400 text-xs">Administrator</span>
             </div>
-            <button class="p-1 hover:bg-gray-700 rounded transition-colors duration-200">
-                <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
-                </svg>
-            </button>
         </div>
     </div>
 </header>

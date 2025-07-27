@@ -50,13 +50,6 @@ class ArticleController extends Controller
         $article = $this->articleService->createArticle($request->validated());
         return response()->json(ArticleDTO::fromModel($article), 201);
     }
-
-    public function update(UpdateArticleRequest $request, $id): JsonResponse
-    {
-        $article = $this->articleService->updateArticle($id, $request->validated());
-        return response()->json(ArticleDTO::fromModel($article));
-    }
-
     public function destroy($id): JsonResponse
     {
         $this->articleService->deleteArticle($id);
@@ -77,7 +70,7 @@ class ArticleController extends Controller
             'tagModels' => $tags,
         ]);
     }
-    
+
     public function backtoCreate(Request $request): RedirectResponse
     {
         return redirect()->route('articles.create')
@@ -86,7 +79,49 @@ class ArticleController extends Controller
 
     public function edit($id)
     {
+        // Find the article by ID
+        $article = Article::with('tags')->findOrFail($id);
+
+        // Get all available tags
+        $tags = Tag::all();
+
+        // Pass the article and tags to the view
+        return view('article-management.edit_article', compact('article', 'tags'));
+    }
+
+    public function update(Request $request, $id)
+    {
+        // Check if the request is coming from an API or a web form
+        if ($request->expectsJson()) {
+            // Handle API request
+            $article = $this->articleService->updateArticle($id, $request->validated());
+            return response()->json(ArticleDTO::fromModel($article));
+        }
+
+        // Handle web form request
+        $validatedData = $request->validate([
+            'title' => 'required|string|max:255',
+            'summary' => 'required|string|max:255',
+            'article' => 'required|string',
+            'tags' => 'array', // Optional: Ensure tags are an array
+            'tags.*' => 'exists:tags,id', // Ensure each tag exists in the tags table
+        ]);
+
+        // Find the article by ID
         $article = Article::findOrFail($id);
-        return view('admin-panel.articles.edit', compact('article'));
+
+        // Update the article fields
+        $article->title = $validatedData['title'];
+        $article->summary = $validatedData['summary'];
+        $article->article = $validatedData['article'];
+        $article->save();
+
+        // Sync the tags (if provided)
+        if (isset($validatedData['tags'])) {
+            $article->tags()->sync($validatedData['tags']);
+        }
+
+        // Redirect back with a success message
+        return redirect()->route('articles.edit', $id)->with('success', 'Article updated successfully!');
     }
 }

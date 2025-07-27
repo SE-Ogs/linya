@@ -20,6 +20,9 @@ return new class extends Migration {
             $table->enum('status', ['pending', 'approved', 'published', 'rejected'])->default('published');
             $table->unsignedInteger('views')->default(0);
             $table->unsignedInteger('comments_count')->default(0);
+            $table->enum('status', ['Pending', 'Approved', 'Published', 'Rejected'])->default('published');
+            $table->unsignedInteger('views');
+            $table->string('rejection_reason');
         });
 
         

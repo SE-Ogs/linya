@@ -7,9 +7,9 @@ use App\Http\Controllers\UserAuthController;
 use App\Http\Controllers\ArticleController;
 use App\Http\Controllers\SettingsController;
 
-// Route::get('/', function () {
-//     return redirect()->route('admin.comments');                   // FOR TESTING PURPOSES ONLY, NOT REALLY PART OF THE FINAL CODE
-// });
+Route::get('/', function () {
+    return redirect()->route('admin.comments');                   // FOR TESTING PURPOSES ONLY, NOT REALLY PART OF THE FINAL CODE
+});
 
 Route::get('/', function () {
     return redirect("/dashboard");

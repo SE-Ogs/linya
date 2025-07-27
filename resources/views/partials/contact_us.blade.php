@@ -25,12 +25,12 @@
                     <div class="flex flex-col flex-1">
                         <label>First Name</label>
                         <input type="text"
-                            class="border border-[#D4D4D4] p-2 rounded-[20px] shadow-[0_10px_19px_0_rgba(0,0,0,0.2)]" />
+                            class="backdrop-blur-md bg-white/30 border border-white/30 text-black placeholder:text-gray-500 p-3 rounded-[20px] shadow-[0_8px_40px_rgba(24,36,79,0.3)] focus:outline-none focus:ring-2 focus:ring-blue-400" />
                     </div>
                     <div class="flex flex-col flex-1">
                         <label>Last Name</label>
                         <input type="text"
-                            class="border border-[#D4D4D4] p-2 rounded-[20px] shadow-[0_10px_19px_0_rgba(0,0,0,0.2)]" />
+                            class="backdrop-blur-md bg-white/30 border border-white/30 text-black placeholder:text-gray-500 p-3 rounded-[20px] shadow-[0_8px_40px_rgba(24,36,79,0.3)] focus:outline-none focus:ring-2 focus:ring-blue-400" />
                     </div>
                 </div>
 
@@ -38,18 +38,19 @@
                 <div class="flex flex-col mb-6">
                     <label>Email</label>
                     <input type="email"
-                        class="border border-[#D4D4D4] p-2 rounded-[20px] shadow-[0_10px_19px_0_rgba(0,0,0,0.2)]" />
+                        class="backdrop-blur-md bg-white/30 border border-white/30 text-black placeholder:text-gray-500 p-3 rounded-[20px] shadow-[0_8px_40px_rgba(24,36,79,0.3)] focus:outline-none focus:ring-2 focus:ring-blue-400" />
                 </div>
 
                 <!-- Message -->
                 <div class="flex flex-col mb-6">
                     <label>Message</label>
-                    <textarea class="border border-[#D4D4D4] p-2 h-32 resize-none rounded-[20px] shadow-[0_10px_19px_0_rgba(0,0,0,0.2)]"></textarea>
+                    <textarea
+                        class="backdrop-blur-md bg-white/30 border border-white/30 text-black placeholder:text-gray-500 p-3 rounded-[20px] shadow-[0_8px_40px_rgba(24,36,79,0.3)] focus:outline-none focus:ring-2 focus:ring-blue-400 h-32 resize-none"></textarea>
                 </div>
 
                 <!-- Submit button (optional) -->
                 <div class="flex justify-end mt-10">
-                    <button type="submit" class="bg-[#FF884D] w-[195px] text-white px-4 py-2 rounded">
+                    <button type="submit" class="backdrop-blur-md bg-orange-500/60 hover:bg-orange-500/80 text-white px-4 py-2 rounded-[20px] shadow-[0_8px_40px_rgba(255,136,77,0.3)] transition duration-300 w-[195px]">
                         Submit </button>
                 </div>
             </form>

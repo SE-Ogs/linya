@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Auth;
 
 class UserManagementController extends Controller
 {
@@ -25,7 +27,7 @@ class UserManagementController extends Controller
         if ($query) {
             $usersQuery->where(function ($q) use ($query) {
                 $q->where('name', 'ILIKE', "%{$query}%")
-                ->orWhere('email', 'ILIKE', "%{$query}%");
+                    ->orWhere('email', 'ILIKE', "%{$query}%");
             });
         }
 
@@ -36,20 +38,20 @@ class UserManagementController extends Controller
     }
 
     // Handle actual update from modal form
-    public function update(Request $request, $id)
+    public function update(Request $request)
     {
-        $request->validate([
-            'name' => 'required|string|max:255',
-            'email' => 'required|email|max:255',
-        ]);
-
-        $user = User::findOrFail($id);
-        $user->update([
-            'name' => $request->name,
-            'email' => $request->email,
-        ]);
-
-        return back()->with('message', "User {$user->id} updated successfully.");
+        switch ($request->input('form_type')) {
+            case 'avatar':
+                return $this->handleAvatarUpload($request);
+            case 'profile_name':
+                return $this->handleProfileNameUpdate($request);
+            case 'password':
+                return $this->handlePasswordChange($request);
+            case 'email':
+                return $this->handleEmailChange($request);
+            default:
+                return back()->with('error', 'Invalid form submission');
+        }
     }
 
     // Set user's status to 'Reported'
@@ -79,5 +81,53 @@ class UserManagementController extends Controller
         $user->delete();
 
         return back()->with('message', "User {$user->id} has been deleted.");
+    }
+
+    private function handleAvatarUpload(Request $request)
+    {
+        $request->validate([
+            'avatar' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048',
+        ]);
+
+        $path = $request->file('avatar')->store('profile_pictures', 'public');
+
+        auth()->user()->update(['avatar' => $path]);
+
+        return back()->with('success', 'Profile picture updated!');
+    }
+
+    private function handleProfileNameUpdate(Request $request)
+    {
+        $request->validate([
+            'name' => 'required|string|max:255',
+        ]);
+
+        auth()->user()->update(['name' => $request->name]);
+
+        return back()->with('success', 'Profile name updated successfully');
+    }
+
+    private function handlePasswordChange(Request $request)
+    {
+        $request->validate([
+            'current_password' => 'required|current_password',
+            'password' => 'required|string|min:8|confirmed',
+        ]);
+
+        auth()->user()->update(['password' => Hash::make($request->password)]);
+
+        return back()->with('success', 'Password updated successfully');
+    }
+
+    private function handleEmailChange(Request $request)
+    {
+        $request->validate([
+            'current_password' => 'required|current_password',
+            'email' => 'required|email|confirmed|unique:users,email,' . auth()->id(),
+        ]);
+
+        auth()->user()->update(['email' => $request->email]);
+
+        return back()->with('success', 'Email updated successfully');
     }
 }

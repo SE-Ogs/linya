@@ -11,13 +11,26 @@ class RecentSearchController extends Controller
     // Get recent searches
 
     public function index(Request $request)
-    {
+{
+    try {
         $query = $request->input('q');
 
-        $recent = RecentSearch::where('user_id', Auth::id())->when($query, fn($q2) => $q2->where('query', 'ILIKE', "%{$query}%"))->orderByDesc('updated_at')->limit(10)->get();
+        $recent = RecentSearch::where('user_id', Auth::id())
+            ->when($query, fn($q2) => $q2->where('query', 'LIKE', "%{$query}%"))
+            ->orderByDesc('updated_at')
+            ->limit(10)
+            ->get();
 
         return response()->json($recent);
+    } catch (\Exception $e) {
+        return response()->json([
+            'error' => 'Server Error',
+            'message' => $e->getMessage(),
+            'trace' => $e->getTraceAsString(),
+        ], 500);
     }
+}
+
 
     // Store new search query
     public function store(Request $request)
