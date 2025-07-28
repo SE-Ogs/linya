@@ -18,7 +18,7 @@ class TagsSeeder extends Seeder
             'Game Development',
             'Real Estate Management',
             'Animation',
-            'Multimedia Arts',
+            'Multimedia Arts and Design',
         ];
 
         foreach ($tags as $tag) {

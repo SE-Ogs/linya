@@ -111,3 +111,6 @@ body.sidebar-collapsed #adminWrapper {
     padding-left: 0;
 }
 
+.header, .sidebar, .font-lexend {
+    font-family: 'Lexend', sans-serif;
+}

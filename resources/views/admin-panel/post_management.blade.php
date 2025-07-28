@@ -92,7 +92,9 @@
                 <div class="flex items-center space-x-3">
                     @if($article->status === 'Pending')
                         <button type="button" class="approve-btn px-3 py-1 bg-blue-500 text-white rounded hover:bg-blue-600" data-id="{{ $article->id }}">Approve</button>
-                        <button type="button" class="approve-btn px-3 py-1 bg-orange-500 text-white rounded hover:bg-orange-600" data-id="{{ $article->id }}">Reject</button>
+                        <button type="button" class="reject-btn px-3 py-1 bg-orange-500 text-white rounded hover:bg-orange-600" data-id="{{ $article->id }}">
+                        Reject
+                        </button>
                     @endif
 
                     @if($article->status === 'Approved')
@@ -157,6 +159,28 @@ function confirmEdit() {
         window.location.href = `/edit-article/${articleId}`; // Redirect to the correct edit page
     }
 }
+
+function submitRejection() {
+    const modal = document.getElementById('rejectionModal');
+    const reason = modal.querySelector('textarea').value.trim();
+    const articleId = modal.getAttribute('data-post-id');
+
+    if (!reason) {
+        alert("Please enter a reason for rejection.");
+        return;
+    }
+
+    window.location.href = `/admin/articles/${articleId}/reject?reason=${encodeURIComponent(reason)}`;
+}
+
+document.querySelectorAll('.reject-btn').forEach(btn => {
+        btn.addEventListener('click', function(e) {
+            e.preventDefault();
+            const articleId = btn.getAttribute('data-id');
+            openModal('rejectionModal', articleId);
+        });
+    });
+
 document.addEventListener('DOMContentLoaded', function () {
     document.addEventListener('DOMContentLoaded', function () {
         document.querySelectorAll('.edit-btn').forEach(btn => {
