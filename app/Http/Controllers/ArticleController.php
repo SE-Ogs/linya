@@ -12,6 +12,7 @@ use Illuminate\View\View;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use App\Models\Article;
+use App\Models\Comment;
 
 class ArticleController extends Controller
 {
@@ -33,11 +34,19 @@ class ArticleController extends Controller
     }
 
     public function show($id)
-    {
-        $article = $this->articleService->getArticle($id);
-        $article->increment('views');
-        return view('article-management.show_article', compact('article'));
-    }
+{
+    $article = $this->articleService->getArticle($id);
+    $article->increment('views');
+
+    // Fetch top-level comments for the article
+    $comments = Comment::with(['user', 'children'])
+        ->where('article_id', $article->id)
+        ->whereNull('parent_id')
+        ->orderBy('created_at', 'desc')
+        ->get();
+
+    return view('article-management.show_article', compact('article', 'comments'));
+}   
 
     public function create(): View
     {

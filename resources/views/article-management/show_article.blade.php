@@ -96,7 +96,8 @@
 
        @include('partials.ad_space')
 
-        @include('partials.comments')
+        @include('partials.comments', ['article' => $article, 'comments' => $comments])
+
     </main>
 
     <footer>
