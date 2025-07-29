@@ -6,6 +6,7 @@ use App\Models\Article;
 use App\Http\Controllers\UserAuthController;
 use App\Http\Controllers\ArticleController;
 use App\Http\Controllers\SettingsController;
+use App\Http\Controllers\AdminDashboardController;
 
 Route::get('/', function () {
     return redirect()->route('admin.comments');                   // FOR TESTING PURPOSES ONLY, NOT REALLY PART OF THE FINAL CODE
@@ -113,7 +114,5 @@ Route::get('/admin/posts', function (\Illuminate\Http\Request $request) {
 })->name('admin.posts');
 
 //Admin Dashboard
-use App\Http\Controllers\AdminDashboardController;
-
 Route::get('/admin/dashboard', [AdminDashboardController::class, 'index'])->name('admin.dashboard');
 

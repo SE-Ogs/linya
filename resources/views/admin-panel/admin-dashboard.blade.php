@@ -39,31 +39,32 @@
     <!-- Total Users -->
     <div class="flex-1 min-w-[150px] text-center space-y-2">
     <img src="/images/UserIcon.png" alt="Users" class="mx-auto h-10 w-10">
-    <div class="text-xl font-semibold" style="color: #24317E;">Total Users: 100</div>
+    <div class="text-xl font-semibold" style="color: #24317E;">Total Users: {{ $totalUsers }}</div>
     </div>
 
     <!-- Posts -->
     <div class="flex-1 min-w-[150px] text-center space-y-2">
     <img src="/images/PostsIcon.png" alt="Posts" class="mx-auto h-10 w-10">
-    <div class="text-xl font-semibold" style="color: #24317E;">Posts: 100</div>
+    <div class="text-xl font-semibold" style="color: #24317E;">Posts: {{ $totalPosts }}</div>
     </div>
 
+    <!-- Comments, Reports, and Alerts are hard coded because they don't have databases at the moment. -->
     <!-- Comments -->
     <div class="flex-1 min-w-[150px] text-center space-y-2">
     <img src="/images/CommentsIcon.png" alt="Comments" class="mx-auto h-10 w-10">
-    <div class="text-xl font-semibold" style="color: #24317E;">Comments: 200</div>
+    <div class="text-xl font-semibold" style="color: #24317E;">Comments: N/A</div>
     </div>
 
     <!-- Reports -->
     <div class="flex-1 min-w-[150px] text-center space-y-2">
     <img src="/images/ReportsIcon.png" alt="Reports" class="mx-auto h-10 w-10">
-    <div class="text-xl font-semibold" style="color: #24317E;">Reports: 200</div>
+    <div class="text-xl font-semibold" style="color: #24317E;">Reports: N/A</div>
     </div>
 
     <!-- Alerts -->
     <div class="flex-1 min-w-[150px] text-center space-y-2">
     <img src="/images/AlertsIcon.png" alt="Alerts" class="mx-auto h-10 w-10">
-    <div class="text-xl font-semibold" style="color: #24317E;">Alerts: 200</div>
+    <div class="text-xl font-semibold" style="color: #24317E;">Alerts: N/A</div>
     </div>
 
   </div>
