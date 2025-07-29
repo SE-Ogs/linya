@@ -112,4 +112,8 @@ Route::get('/admin/posts', function (\Illuminate\Http\Request $request) {
     return view('admin-panel.post_management', compact('articles', 'tags'));
 })->name('admin.posts');
 
+//Admin Dashboard
+use App\Http\Controllers\AdminDashboardController;
+
+Route::get('/admin/dashboard', [AdminDashboardController::class, 'index'])->name('admin.dashboard');
 
