@@ -73,6 +73,15 @@ Route::middleware('guest')->group(function () {
     Route::get('/resetsuccess', function () {
         return view('partials.reset_success');
     });
+
+    Route::get('/forgot-password', function () {
+    return view('partials.forgot_pass');
+    });
+
+    Route::get('/code-verify', function () {
+    return view('partials.code_verify');
+    });
+
 });
 
 // ============================================================================
