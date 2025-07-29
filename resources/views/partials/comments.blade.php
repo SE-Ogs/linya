@@ -14,10 +14,11 @@
     @else
         <div class="add-comment-area-wrapper">
             <div class="comment-user-info">
-                <img src="placeholder-avatar.png" alt="Your Avatar" class="user-avatar">
+                <img src="https://ui-avatars.com/api/?name={{ urlencode(Auth::user()->name) }}" alt="Your Avatar" class="user-avatar">
             </div>
             <div class="add-comment-input-box border border-black rounded-[10px] bg-white flex items-center px-3 py-2 w-full">
-                <form action="{{ route('comments.store', ['article' => $article->id]) }}" method="POST">
+                <form id="comment-form" data-article-id="{{ $article->id }}">
+
                     @csrf
                     <textarea
                         name="content"
@@ -82,4 +83,42 @@
     @endguest
 </div>
 
-<script src="{{ asset('js/comments.js') }}"></script>
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+    const form = document.getElementById('comment-form');
+    if (!form) return; // prevent the crash if form is missing
+
+    form.addEventListener('submit', async function (e) {
+        e.preventDefault();
+
+        const articleId = form.getAttribute('data-article-id');
+        const content = form.querySelector('textarea[name="content"]').value;
+        const token = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
+
+        try {
+            const response = await fetch(`/articles/${articleId}/comments/ajax`, {
+                method: 'POST',
+                headers: {
+                    'X-CSRF-TOKEN': token,
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ content })
+            });
+
+            const data = await response.json();
+            if (data.success) {
+                document.querySelector('.comments-list').insertAdjacentHTML('afterbegin', data.comment_html);
+                form.reset();
+            } else {
+                alert(data.message || "Comment failed to post.");
+            }
+        } catch (error) {
+            console.error("Error submitting comment:", error);
+        }
+    });
+});
+</script>
+
+
+

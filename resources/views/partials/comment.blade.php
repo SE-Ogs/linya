@@ -31,4 +31,21 @@
             @endforeach
         </div>
     @endif
+
+    <div class="flex items-center gap-3 mt-2">
+    <form action="{{ route('comments.like', $comment) }}" method="POST">
+        @csrf
+        <button type="submit" class="text-sm text-green-600">
+            👍 {{ $comment->likeCount() }}
+        </button>
+    </form>
+
+    <form action="{{ route('comments.dislike', $comment) }}" method="POST">
+        @csrf
+        <button type="submit" class="text-sm text-red-600">
+            👎 {{ $comment->dislikeCount() }}
+        </button>
+    </form>
+</div>
+
 </div>
