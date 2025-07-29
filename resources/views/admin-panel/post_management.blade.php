@@ -37,7 +37,7 @@
                     <div class="flex space-x-2">
                         <input type="text" name="search" value="{{ request('search') }}" placeholder="Search post..." class="rounded-full px-6 py-3 border border-gray-300 focus:outline-none shadow-sm w-72">
                         <button type="submit" class="px-5 py-3 bg-blue-500 text-white rounded-full hover:bg-blue-600 transition">Search</button>
-                        <button id="addPostBtn" type="button" onclick="window.location.href='/add-article'" class="px-5 py-3 bg-gradient-to-r from-orange-400 to-orange-500 text-white rounded-full hover:scale-105 transform transition cursor-pointer">+ Add New Post</button>
+                        <button id="addPostBtn" type="button" onclick="window.location.href='/admin/add-article'" class="px-5 py-3 bg-gradient-to-r from-orange-400 to-orange-500 text-white rounded-full hover:scale-105 transform transition cursor-pointer">+ Add New Post</button>
                     </div>
                     <div class="relative">
                         <button id="filterBtn" type="button" class="flex items-center gap-2 px-4 py-2 text-sm text-gray-700 bg-white border border-gray-300 rounded-md shadow hover:bg-gray-100 focus:outline-none">Filter</button>

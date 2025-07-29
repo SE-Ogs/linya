@@ -52,7 +52,6 @@ Route::get('/dashboard/{tag_slug}', function ($tag_slug) {
 Route::post('/articles', [ArticleController::class, 'store'])->name('articles.store');
 Route::get('/articles/{id}', [ArticleController::class, 'show'])->name('articles.show');
 
-
 // Authentication routes
 Route::middleware('guest')->group(function () {
     Route::get('/login', [UserAuthController::class, 'showLogin'])->name('login');
@@ -141,6 +140,8 @@ Route::middleware('auth')->group(function () {
             return view('admin-panel.post_management', compact('articles', 'tags'));
         })->name('articles');
         // article management
+        Route::get('/add-article', [ArticleController::class, 'create'])->name('articles.create');
+        Route::post('/articles/preview', [ArticleController::class, 'preview'])->name('articles.preview');
         Route::get('/edit-article/{id}', [ArticleController::class, 'edit'])->name('articles.edit');
         Route::put('/edit-article/{id}', [ArticleController::class, 'update'])->name('articles.update');
         Route::patch('/articles/{article}/approve', [ArticleController::class, 'approve'])->name('articles.approve');

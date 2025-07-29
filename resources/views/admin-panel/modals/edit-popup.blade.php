@@ -12,7 +12,7 @@
         document.getElementById(modalId).style.display = 'none';
     }
     function confirmEdit(articleId){
-        window.location.href = `/edit-article/${articleId}`;
+        window.location.href = `/admin/edit-article/${articleId}`;
     }
     // Attach event listener to the confirm button to use the article ID from the modal's data attribute
     document.addEventListener('DOMContentLoaded', function() {
