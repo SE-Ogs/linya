@@ -8,9 +8,9 @@ use App\Http\Controllers\SearchFilterController;
 use App\Http\Controllers\SettingsController;
 use App\Http\Controllers\UserAuthController;
 use App\Http\Controllers\UserManagementController;
+use App\Http\Controllers\DashboardSearchController;
 use App\Models\Article;
 use App\Models\Tag;
-use App\Http\Controllers\DashboardSearchController;
 use Illuminate\Support\Facades\Route;
 
 // Root redirect
@@ -21,9 +21,8 @@ Route::get('/', function () {
 // ============================================================================
 // GUEST ROUTES (Dashboard - No Authentication Required)
 // ============================================================================
-// Dashboard routes
-Route::get('/dashboard', function () {
 
+Route::get('/dashboard', function () {
     $articles = Article::with('tags')
         ->where('status', 'Published')
         ->orderByDesc('views')
@@ -52,7 +51,6 @@ Route::get('/dashboard/{tag_slug}', function ($tag_slug) {
 Route::post('/articles', [ArticleController::class, 'store'])->name('articles.store');
 Route::get('/articles/{id}', [ArticleController::class, 'show'])->name('articles.show');
 
-
 // Authentication routes
 Route::middleware('guest')->group(function () {
     Route::get('/login', [UserAuthController::class, 'showLogin'])->name('login');
@@ -71,8 +69,27 @@ Route::middleware('guest')->group(function () {
     });
 
     Route::get('/resetsuccess', function () {
-        return view('partials.reset_success');
-    });
+        return view('auth.reset_success');
+    })->name('resetsuccess');
+
+    // Step-by-step password reset flow
+    Route::get('/reset-password/email', function () {
+        return view('partials.forgot_password_email');
+    })->name('password.email');
+
+    Route::post('/reset-password/email', function (\Illuminate\Http\Request $request) {
+        // TODO: send email logic
+        return redirect()->route('password.code')->with('status', 'Verification code sent!');
+    })->name('send.reset.code');
+
+    Route::get('/reset-password/code', function () {
+        return view('partials.verify_code');
+    })->name('password.code');
+
+    Route::post('/reset-password/code', function (\Illuminate\Http\Request $request) {
+        // TODO: code verification logic
+        return redirect()->route('password.request')->with('status', 'Code verified!');
+    })->name('verify.reset.code');
 });
 
 // ============================================================================
@@ -111,7 +128,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/comment-manage-searchbar', [SearchFilterController::class, 'index'])->name('search');
 
     // ========================================================================
-    // ADMIN ROUTES (Additional middleware can be added here if needed)
+    // ADMIN ROUTES
     // ========================================================================
     Route::prefix('admin')->name('admin.')->group(function () {
 
@@ -122,7 +139,6 @@ Route::middleware('auth')->group(function () {
         Route::get('/posts', function (\Illuminate\Http\Request $request) {
             $query = Article::with('tags');
 
-            // Apply filters
             if ($request->filled('status') && $request->status !== 'All') {
                 $query->where('status', $request->status);
             }
