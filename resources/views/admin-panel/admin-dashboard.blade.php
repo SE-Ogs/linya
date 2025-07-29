@@ -23,7 +23,8 @@
     <div class="p-6 space-y-6 font-[Lexend]">
       <h2 class="text-2xl font-bold flex items-center gap-2">
         <img src="/images/Waving-Hand.svg" alt="Waving Hand" class="h-10 w-auto" />
-        Welcome Back, <span style="color: #24317E;">Jarod!</span>
+        <!-- To show the user's username -->
+        Welcome Back, <span style="color: #24317E;">{{ $currentUser->name }}!</span>
       </h2>
 
 <!-- QUICK SYSTEM OVERVIEW -->
