@@ -1,4 +1,4 @@
-<div class="comments-list space-y-4">
+<div class="comments-list space-y-3">
     @if (empty($comments))
         <div class="text-center my-8">
             <p class="text-base font-semibold bg-gradient-to-r from-orange-600 via-orange-500 to-blue-800 bg-clip-text text-transparent animate-pulse">
@@ -12,4 +12,5 @@
             </div>
         @endforeach
     @endif
+    
 </div>

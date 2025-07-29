@@ -1,4 +1,4 @@
-<div class="border p-4 rounded bg-white">
+<div class=" p-4 rounded bg-white shadow">
     <div class="flex items-center gap-2">
         <span class="font-semibold text-gray-800 text-base sm:text-base">
             {{ $comment->user?->name ?? 'Unknown User' }}
@@ -9,22 +9,31 @@
             • {{ $comment->created_at->diffForHumans() }}
         </span>
     </div>
+    
     <p class="mt-2 text-gray-800">{{ $comment->content }}</p>
 
     @auth
         
 
-       <form method="POST"
-      class="mt-2 hidden reply-form"
-      id="reply-{{ $comment->id }}"
-      data-comment-id="{{ $comment->id }}"
-      data-article-id="{{ $article->id }}">
+    <form method="POST"
+    class="mt-3 hidden reply-form"
+    id="reply-{{ $comment->id }}"
+    data-comment-id="{{ $comment->id }}"
+    data-article-id="{{ $article->id }}">
     @csrf
-    <textarea name="content" class="w-full border p-2 mb-2" placeholder="Reply..." required></textarea>
-    <input type="hidden" name="parent_id" value="{{ $comment->id }}">
-    <button class="bg-gray-300 px-3 py-1 rounded">Reply</button>
-</form>
+    <div class="relative">
+        <textarea name="content" 
+                  class="w-full border border-gray-300 rounded-md px-3 py-2 pr-20 text-sm focus:outline-none focus:ring-1 focus:ring-blue-400 resize-none"
+                  placeholder="Write a reply..." required></textarea>
 
+        <input type="hidden" name="parent_id" value="{{ $comment->id }}">
+
+        <button type="submit"
+                class="absolute top-1/2 right-2 transform -translate-y-1/2 bg-blue-500 text-white px-3 py-1 rounded text-sm hover:bg-blue-600 transition">
+            Reply
+        </button>
+    </div>
+    </form>
 
         @can('delete', $comment)
             <form method="POST" action="{{ route('comments.destroy', $comment) }}" class="inline-block ml-4">

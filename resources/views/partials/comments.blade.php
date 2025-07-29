@@ -73,6 +73,8 @@
     @endguest
 </div>
 
+
+
 <script>
 document.addEventListener("DOMContentLoaded", function () {
     const form = document.getElementById('comment-form');
