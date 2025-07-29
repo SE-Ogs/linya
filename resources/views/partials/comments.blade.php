@@ -16,32 +16,35 @@
             <div class="comment-user-info">
                 <img src="https://ui-avatars.com/api/?name={{ urlencode(Auth::user()->name) }}" alt="Your Avatar" class="user-avatar">
             </div>
-            <div class="add-comment-input-box border border-black rounded-[10px] bg-white flex items-center px-3 py-2 w-full">
-                <form id="comment-form" data-article-id="{{ $article->id }}">
+            <div class="add-comment-input-box border border-black rounded-[10px] bg-white px-3 py-2 w-full">
+    <form id="comment-form" data-article-id="{{ $article->id }}" class="w-full">
 
-                    @csrf
-                    <textarea
-                        name="content"
-                        maxlength="500"
-                        placeholder="Add a comment"
-                        class="flex-grow px-3 py-2 text-sm border-none outline-none resize-none overflow-hidden leading-snug transition-all duration-300 focus:outline-none focus:shadow-none"
-                        rows="1"
-                        required
-                        oninput="this.style.height = 'auto'; this.style.height = this.scrollHeight + 'px';"
-                    ></textarea>
+        @csrf
+        <div class="flex items-start justify-between gap-2">
+            <textarea
+                name="content"
+                maxlength="500"
+                placeholder="Add a comment"
+                class="flex-grow px-3 py-2 text-sm border-none outline-none resize-none overflow-hidden leading-snug transition-all duration-300 focus:outline-none focus:shadow-none"
+                rows="1"
+                required
+                oninput="this.style.height = 'auto'; this.style.height = this.scrollHeight + 'px';"
+            ></textarea>
 
-                    <button
-                        type="submit"
-                        name="submit_comment"
-                        class="text-orange-500 hover:text-orange-600 text-xl ml-2">
-                        &#10148;
-                    </button>
+            <button
+                type="submit"
+                name="submit_comment"
+                class="text-orange-500 hover:text-orange-600 text-2xl pt-1">
+                &#10148;
+            </button>
+        </div>
 
-                    <div class="w-full text-right">
-                        <small id="char-count" class="text-gray-500">0/500</small>
-                    </div>
-                </form>
-            </div>
+        <div class="w-full text-right mt-1">
+            <small id="char-count" class="text-gray-500">0/500</small>
+        </div>
+    </form>
+</div>
+
         </div>
 
         @if (isset($error))
@@ -54,13 +57,13 @@
             @endphp
 
             @foreach ($filters as $key => $label)
-                <a href="?sort={{ $key }}"
-                   class="px-4 py-1.5 rounded-md text-sm font-medium transition-all duration-200 border hover:scale-105 transition-transform ease-in-out
-                   {{ ($sort ?? 'all') === $key
-                       ? 'bg-blue-800 text-white border-blue-800 shadow-sm'
-                       : 'bg-gray-100 text-gray-800 border-gray-300 hover:bg-blue-800 hover:text-white hover:border-blue-800' }}">
-                    {{ $label }}
-                </a>
+                <button
+    class="comment-sort-btn px-4 py-1.5 rounded-md text-sm font-medium transition-all duration-200 border hover:scale-105 {{ ($sort ?? 'all') === $key ? 'bg-blue-800 text-white border-blue-800 shadow-sm' : 'bg-gray-100 text-gray-800 border-gray-300 hover:bg-blue-800 hover:text-white hover:border-blue-800' }}"
+    data-sort="{{ $key }}"
+    type="button"
+>
+    {{ $label }}
+</button>
             @endforeach
         </div>
 
@@ -74,7 +77,8 @@
             @else
                 @foreach ($comments as $comment)
                     <div class="animate-fade-in transition-opacity duration-500">
-                        @include('partials.comment', ['comment' => $comment, 'article' => $article, 'level' => 0])
+                        @include('partials.comments_list', ['comments' => $comments, 'article' => $article, 'sort' => $sort ?? 'all'])
+
 
                     </div>
                 @endforeach
@@ -85,38 +89,83 @@
 
 <script>
 document.addEventListener("DOMContentLoaded", function () {
+    // Submit comment via AJAX
     const form = document.getElementById('comment-form');
-    if (!form) return; // prevent the crash if form is missing
+    if (form) {
+        form.addEventListener('submit', async function (e) {
+            e.preventDefault();
 
-    form.addEventListener('submit', async function (e) {
-        e.preventDefault();
+            const articleId = form.getAttribute('data-article-id');
+            const content = form.querySelector('textarea[name="content"]').value;
+            const token = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
 
-        const articleId = form.getAttribute('data-article-id');
-        const content = form.querySelector('textarea[name="content"]').value;
-        const token = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
+            try {
+                const response = await fetch(`/articles/${articleId}/comments/ajax`, {
+                    method: 'POST',
+                    headers: {
+                        'X-CSRF-TOKEN': token,
+                        'Accept': 'application/json',
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ content })
+                });
+
+                const data = await response.json();
+                if (data.success) {
+                    document.querySelector('.comments-list').insertAdjacentHTML('afterbegin', data.comment_html);
+                    form.reset();
+                } else {
+                    alert(data.message || "Comment failed to post.");
+                }
+            } catch (error) {
+                console.error("Error submitting comment:", error);
+            }
+        });
+    }
+
+    // Filter comments via AJAX
+    const sortButtons = document.querySelectorAll('.comment-sort-btn');
+
+sortButtons.forEach(button => {
+    button.addEventListener('click', async () => {
+        const sort = button.getAttribute('data-sort');
+        const articleId = {{ $article->id }};
 
         try {
-            const response = await fetch(`/articles/${articleId}/comments/ajax`, {
-                method: 'POST',
+            const response = await fetch(`/articles/${articleId}?sort=${sort}`, {
                 headers: {
-                    'X-CSRF-TOKEN': token,
-                    'Accept': 'application/json',
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({ content })
+                    'X-Requested-With': 'XMLHttpRequest',
+                    'Accept': 'text/html'
+                }
             });
 
-            const data = await response.json();
-            if (data.success) {
-                document.querySelector('.comments-list').insertAdjacentHTML('afterbegin', data.comment_html);
-                form.reset();
-            } else {
-                alert(data.message || "Comment failed to post.");
+            const html = await response.text();
+            const parser = new DOMParser();
+            const doc = parser.parseFromString(html, 'text/html');
+            const newComments = doc.querySelector('.comments-list');
+
+            if (!newComments) {
+                console.warn('No .comments-list found in AJAX response.');
+                return;
             }
+
+            // Replace comment list
+            document.querySelector('.comments-list').innerHTML = newComments.innerHTML;
+
+            // 🔧 Fix styling: remove old active classes, add to current
+            sortButtons.forEach(btn => {
+                btn.classList.remove('bg-blue-800', 'text-white', 'border-blue-800', 'shadow-sm');
+                btn.classList.add('bg-gray-100', 'text-gray-800', 'border-gray-300');
+            });
+
+            button.classList.remove('bg-gray-100', 'text-gray-800', 'border-gray-300');
+            button.classList.add('bg-blue-800', 'text-white', 'border-blue-800', 'shadow-sm');
+
         } catch (error) {
-            console.error("Error submitting comment:", error);
+            console.error("AJAX error:", error);
         }
     });
+});
 });
 </script>
 

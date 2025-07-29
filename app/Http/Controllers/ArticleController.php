@@ -33,20 +33,43 @@ class ArticleController extends Controller
         return response()->json($dtos);
     }
 
-    public function show($id)
+    public function show($id, Request $request)
 {
     $article = $this->articleService->getArticle($id);
     $article->increment('views');
 
-    // Fetch top-level comments for the article
-    $comments = Comment::with(['user', 'children'])
-        ->where('article_id', $article->id)
-        ->whereNull('parent_id')
-        ->orderBy('created_at', 'desc')
-        ->get();
+    $sort = $request->query('sort', 'all');
 
-    return view('article-management.show_article', compact('article', 'comments'));
-}   
+    $commentsQuery = Comment::with(['user', 'children'])
+        ->where('article_id', $article->id)
+        ->whereNull('parent_id');
+
+    switch ($sort) {
+        case 'newest':
+            $commentsQuery->orderByDesc('created_at');
+            break;
+        case 'oldest':
+            $commentsQuery->orderBy('created_at');
+            break;
+        case 'most_liked':
+            $commentsQuery->withCount('likes')->orderByDesc('likes_count');
+            break;
+        case 'all':
+        default:
+            $commentsQuery->orderByDesc('created_at');
+            break;
+    }
+
+    $comments = $commentsQuery->get();
+
+    if ($request->ajax()) {
+        return view('partials.comments_list', compact('comments', 'article', 'sort'));
+    }
+
+    return view('article-management.show_article', compact('article', 'comments', 'sort'));
+}
+
+
 
     public function create(): View
     {

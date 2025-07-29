@@ -106,6 +106,9 @@ Route::middleware('auth')->group(function () {
     Route::post('/comments/{comment}/like', [CommentController::class, 'like'])->name('comments.like');
 Route::post('/comments/{comment}/dislike', [CommentController::class, 'dislike'])->name('comments.dislike');
 Route::post('/articles/{article}/comments/ajax', [CommentController::class, 'storeAjax'])->name('comments.store.ajax');
+Route::post('/comments/{comment}/like', [CommentController::class, 'like'])->name('comments.like');
+Route::post('/comments/{comment}/dislike', [CommentController::class, 'dislike'])->name('comments.dislike');
+
 
 
 
