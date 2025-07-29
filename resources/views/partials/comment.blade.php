@@ -48,33 +48,33 @@
     $reaction = $comment->userReaction;
 @endphp
 
-    <div class="flex items-center gap-3 mt-2">
-    <button type="button"
-    class="like-dislike-btn"
-    data-id="{{ $comment->id }}"
-    data-type="like">
-    <img src="{{ asset('images/Like.png') }}"
-         class="w-4 h-4 inline {{ $reaction && $reaction->is_like ? 'text-blue-600' : 'text-gray-400' }}"
->
-    <span class="like-count text-gray-500 {{ $reaction && $reaction->is_like ? '' : 'hidden' }}">
-        {{ $comment->likeCount() }}
-    </span>
-</button>
+    <div class="flex items-center gap-4 mt-2">
+    <div class="flex items-center gap-3 reaction-group">
+        <button type="button"
+            class="like-dislike-btn"
+            data-id="{{ $comment->id }}"
+            data-type="like">
+            <img src="{{ asset('images/Like.png') }}"
+                class="w-4 h-4 inline {{ $reaction && $reaction->is_like ? 'text-blue-600' : 'text-gray-400' }}">
+            <span class="like-count text-gray-500 {{ $reaction && $reaction->is_like ? '' : 'hidden' }}">
+                {{ $comment->likeCount() }}
+            </span>
+        </button>
 
-{{-- DISLIKE button --}}
-<button type="button"
-    class="like-dislike-btn"
-    data-id="{{ $comment->id }}"
-    data-type="dislike">
-    <img src="{{ asset('images/Dislike.png') }}"
-         class="w-4 h-4 inline {{ $reaction && $reaction->is_like === false ? 'text-red-600' : 'text-gray-400' }}"
->
-    <span class="dislike-count text-gray-500 {{ $reaction && $reaction->is_like === false ? '' : 'hidden' }}">
-        {{ $comment->dislikeCount() }}
-    </span>
-</button>
+        <button type="button"
+            class="like-dislike-btn"
+            data-id="{{ $comment->id }}"
+            data-type="dislike">
+            <img src="{{ asset('images/Dislike.png') }}"
+                class="w-4 h-4 inline {{ $reaction && $reaction->is_like === false ? 'text-red-600' : 'text-gray-400' }}">
+            <span class="dislike-count text-gray-500 {{ $reaction && $reaction->is_like === false ? '' : 'hidden' }}">
+                {{ $comment->dislikeCount() }}
+            </span>
+        </button>
+    </div>
 
-<button onclick="document.getElementById('reply-{{ $comment->id }}').classList.toggle('hidden')" class="text-sm text-blue-500 mt-2">Reply</button>
+    <button onclick="document.getElementById('reply-{{ $comment->id }}').classList.toggle('hidden')"
+        class="text-sm text-blue-500">Reply</button>
 </div>
 
 
@@ -95,8 +95,10 @@ async function handleReaction(e) {
     const type = btn.getAttribute('data-type');
     const token = document.querySelector('meta[name="csrf-token"]').content;
 
-    const likeBtn = btn.closest('.flex').querySelector('[data-type="like"]');
-    const dislikeBtn = btn.closest('.flex').querySelector('[data-type="dislike"]');
+    const group = btn.closest('.reaction-group');
+const likeBtn = group.querySelector('[data-type="like"]');
+const dislikeBtn = group.querySelector('[data-type="dislike"]');
+
     const likeCount = likeBtn.querySelector('.like-count');
     const dislikeCount = dislikeBtn.querySelector('.dislike-count');
 
