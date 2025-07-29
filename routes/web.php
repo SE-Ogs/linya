@@ -113,7 +113,7 @@ Route::middleware('auth')->group(function () {
     // ========================================================================
     // ADMIN ROUTES (Additional middleware can be added here if needed)
     // ========================================================================
-    Route::prefix('admin')->name('admin.')->group(function () {
+    Route::middleware(['admin'])->prefix('admin')->name('admin.')->group(function () {
 
         // Admin dashboard
         Route::get('/dashboard', [AdminDashboardController::class, 'index'])->name('dashboard');
