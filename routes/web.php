@@ -17,7 +17,7 @@ Route::get('/', function () {
 
 Route::get('/dashboard', function(){
     $articles = Article::with('tags')
-        ->where('status', 'published')
+        ->where('status', 'Published')
         ->orderByDesc('views')
         ->get();
     return view('layout.user', compact('articles'));
@@ -31,7 +31,7 @@ Route::post('/login', [UserAuthController::class, 'login']);
 Route::post('/signup', [UserAuthController::class, 'signup']);
 Route::get('/set-display-name', [UserAuthController::class, 'showDisplayName']);
 Route::post('/set-display-name', [UserAuthController::class, 'storeDisplayName']);
-Route::post('/clear-signup-data', [UserAuthController::class, 'clearSignupData'])->name('clear-signup-data'); 
+Route::post('/clear-signup-data', [UserAuthController::class, 'clearSignupData'])->name('clear-signup-data');
 
 Route::post('/logout', [UserAuthController::class, 'logout'])->name('logout');
 
