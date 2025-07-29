@@ -7,9 +7,6 @@
 </head>
 <body class="bg-[#f4f4f4] font-lexend">
 
-<div class="text-xl font-semibold" style="color: #24317E;">
-    Total Users: {{ $userCount }}
-</div>
 
 <div id="app" class="flex min-h-screen">
 
@@ -19,38 +16,15 @@
     <!-- Main Content -->
     <div id="mainContent" class="flex-1 flex flex-col transition-[margin] duration-300 ml-64">
 
-        <!-- Header -->
-        <header class="bg-[#23222E] text-white px-8 py-4 flex justify-between items-center shadow-md h-20">
-            <button id="sidebarToggle" class="p-2 bg-[#2C2B3C] hover:bg-[#35344a] transition">
-                <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>
-                </svg>
-            </button>
-            <div class="flex items-center space-x-4">
-                <button class="relative p-2 hover:bg-gray-700 rounded-full">
-                    <svg class="w-6 h-6 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"/>
-                    </svg>
-                    <span class="absolute -top-1 -right-1 bg-red-500 text-xs rounded-full h-5 w-5 flex items-center justify-center font-medium">3</span>
-                </button>
-                <div class="flex items-center space-x-3">
-                    <div class="w-10 h-10 bg-gray-600 rounded-full flex items-center justify-center">
-                        <span class="text-white font-semibold text-sm">JR</span>
-                    </div>
-                    <div>
-                        <span class="font-semibold text-sm">Jarod R.</span>
-                        <p class="text-xs text-gray-400 font-noto">Administrator</p>
-                    </div>
-                </div>
-            </div>
-        </header>
+    <!-- Header -->
+    @include('partials.admin_header')
 
         <!-- WELCOME MESSAGE -->
-<div class="p-6 space-y-6 font-[Lexend]">
-  <h2 class="text-2xl font-bold flex items-center gap-2">
-    <img src="/images/Waving-Hand.svg" alt="Waving Hand" class="h-10 w-auto" />
-    Welcome Back, <span style="color: #24317E;">Jarod!</span>
-  </h2>
+    <div class="p-6 space-y-6 font-[Lexend]">
+      <h2 class="text-2xl font-bold flex items-center gap-2">
+        <img src="/images/Waving-Hand.svg" alt="Waving Hand" class="h-10 w-auto" />
+        Welcome Back, <span style="color: #24317E;">Jarod!</span>
+      </h2>
 
 <!-- QUICK SYSTEM OVERVIEW -->
 <div class="bg-white rounded-2xl shadow p-6">
@@ -65,7 +39,7 @@
     <!-- Total Users -->
     <div class="flex-1 min-w-[150px] text-center space-y-2">
     <img src="/images/UserIcon.png" alt="Users" class="mx-auto h-10 w-10">
-    <div class="text-xl font-semibold" style="color: #24317E;">Total Users: {{ $userCount }}</div>
+    <div class="text-xl font-semibold" style="color: #24317E;">Total Users: 100</div>
     </div>
 
     <!-- Posts -->
