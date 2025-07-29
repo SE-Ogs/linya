@@ -37,7 +37,7 @@
         @endif
 
         <!-- Edit Article Form -->
-        <form method="POST" action="{{ route('articles.update', $article->id) }}" class="flex flex-col flex-1 space-y-6 w-full">
+        <form method="POST" action="{{ route('admin.articles.update', $article->id) }}" class="flex flex-col flex-1 space-y-6 w-full">
             @csrf
             @method('PUT')
 
@@ -67,14 +67,14 @@
                         @php
                             $dotColors = [
                                 'bg-blue-500',
-                                'bg-black', 
+                                'bg-black',
                                 'bg-gray-600',
                                 'bg-yellow-500',
                                 'bg-red-500',
                             ];
                             $dotColor = $dotColors[$index % count($dotColors)];
                         @endphp
-                        
+
                         <label class="tag-checkbox cursor-pointer">
                             <input type="checkbox" name="tags[]" value="{{ $tag->id }}" id="tag-{{ $tag->id }}"
                                 class="hidden peer"
