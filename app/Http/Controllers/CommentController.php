@@ -77,10 +77,12 @@ class CommentController extends Controller
 
         return response()->json([
     'success' => true,
-    'comment_html' => view('partials.comment', [
-        'comment' => $comment,
-        'article' => $article, // ✅ Fix: pass the missing variable
-    ])->render()
+    'comment_html' => '<div class="animate-fade-in transition-opacity duration-500 rounded-md">' .
+        view('partials.comment', [
+            'comment' => $comment,
+            'article' => $article,
+        ])->render() .
+    '</div>',
 ]);
 
     }
