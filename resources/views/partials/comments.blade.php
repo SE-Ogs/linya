@@ -75,15 +75,52 @@
 
 <script>
 document.addEventListener("DOMContentLoaded", function () {
-    // Submit comment via AJAX
     const form = document.getElementById('comment-form');
+    const sortButtons = document.querySelectorAll('.comment-sort-btn');
+
+    function attachLikeDislikeListeners() {
+        document.querySelectorAll('.like-dislike-btn').forEach(btn => {
+            btn.addEventListener('click', async () => {
+                const commentId = btn.getAttribute('data-id');
+                const type = btn.getAttribute('data-type');
+
+                const response = await fetch(`/comments/${commentId}/${type}`, {
+                    method: 'POST',
+                    headers: {
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
+                        'Accept': 'application/json'
+                    }
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    const container = btn.closest('.flex');
+                    const likeEl = container.querySelector('.like-count');
+                    const dislikeEl = container.querySelector('.dislike-count');
+
+                    if (type === 'like') {
+                        likeEl.textContent = data.new_count;
+                        likeEl.classList.remove('hidden');
+                        dislikeEl.classList.add('hidden');
+                    } else {
+                        dislikeEl.textContent = data.new_count;
+                        dislikeEl.classList.remove('hidden');
+                        likeEl.classList.add('hidden');
+                    }
+                }
+            });
+        });
+    }
+
+    // AJAX: Submit comment
     if (form) {
         form.addEventListener('submit', async function (e) {
             e.preventDefault();
 
             const articleId = form.getAttribute('data-article-id');
             const content = form.querySelector('textarea[name="content"]').value;
-            const token = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
+            const token = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
 
             try {
                 const response = await fetch(`/articles/${articleId}/comments/ajax`, {
@@ -100,6 +137,7 @@ document.addEventListener("DOMContentLoaded", function () {
                 if (data.success) {
                     document.querySelector('.comments-list').insertAdjacentHTML('afterbegin', data.comment_html);
                     form.reset();
+                    attachLikeDislikeListeners(); // ✅ Rebind after adding new comment
                 } else {
                     alert(data.message || "Comment failed to post.");
                 }
@@ -109,51 +147,50 @@ document.addEventListener("DOMContentLoaded", function () {
         });
     }
 
-    // Filter comments via AJAX
-    const sortButtons = document.querySelectorAll('.comment-sort-btn');
+    // AJAX: Filter comments
+    sortButtons.forEach(button => {
+        button.addEventListener('click', async () => {
+            const sort = button.getAttribute('data-sort');
+            const articleId = {{ $article->id }};
 
-sortButtons.forEach(button => {
-    button.addEventListener('click', async () => {
-        const sort = button.getAttribute('data-sort');
-        const articleId = {{ $article->id }};
+            try {
+                const response = await fetch(`/articles/${articleId}?sort=${sort}`, {
+                    headers: {
+                        'X-Requested-With': 'XMLHttpRequest',
+                        'Accept': 'text/html'
+                    }
+                });
 
-        try {
-            const response = await fetch(`/articles/${articleId}?sort=${sort}`, {
-                headers: {
-                    'X-Requested-With': 'XMLHttpRequest',
-                    'Accept': 'text/html'
+                const html = await response.text();
+                const parser = new DOMParser();
+                const doc = parser.parseFromString(html, 'text/html');
+                const newComments = doc.querySelector('.comments-list');
+
+                if (!newComments) {
+                    console.warn('No .comments-list found in AJAX response.');
+                    return;
                 }
-            });
 
-            const html = await response.text();
-            const parser = new DOMParser();
-            const doc = parser.parseFromString(html, 'text/html');
-            const newComments = doc.querySelector('.comments-list');
+                document.querySelector('.comments-list').innerHTML = newComments.innerHTML;
 
-            if (!newComments) {
-                console.warn('No .comments-list found in AJAX response.');
-                return;
+                // Toggle active sort button styles
+                sortButtons.forEach(btn => {
+                    btn.classList.remove('bg-blue-800', 'text-white', 'border-blue-800', 'shadow-sm');
+                    btn.classList.add('bg-gray-100', 'text-gray-800', 'border-gray-300');
+                });
+
+                button.classList.remove('bg-gray-100', 'text-gray-800', 'border-gray-300');
+                button.classList.add('bg-blue-800', 'text-white', 'border-blue-800', 'shadow-sm');
+
+                attachLikeDislikeListeners(); // ✅ Rebind after filter reload
+            } catch (error) {
+                console.error("AJAX error:", error);
             }
-
-            // Replace comment list
-            document.querySelector('.comments-list').innerHTML = newComments.innerHTML;
-
-            // 🔧 Fix styling: remove old active classes, add to current
-            sortButtons.forEach(btn => {
-                btn.classList.remove('bg-blue-800', 'text-white', 'border-blue-800', 'shadow-sm');
-                btn.classList.add('bg-gray-100', 'text-gray-800', 'border-gray-300');
-            });
-
-            button.classList.remove('bg-gray-100', 'text-gray-800', 'border-gray-300');
-            button.classList.add('bg-blue-800', 'text-white', 'border-blue-800', 'shadow-sm');
-
-        } catch (error) {
-            console.error("AJAX error:", error);
-        }
+        });
     });
-});
+
+    attachLikeDislikeListeners(); // ✅ Initial bind
 });
 </script>
-
 
 

@@ -40,7 +40,11 @@ class ArticleController extends Controller
 
     $sort = $request->query('sort', 'all');
 
-    $commentsQuery = Comment::with(['user', 'children'])
+    $commentsQuery = Comment::with([
+        'user',
+        'children',
+        'userReaction' // 🔥 include the current user's reaction
+    ])
         ->where('article_id', $article->id)
         ->whereNull('parent_id');
 
@@ -68,7 +72,6 @@ class ArticleController extends Controller
 
     return view('article-management.show_article', compact('article', 'comments', 'sort'));
 }
-
 
 
     public function create(): View

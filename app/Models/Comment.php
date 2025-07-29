@@ -51,6 +51,11 @@ public function dislikeCount()
 {
     return $this->likes()->where('is_like', false)->count();
 }
+
+public function userReaction()
+{
+    return $this->hasOne(CommentLike::class)->where('user_id', auth()->id());
+}
 }
 
 

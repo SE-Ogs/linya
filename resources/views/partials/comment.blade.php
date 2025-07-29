@@ -1,11 +1,18 @@
-<div class="border p-4 rounded">
-    <div class="text-sm text-gray-700">
-       <strong>{{ $comment->user?->name ?? 'Unknown User' }}</strong> · <span>{{ $comment->created_at->diffForHumans() }}</span>
+<div class="border p-4 rounded bg-white">
+    <div class="flex items-center gap-2">
+        <span class="font-semibold text-gray-800 text-base sm:text-base">
+            {{ $comment->user?->name ?? 'Unknown User' }}
+        </span>
+        <span class="text-xs text-gray-400 text-xs sm:text-xs">
+            {{-- Display the time since the comment was created --}}
+            {{-- Example: "2 hours ago" --}}
+            • {{ $comment->created_at->diffForHumans() }}
+        </span>
     </div>
     <p class="mt-2 text-gray-800">{{ $comment->content }}</p>
 
     @auth
-        <button onclick="document.getElementById('reply-{{ $comment->id }}').classList.toggle('hidden')" class="text-sm text-blue-500 mt-2">Reply</button>
+        
 
        <form method="POST"
       class="mt-2 hidden reply-form"
@@ -37,58 +44,89 @@
         </div>
     @endif
 
+    @php
+    $reaction = $comment->userReaction;
+@endphp
+
     <div class="flex items-center gap-3 mt-2">
     <button type="button"
-        class="like-dislike-btn text-sm text-green-600 flex items-center gap-1"
-        data-id="{{ $comment->id }}"
-        data-type="like">
-        <img src="{{ asset('images/Like.png') }}" alt="Like" class="w-5 h-5 transition-transform duration-150 hover:scale-110 hover:brightness-110"> 
-        <span class="like-count hidden text-gray-500">{{ $comment->likeCount() }}</span>
-    </button>
+    class="like-dislike-btn"
+    data-id="{{ $comment->id }}"
+    data-type="like">
+    <img src="{{ asset('images/Like.png') }}"
+         class="w-4 h-4 inline {{ $reaction && $reaction->is_like ? 'text-blue-600' : 'text-gray-400' }}"
+>
+    <span class="like-count text-gray-500 {{ $reaction && $reaction->is_like ? '' : 'hidden' }}">
+        {{ $comment->likeCount() }}
+    </span>
+</button>
 
-    <button type="button"
-        class="like-dislike-btn text-sm text-red-600 flex items-center gap-1"
-        data-id="{{ $comment->id }}"
-        data-type="dislike">
-        <img src="{{ asset('images/Dislike.png') }}" alt="Dislike" class="w-5 h-5 transition-transform duration-150 hover:scale-110 hover:brightness-110"> 
-        <span class="dislike-count hidden text-gray-500">{{ $comment->dislikeCount() }}</span>
-    </button>
+{{-- DISLIKE button --}}
+<button type="button"
+    class="like-dislike-btn"
+    data-id="{{ $comment->id }}"
+    data-type="dislike">
+    <img src="{{ asset('images/Dislike.png') }}"
+         class="w-4 h-4 inline {{ $reaction && $reaction->is_like === false ? 'text-red-600' : 'text-gray-400' }}"
+>
+    <span class="dislike-count text-gray-500 {{ $reaction && $reaction->is_like === false ? '' : 'hidden' }}">
+        {{ $comment->dislikeCount() }}
+    </span>
+</button>
+
+<button onclick="document.getElementById('reply-{{ $comment->id }}').classList.toggle('hidden')" class="text-sm text-blue-500 mt-2">Reply</button>
 </div>
+
+
 
 </div>
 
 <script>
-document.querySelectorAll('.like-dislike-btn').forEach(btn => {
-    btn.addEventListener('click', async () => {
-        const commentId = btn.getAttribute('data-id');
-        const type = btn.getAttribute('data-type');
-        const oppositeType = type === 'like' ? 'dislike' : 'like';
+function initLikeDislikeButtons() {
+    document.querySelectorAll('.like-dislike-btn').forEach(button => {
+        button.removeEventListener('click', handleReaction); // Prevent duplicate binding
+        button.addEventListener('click', handleReaction);
+    });
+}
 
+async function handleReaction(e) {
+    const btn = e.currentTarget;
+    const commentId = btn.getAttribute('data-id');
+    const type = btn.getAttribute('data-type');
+    const token = document.querySelector('meta[name="csrf-token"]').content;
+
+    const likeBtn = btn.closest('.flex').querySelector('[data-type="like"]');
+    const dislikeBtn = btn.closest('.flex').querySelector('[data-type="dislike"]');
+    const likeCount = likeBtn.querySelector('.like-count');
+    const dislikeCount = dislikeBtn.querySelector('.dislike-count');
+
+    try {
         const response = await fetch(`/comments/${commentId}/${type}`, {
             method: 'POST',
             headers: {
-                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
+                'X-CSRF-TOKEN': token,
                 'Accept': 'application/json'
             }
         });
 
         const data = await response.json();
         if (data.success) {
-            // Update current type count
-            const countSpan = btn.querySelector(`.${type}-count`);
-            countSpan.textContent = data.new_count;
-            countSpan.classList.remove('hidden');
-
-            // Reset opposite type count visually (optional: set to 0 or hide)
-            const parent = btn.parentElement;
-            const oppositeBtn = parent.querySelector(`[data-type="${oppositeType}"]`);
-            const oppositeSpan = oppositeBtn.querySelector(`.${oppositeType}-count`);
-
-            oppositeSpan.textContent = '0';
-            oppositeSpan.classList.add('hidden');
+            if (type === 'like') {
+                likeCount.textContent = data.new_count;
+                likeCount.classList.remove('hidden');
+                dislikeCount.classList.add('hidden');
+            } else {
+                dislikeCount.textContent = data.new_count;
+                dislikeCount.classList.remove('hidden');
+                likeCount.classList.add('hidden');
+            }
         }
-    });
-});
+    } catch (error) {
+        console.error('Reaction error:', error);
+    }
+}
 
+document.querySelector('.comments-list').innerHTML = newComments.innerHTML;
+initLikeDislikeButtons(); // re-attach event listeners
 
 </script>
