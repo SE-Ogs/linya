@@ -23,13 +23,22 @@
         </div>
 
         <div class="flex items-center space-x-3">
-            <div class="w-10 h-10 rounded-full bg-gray-600 flex items-center justify-center">
-                <span class="text-white font-semibold text-sm">JR</span>
-            </div>
-            <div class="flex flex-col">
-                <span class="font-semibold text-white text-sm">Jarod R.</span>
-                <span class="font-noto text-gray-400 text-xs">Administrator</span>
-            </div>
+
+<!-- Backend username and avatar -->
+<!-- NOT PERFECT -->
+<div class="w-10 h-10 rounded-full overflow-hidden">
+    @if($currentUser && $currentUser->avatar)
+        <img src="{{ asset('/images/Jarodpfp.png') }}" alt="Default Avatar" class="w-full h-full object-cover">
+    @else
+        <img src="{{ asset('/images/Jarodpfp.png') }}" alt="Default Avatar" class="w-full h-full object-cover">
+    @endif
+</div>
+<div class="flex flex-col">
+    <span class="font-semibold text-white text-sm">{{ $currentUser->name }}</span>
+    <span class="font-noto text-gray-400 text-xs">Administrator</span>
+</div>
+
+
         </div>
     </div>
 </header>
