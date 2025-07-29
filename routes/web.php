@@ -97,13 +97,6 @@ Route::middleware('auth')->group(function () {
     Route::delete('/recent-searches', [RecentSearchController::class, 'clear']);
     Route::get('/dashboard-search', [DashboardSearchController::class, 'search']);
 
-    // Article management
-    Route::get('/add-article', [ArticleController::class, 'create'])->name('articles.create');
-    Route::post('/articles/preview', [ArticleController::class, 'preview'])->name('articles.preview');
-    Route::get('/edit-article/{id}', [ArticleController::class, 'edit'])->name('articles.edit');
-    Route::put('/edit-article/{id}', [ArticleController::class, 'update'])->name('articles.update');
-    Route::delete('/articles/{id}', [ArticleController::class, 'destroy'])->name('articles.destroy');
-
     // Comment management
     Route::get('/articles/{slug}', [CommentManageController::class, 'show'])->name('comment.manage.show');
 
@@ -147,10 +140,13 @@ Route::middleware('auth')->group(function () {
 
             return view('admin-panel.post_management', compact('articles', 'tags'));
         })->name('articles');
+        // article management
+        Route::get('/edit-article/{id}', [ArticleController::class, 'edit'])->name('articles.edit');
+        Route::put('/edit-article/{id}', [ArticleController::class, 'update'])->name('articles.update');
         Route::patch('/articles/{article}/approve', [ArticleController::class, 'approve'])->name('articles.approve');
         Route::patch('/articles/{id}/reject', [ArticleController::class, 'reject'])->name('articles.reject');
         Route::patch('/articles/{article}/publish', [ArticleController::class, 'publish'])->name('articles.publish');
-        Route::delete('/articles/{id}/delete', [ArticleController::class, 'destroy'])->name('articles.delete');
+        Route::delete('/articles/{article}/delete', [ArticleController::class, 'destroy'])->name('articles.delete');
 
         // Comment management
         Route::get('/comments', [CommentManageController::class, 'index'])->name('comments');
