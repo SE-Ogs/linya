@@ -42,4 +42,19 @@ class ArticleService
     {
         return $this->articleRepository->delete($id);
     }
+
+    public function approveArticle($id)
+    {
+        return $this->articleRepository->approve($id);
+    }
+
+    public function publishArticle($id)
+    {
+        return $this->articleRepository->publish($id);
+    }
+
+    public function rejectArticle($id, $reason)
+    {
+        return $this->articleRepository->reject($id, $reason);
+    }
 }
