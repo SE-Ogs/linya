@@ -3,12 +3,17 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use App\Models\User;
+use App\Models\Article;
 
 class AdminDashboardController extends Controller
 {
     public function index()
     {
-        return view('admin-panel.admin-dashboard');
+        $totalUsers = User::count();
+        $totalPosts = Article::count();
+
+        return view('admin-panel.admin-dashboard', compact('totalUsers', 'totalPosts'));
     }
 }
 
