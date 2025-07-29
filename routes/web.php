@@ -119,7 +119,7 @@ Route::middleware('auth')->group(function () {
         Route::get('/dashboard', [AdminDashboardController::class, 'index'])->name('dashboard');
 
         // Post management
-        Route::get('/posts', function (\Illuminate\Http\Request $request) {
+        Route::get('/articles', function (\Illuminate\Http\Request $request) {
             $query = Article::with('tags');
 
             // Apply filters
@@ -146,7 +146,11 @@ Route::middleware('auth')->group(function () {
             $tags = Tag::all();
 
             return view('admin-panel.post_management', compact('articles', 'tags'));
-        })->name('posts');
+        })->name('articles');
+        Route::patch('/articles/{article}/approve', [ArticleController::class, 'approve'])->name('articles.approve');
+        Route::patch('/articles/{id}/reject', [ArticleController::class, 'reject'])->name('articles.reject');
+        Route::patch('/articles/{article}/publish', [ArticleController::class, 'publish'])->name('articles.publish');
+        Route::delete('/articles/{id}/delete', [ArticleController::class, 'destroy'])->name('articles.delete');
 
         // Comment management
         Route::get('/comments', [CommentManageController::class, 'index'])->name('comments');

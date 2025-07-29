@@ -23,22 +23,14 @@
         </div>
 
         <div class="flex items-center space-x-3">
-
-<!-- Backend username and avatar -->
-<!-- NOT PERFECT -->
-<div class="w-10 h-10 rounded-full overflow-hidden">
-    @if($currentUser && $currentUser->avatar)
-        <img src="{{ asset('/images/Jarodpfp.png') }}" alt="Default Avatar" class="w-full h-full object-cover">
-    @else
-        <img src="{{ asset('/images/Jarodpfp.png') }}" alt="Default Avatar" class="w-full h-full object-cover">
-    @endif
-</div>
-<div class="flex flex-col">
-    <span class="font-semibold text-white text-sm">{{ $currentUser->name }}</span>
-    <span class="font-noto text-gray-400 text-xs">Administrator</span>
-</div>
-
-
+            <div class="w-10 h-10 rounded-full bg-gray-600 flex items-center justify-center overflow-hidden">
+                <img src="{{ auth()->user()->avatar ? Storage::url(auth()->user()->avatar) : "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 128 128'%3E%3Ccircle cx='64' cy='64' r='64' fill='%23d1d5db'/%3E%3Cpath d='M64 32c-8.8 0-16 7.2-16 16s7.2 16 16 16 16-7.2 16-16-7.2-16-16-16zM64 96c-13.3 0-24-10.7-24-24v-8c0-8.8 7.2-16 16-16h16c8.8 0 16 7.2 16 16v8c0 13.3-10.7 24-24 24z' fill='%23374151'/%3E%3C/svg%3E" }}"
+                     alt="Profile Image" class="h-full w-full object-cover" />
+            </div>
+            <div class="flex flex-col">
+                <span class="font-semibold text-white text-sm">{{ Auth::user()->name }}</span>
+                <span class="font-noto text-gray-400 text-xs">Administrator</span>
+            </div>
         </div>
     </div>
 </header>

@@ -50,10 +50,12 @@ class ArticleController extends Controller
         $article = $this->articleService->createArticle($request->validated());
         return response()->json(ArticleDTO::fromModel($article), 201);
     }
-    public function destroy($id): JsonResponse
+
+    public function destroy($id)
     {
         $this->articleService->deleteArticle($id);
-        return response()->json(null, 204);
+
+        return redirect()->route('admin.articles')->with('success', 'Article deleted!');
     }
 
     public function preview(\Illuminate\Http\Request $request)
@@ -123,5 +125,26 @@ class ArticleController extends Controller
 
         // Redirect back with a success message
         return redirect()->route('articles.edit', $id)->with('success', 'Article updated successfully!');
+    }
+
+    public function approve($id)
+    {
+        $this->articleService->approveArticle($id);
+        return redirect()->route('admin.articles')->with('success', 'Article approved!');
+    }
+
+    public function reject(Request $request, $id)
+    {
+        $request->validate([
+            'rejection_reason' => 'required|string|max:500'
+        ]);
+        $this->articleService->rejectArticle($id, $request->input('rejection_reason'));
+        return redirect()->route('admin.articles')->with('success', 'Article has been rejected.');
+    }
+
+    public function publish($id)
+    {
+        $this->articleService->publishArticle($id);
+        return redirect()->route('admin.articles')->with('success', 'Article published!');
     }
 }

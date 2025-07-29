@@ -16,7 +16,6 @@ return new class extends Migration
             $table->id();
             $table->foreignId('article_id')->constrained()->onDelete('cascade');
             $table->foreignId('tag_id')->constrained()->onDelete('cascade');
-            $table->timestamps();
         });
     }
 
@@ -27,4 +26,4 @@ return new class extends Migration
     {
         Schema::dropIfExists('article_tag');
     }
-}; 
+};
