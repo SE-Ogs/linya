@@ -12,9 +12,10 @@ use App\Models\Article;
 use App\Models\Tag;
 use App\Http\Controllers\DashboardSearchController;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\CommentController;
 
-// Root redirectuse App\Http\Controllers\CommentController;
 
+// Root redirect
 Route::get('/', function () {
     return redirect('/dashboard');
 });
@@ -22,13 +23,12 @@ Route::get('/', function () {
 // ============================================================================
 // GUEST ROUTES (Dashboard - No Authentication Required)
 // ============================================================================
-// Dashboard routes
 Route::get('/dashboard', function () {
-
     $articles = Article::with('tags')
         ->where('status', 'Published')
         ->orderByDesc('views')
         ->get();
+
     return view('layout.user', compact('articles'));
 })->name('dashboard');
 
@@ -52,9 +52,12 @@ Route::get('/dashboard/{tag_slug}', function ($tag_slug) {
 
 Route::post('/articles', [ArticleController::class, 'store'])->name('articles.store');
 Route::get('/articles/{id}', [ArticleController::class, 'show'])->name('articles.show');
+Route::post('/articles/{article}/comments', [CommentController::class, 'store'])->name('comments.store');
+Route::delete('/comments/{comment}', [CommentController::class, 'destroy'])->name('comments.destroy');
 
-
-// Authentication routes
+// ============================================================================
+// AUTHENTICATION ROUTES
+// ============================================================================
 Route::middleware('guest')->group(function () {
     Route::get('/login', [UserAuthController::class, 'showLogin'])->name('login');
     Route::get('/signup', [UserAuthController::class, 'showSignup'])->name('signup');
@@ -62,7 +65,6 @@ Route::middleware('guest')->group(function () {
     Route::post('/signup', [UserAuthController::class, 'signup']);
     Route::post('/clear-signup-data', [UserAuthController::class, 'clearSignupData'])->name('clear-signup-data');
 
-    // Password reset routes
     Route::get('/reset-password', function () {
         return view('partials.reset_password');
     })->name('password.request');
@@ -77,53 +79,43 @@ Route::middleware('guest')->group(function () {
 });
 
 // ============================================================================
-// AUTHENTICATED ROUTES (Require Authentication)
+// AUTHENTICATED ROUTES
 // ============================================================================
 Route::middleware('auth')->group(function () {
 
-    // Logout
     Route::post('/logout', [UserAuthController::class, 'logout'])->name('logout');
 
-    // Display name setup
     Route::get('/set-display-name', [UserAuthController::class, 'showDisplayName']);
     Route::post('/set-display-name', [UserAuthController::class, 'storeDisplayName']);
 
-    // User settings
     Route::get('/settings', [SettingsController::class, 'showSettings'])->name('settings');
     Route::post('/settings', [UserManagementController::class, 'update'])->name('settings.update');
 
-    // Recent searches
     Route::get('/recent-searches', [RecentSearchController::class, 'index'])->name('recent-searches.index');
     Route::post('/recent-searches', [RecentSearchController::class, 'store'])->name('recent-searches.store');
     Route::delete('/recent-searches', [RecentSearchController::class, 'clear']);
     Route::get('/dashboard-search', [DashboardSearchController::class, 'search']);
 
-    // Article management
     Route::get('/add-article', [ArticleController::class, 'create'])->name('articles.create');
     Route::post('/articles/preview', [ArticleController::class, 'preview'])->name('articles.preview');
     Route::get('/edit-article/{id}', [ArticleController::class, 'edit'])->name('articles.edit');
     Route::put('/edit-article/{id}', [ArticleController::class, 'update'])->name('articles.update');
     Route::delete('/articles/{id}', [ArticleController::class, 'destroy'])->name('articles.destroy');
 
-    // Comment management
     Route::get('/articles/{slug}', [CommentManageController::class, 'show'])->name('comment.manage.show');
 
-    // Search functionality
     Route::get('/comment-manage-searchbar', [SearchFilterController::class, 'index'])->name('search');
 
     // ========================================================================
-    // ADMIN ROUTES (Additional middleware can be added here if needed)
+    // ADMIN ROUTES
     // ========================================================================
     Route::middleware(['admin'])->prefix('admin')->name('admin.')->group(function () {
 
-        // Admin dashboard
         Route::get('/dashboard', [AdminDashboardController::class, 'index'])->name('dashboard');
 
-        // Post management
         Route::get('/posts', function (\Illuminate\Http\Request $request) {
             $query = Article::with('tags');
 
-            // Apply filters
             if ($request->filled('status') && $request->status !== 'All') {
                 $query->where('status', $request->status);
             }
@@ -146,11 +138,8 @@ Route::middleware('auth')->group(function () {
             $articles = $query->get();
             $tags = Tag::all();
 
-    return view('admin-panel.post_management', compact('articles', 'tags'));
-})->name('admin.posts');
+            return view('admin-panel.post_management', compact('articles', 'tags'));
+        })->name('posts');
 
-//Admin Dashboard
-use App\Http\Controllers\AdminDashboardController;
-
-Route::get('/admin/dashboard', [AdminDashboardController::class, 'index'])->name('admin.dashboard');
-
+    });
+});
