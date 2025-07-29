@@ -34,30 +34,49 @@ class CommentController extends Controller
     }
 
     public function like(Request $request, Comment $comment)
-    {
-        $user = auth()->user();
-        $comment->likes()->updateOrCreate(
-            ['user_id' => $user->id],
-            ['is_like' => true]
-        );
+{
+    $user = auth()->user();
 
-        $count = $comment->likes()->where('is_like', true)->count();
+    // Remove existing dislike from same user
+    $comment->likes()
+        ->where('user_id', $user->id)
+        ->where('is_like', false)
+        ->delete();
 
-        return response()->json(['success' => true, 'new_count' => $count]);
-    }
+    // Add or update like
+    $comment->likes()->updateOrCreate(
+        ['user_id' => $user->id],
+        ['is_like' => true]
+    );
+
+    return response()->json([
+        'success' => true,
+        'new_count' => $comment->likes()->where('is_like', true)->count()
+    ]);
+}
 
     public function dislike(Request $request, Comment $comment)
-    {
-        $user = auth()->user();
-        $comment->likes()->updateOrCreate(
-            ['user_id' => $user->id],
-            ['is_like' => false]
-        );
+{
+    $user = auth()->user();
 
-        $count = $comment->likes()->where('is_like', false)->count();
+    // Remove existing like from same user
+    $comment->likes()
+        ->where('user_id', $user->id)
+        ->where('is_like', true)
+        ->delete();
 
-        return response()->json(['success' => true, 'new_count' => $count]);
-    }
+    // Add or update dislike
+    $comment->likes()->updateOrCreate(
+        ['user_id' => $user->id],
+        ['is_like' => false]
+    );
+
+    return response()->json([
+        'success' => true,
+        'new_count' => $comment->likes()->where('is_like', false)->count()
+    ]);
+}
+
 
     public function storeAjax(Request $request, Article $article)
     {

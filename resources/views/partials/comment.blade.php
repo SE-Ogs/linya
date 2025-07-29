@@ -1,4 +1,4 @@
-<div class="border p-4 rounded bg-gray-50">
+<div class="border p-4 rounded">
     <div class="text-sm text-gray-700">
        <strong>{{ $comment->user?->name ?? 'Unknown User' }}</strong> · <span>{{ $comment->created_at->diffForHumans() }}</span>
     </div>
@@ -39,19 +39,56 @@
 
     <div class="flex items-center gap-3 mt-2">
     <button type="button"
-        class="like-dislike-btn text-sm text-green-600"
+        class="like-dislike-btn text-sm text-green-600 flex items-center gap-1"
         data-id="{{ $comment->id }}"
         data-type="like">
-        👍 <span class="like-count">{{ $comment->likeCount() }}</span>
+        <img src="{{ asset('images/Like.png') }}" alt="Like" class="w-5 h-5 transition-transform duration-150 hover:scale-110 hover:brightness-110"> 
+        <span class="like-count hidden text-gray-500">{{ $comment->likeCount() }}</span>
     </button>
 
     <button type="button"
-        class="like-dislike-btn text-sm text-red-600"
+        class="like-dislike-btn text-sm text-red-600 flex items-center gap-1"
         data-id="{{ $comment->id }}"
         data-type="dislike">
-        👎 <span class="dislike-count">{{ $comment->dislikeCount() }}</span>
+        <img src="{{ asset('images/Dislike.png') }}" alt="Dislike" class="w-5 h-5 transition-transform duration-150 hover:scale-110 hover:brightness-110"> 
+        <span class="dislike-count hidden text-gray-500">{{ $comment->dislikeCount() }}</span>
     </button>
 </div>
 
-
 </div>
+
+<script>
+document.querySelectorAll('.like-dislike-btn').forEach(btn => {
+    btn.addEventListener('click', async () => {
+        const commentId = btn.getAttribute('data-id');
+        const type = btn.getAttribute('data-type');
+        const oppositeType = type === 'like' ? 'dislike' : 'like';
+
+        const response = await fetch(`/comments/${commentId}/${type}`, {
+            method: 'POST',
+            headers: {
+                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
+                'Accept': 'application/json'
+            }
+        });
+
+        const data = await response.json();
+        if (data.success) {
+            // Update current type count
+            const countSpan = btn.querySelector(`.${type}-count`);
+            countSpan.textContent = data.new_count;
+            countSpan.classList.remove('hidden');
+
+            // Reset opposite type count visually (optional: set to 0 or hide)
+            const parent = btn.parentElement;
+            const oppositeBtn = parent.querySelector(`[data-type="${oppositeType}"]`);
+            const oppositeSpan = oppositeBtn.querySelector(`.${oppositeType}-count`);
+
+            oppositeSpan.textContent = '0';
+            oppositeSpan.classList.add('hidden');
+        }
+    });
+});
+
+
+</script>
