@@ -76,16 +76,10 @@ Route::middleware('guest')->group(function () {
     Route::get('/resetsuccess', function () {
         return view('partials.reset_success');
     });
-
-    Route::get('/forgot-password', function () {
-    return view('partials.forgot_pass');
-    });
-
-    Route::get('/code-verify', function () {
-    return view('partials.code_verify');
-    });
-
 });
+
+
+Route::post('/articles/{article}/comments/ajax', [CommentController::class, 'storeAjax'])->name('comments.store.ajax');
 
 // ============================================================================
 // AUTHENTICATED ROUTES
@@ -105,6 +99,7 @@ Route::middleware('auth')->group(function () {
     Route::delete('/recent-searches', [RecentSearchController::class, 'clear']);
     Route::get('/dashboard-search', [DashboardSearchController::class, 'search']);
 
+    // Comment management
     Route::get('/articles/{slug}', [CommentManageController::class, 'show'])->name('comment.manage.show');
     Route::post('/articles/{article}/comments', [CommentController::class, 'store'])->name('comments.store');
     Route::delete('/comments/{comment}', [CommentController::class, 'destroy'])->name('comments.destroy');
@@ -158,6 +153,11 @@ Route::middleware('auth')->group(function () {
 
         // Comment management
         Route::get('/comments', [CommentManageController::class, 'index'])->name('comments');
+        Route::post('/comments/{comment}/like', [CommentController::class, 'like'])->name('comments.like');
+        Route::post('/comments/{comment}/dislike', [CommentController::class, 'dislike'])->name('comments.dislike');
+        // Route::post('/articles/{article}/comments/ajax', [CommentController::class, 'storeAjax'])->name('comments.store.ajax');
+        Route::post('/comments/{comment}/like', [CommentController::class, 'like'])->name('comments.like');
+        Route::post('/comments/{comment}/dislike', [CommentController::class, 'dislike'])->name('comments.dislike');
 
         // User management
         Route::get('/users', [UserManagementController::class, 'index'])->name('index');
