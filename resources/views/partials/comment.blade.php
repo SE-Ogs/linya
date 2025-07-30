@@ -9,11 +9,11 @@
             • {{ $comment->created_at->diffForHumans() }}
         </span>
     </div>
-    
+
     <p class="mt-2 text-gray-800">{{ $comment->content }}</p>
 
     @auth
-        
+
 
     <form method="POST"
     class="mt-3 hidden reply-form"
@@ -22,7 +22,7 @@
     data-article-id="{{ $article->id }}">
     @csrf
     <div class="relative">
-        <textarea name="content" 
+        <textarea name="content"
                   class="w-full border border-gray-300 rounded-md px-3 py-2 pr-20 text-sm focus:outline-none focus:ring-1 focus:ring-blue-400 resize-none"
                   placeholder="Write a reply..." required></textarea>
 
@@ -44,15 +44,6 @@
         @endcan
     @endauth
 
-    {{-- Replies --}}
-    @if($comment->replies->count())
-        <div class="ml-6 mt-4 space-y-2">
-            @foreach($comment->replies as $reply)
-                @include('partials.comment', ['comment' => $reply, 'article' => $article])
-            @endforeach
-        </div>
-    @endif
-
     @php
     $reaction = $comment->userReaction;
 @endphp
@@ -60,22 +51,24 @@
     <div class="flex items-center gap-4 mt-2">
     <div class="flex items-center gap-3 reaction-group">
         <button type="button"
-            class="like-dislike-btn"
+            class="like-dislike-btn transition-transform duration-150 ease-out hover:scale-110 active:scale-95"
             data-id="{{ $comment->id }}"
             data-type="like">
-            <img src="{{ asset('images/Like.png') }}"
-                class="w-4 h-4 inline {{ $reaction && $reaction->is_like ? 'text-blue-600' : 'text-gray-400' }}">
+            <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 inline transition-colors duration-150 ease-out {{ $reaction && $reaction->is_like ? 'text-blue-600' : 'text-gray-400' }}" fill="currentColor" viewBox="0 0 24 24">
+                <path d="M2 21h4V9H2v12zM22 9h-6.31l.95-4.57.03-.32c0-.41-.17-.79-.44-1.06L15.17 2 8.59 8.59C8.22 8.95 8 9.45 8 10v9c0 1.1.9 2 2 2h8c.83 0 1.54-.5 1.84-1.22l3.02-7.05c.09-.23.14-.47.14-.73v-2c0-1.1-.9-2-2-2z"/>
+            </svg>
             <span class="like-count text-gray-500 {{ $reaction && $reaction->is_like ? '' : 'hidden' }}">
                 {{ $comment->likeCount() }}
             </span>
         </button>
 
         <button type="button"
-            class="like-dislike-btn"
+            class="like-dislike-btn transition-transform duration-150 ease-out hover:scale-110 active:scale-95"
             data-id="{{ $comment->id }}"
             data-type="dislike">
-            <img src="{{ asset('images/Dislike.png') }}"
-                class="w-4 h-4 inline {{ $reaction && $reaction->is_like === false ? 'text-red-600' : 'text-gray-400' }}">
+            <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 inline transition-colors duration-150 ease-out {{ $reaction && $reaction->is_like === false ? 'text-red-600' : 'text-gray-400' }}" fill="currentColor" viewBox="0 0 24 24">
+                <path d="M22 3h-4v12h4V3zM2 15h6.31l-.95 4.57-.03.32c0 .41.17.79.44 1.06L8.83 22l6.58-6.59c.37-.36.59-.86.59-1.41V5c0-1.1-.9-2-2-2H6c-.83 0-1.54.5-1.84 1.22l-3.02 7.05c-.09.23-.14.47-.14.73v2c0 1.1.9 2 2 2z"/>
+            </svg>
             <span class="dislike-count text-gray-500 {{ $reaction && $reaction->is_like === false ? '' : 'hidden' }}">
                 {{ $comment->dislikeCount() }}
             </span>
@@ -85,6 +78,15 @@
     <button onclick="document.getElementById('reply-{{ $comment->id }}').classList.toggle('hidden')"
         class="text-sm text-blue-500">Reply</button>
 </div>
+
+{{-- Replies --}}
+@if($comment->replies->count())
+    <div class="ml-6 mt-4 space-y-2">
+        @foreach($comment->replies as $reply)
+            @include('partials.comment', ['comment' => $reply, 'article' => $article])
+        @endforeach
+    </div>
+@endif
 
 
 
@@ -122,11 +124,25 @@ const dislikeBtn = group.querySelector('[data-type="dislike"]');
 
         const data = await response.json();
         if (data.success) {
+            // Reset both buttons to gray
+            likeBtn.querySelector('svg').classList.remove('text-blue-600');
+            likeBtn.querySelector('svg').classList.add('text-gray-400');
+            dislikeBtn.querySelector('svg').classList.remove('text-red-600');
+            dislikeBtn.querySelector('svg').classList.add('text-gray-400');
+
             if (type === 'like') {
+                // Activate like button color
+                likeBtn.querySelector('svg').classList.remove('text-gray-400');
+                likeBtn.querySelector('svg').classList.add('text-blue-600');
+
                 likeCount.textContent = data.new_count;
                 likeCount.classList.remove('hidden');
                 dislikeCount.classList.add('hidden');
             } else {
+                // Activate dislike button color
+                dislikeBtn.querySelector('svg').classList.remove('text-gray-400');
+                dislikeBtn.querySelector('svg').classList.add('text-red-600');
+
                 dislikeCount.textContent = data.new_count;
                 dislikeCount.classList.remove('hidden');
                 likeCount.classList.add('hidden');
@@ -137,7 +153,17 @@ const dislikeBtn = group.querySelector('[data-type="dislike"]');
     }
 }
 
-document.querySelector('.comments-list').innerHTML = newComments.innerHTML;
-initLikeDislikeButtons(); // re-attach event listeners
+// Initialize on page load for all like/dislike buttons (including replies)
+document.addEventListener('DOMContentLoaded', () => {
+    initLikeDislikeButtons();
+});
 
+// Function to refresh comments UI and re-bind events (can be used after AJAX loads new comments)
+function refreshCommentsUI(newComments) {
+    const commentsList = document.querySelector('.comments-list');
+    if (commentsList && newComments) {
+        commentsList.innerHTML = newComments.innerHTML;
+    }
+    initLikeDislikeButtons();
+}
 </script>
