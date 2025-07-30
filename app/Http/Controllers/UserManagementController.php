@@ -6,24 +6,22 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
 
 class UserManagementController extends Controller
 {
     public function index(Request $request)
     {
-        $type = $request->input('type', 'users'); // 'users' or 'admins'
+        $type = $request->input('type', 'users');
 
-        // Sanitize per_page: allow only between 1 and 100
         $perPage = (int) $request->input('per_page', 5);
-        $perPage = max(1, min($perPage, 100)); // clamp to [1, 100]
+        $perPage = max(1, min($perPage, 100));
 
         $query = $request->input('query');
 
-        // Role filtering
         $usersQuery = User::query()
             ->where('role', $type === 'admins' ? 'admin' : 'user');
 
-        // Optional search
         if ($query) {
             $usersQuery->where(function ($q) use ($query) {
                 $q->where('name', 'ILIKE', "%{$query}%")
@@ -31,13 +29,11 @@ class UserManagementController extends Controller
             });
         }
 
-        // Paginate and preserve query params
         $users = $usersQuery->paginate($perPage)->appends($request->all());
 
         return view('admin-panel.user-manage', compact('users', 'type'));
     }
 
-    // Handle actual update from modal form
     public function update(Request $request)
     {
         switch ($request->input('form_type')) {
@@ -54,7 +50,6 @@ class UserManagementController extends Controller
         }
     }
 
-    // Set user's status to 'Reported'
     public function report($id)
     {
         $user = User::findOrFail($id);
@@ -64,7 +59,6 @@ class UserManagementController extends Controller
         return back()->with('message', "User {$user->id} has been reported.");
     }
 
-    // Set user's status to 'Suspended'
     public function suspend($id)
     {
         $user = User::findOrFail($id);
@@ -74,7 +68,6 @@ class UserManagementController extends Controller
         return back()->with('message', "User {$user->id} has been suspended.");
     }
 
-    // Delete the user from the database
     public function destroy($id)
     {
         $user = User::findOrFail($id);
@@ -116,7 +109,10 @@ class UserManagementController extends Controller
 
         auth()->user()->update(['password' => Hash::make($request->password)]);
 
-        return back()->with('success', 'Password updated successfully');
+        // Logout the user after password change and redirect
+        Auth::logout();
+
+        return redirect()->route('resetsuccess')->with('success', 'Password updated successfully!');
     }
 
     private function handleEmailChange(Request $request)
