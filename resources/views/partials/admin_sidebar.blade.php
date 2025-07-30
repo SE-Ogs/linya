@@ -5,7 +5,7 @@
     <nav class="flex flex-col gap-2">
         <a href="/admin/dashboard" class="py-2 px-3 rounded hover:bg-orange-500 transition text-lg font-medium">Dashboard</a>
         <a href="/admin/users" class="py-2 px-3 rounded hover:bg-orange-500 transition text-base font-medium">User Management</a>
-        <a href="/admin/posts" class="py-2 px-3 rounded hover:bg-orange-500 transition text-base font-medium">Post Management</a>
+        <a href="/admin/articles" class="py-2 px-3 rounded hover:bg-orange-500 transition text-base font-medium">Post Management</a>
         <a href="/admin/comments" class="py-2 px-3 rounded hover:bg-orange-500 transition text-base font-medium">Comment Management</a>
     </nav>
 </aside>
