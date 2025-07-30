@@ -16,11 +16,7 @@ use App\Http\Controllers\SearchFilterController;
 use App\Http\Controllers\SettingsController;
 use App\Http\Controllers\UserAuthController;
 use App\Http\Controllers\UserManagementController;
-use App\Models\Article;
-use App\Models\Tag;
-use App\Http\Controllers\DashboardSearchController;
-use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\CommentController;
+
 
 // Root redirect
 Route::get('/', fn () => redirect('/dashboard'));
