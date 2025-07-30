@@ -34,49 +34,74 @@ class CommentController extends Controller
     }
 
     public function like(Request $request, Comment $comment)
-{
-    $user = auth()->user();
+    {
+        $user = auth()->user();
 
-    // Remove existing dislike from same user
-    $comment->likes()
-        ->where('user_id', $user->id)
-        ->where('is_like', false)
-        ->delete();
+        // Check if user already has a reaction to this comment
+        $existingReaction = $comment->likes()->where('user_id', $user->id)->first();
 
-    // Add or update like
-    $comment->likes()->updateOrCreate(
-        ['user_id' => $user->id],
-        ['is_like' => true]
-    );
+        if ($existingReaction) {
+            if ($existingReaction->is_like) {
+                // User already liked, remove the like
+                $existingReaction->delete();
+                $liked = false;
+            } else {
+                // User disliked, change to like
+                $existingReaction->update(['is_like' => true]);
+                $liked = true;
+            }
+        } else {
+            // No existing reaction, create a like
+            $comment->likes()->create([
+                'user_id' => $user->id,
+                'is_like' => true
+            ]);
+            $liked = true;
+        }
 
-    return response()->json([
-        'success' => true,
-        'new_count' => $comment->likes()->where('is_like', true)->count()
-    ]);
-}
+        return response()->json([
+            'success' => true,
+            'liked' => $liked,
+            'disliked' => false,
+            'like_count' => $comment->likeCount(),
+            'dislike_count' => $comment->dislikeCount()
+        ]);
+    }
 
     public function dislike(Request $request, Comment $comment)
-{
-    $user = auth()->user();
+    {
+        $user = auth()->user();
 
-    // Remove existing like from same user
-    $comment->likes()
-        ->where('user_id', $user->id)
-        ->where('is_like', true)
-        ->delete();
+        // Check if user already has a reaction to this comment
+        $existingReaction = $comment->likes()->where('user_id', $user->id)->first();
 
-    // Add or update dislike
-    $comment->likes()->updateOrCreate(
-        ['user_id' => $user->id],
-        ['is_like' => false]
-    );
+        if ($existingReaction) {
+            if (!$existingReaction->is_like) {
+                // User already disliked, remove the dislike
+                $existingReaction->delete();
+                $disliked = false;
+            } else {
+                // User liked, change to dislike
+                $existingReaction->update(['is_like' => false]);
+                $disliked = true;
+            }
+        } else {
+            // No existing reaction, create a dislike
+            $comment->likes()->create([
+                'user_id' => $user->id,
+                'is_like' => false
+            ]);
+            $disliked = true;
+        }
 
-    return response()->json([
-        'success' => true,
-        'new_count' => $comment->likes()->where('is_like', false)->count()
-    ]);
-}
-
+        return response()->json([
+            'success' => true,
+            'liked' => false,
+            'disliked' => $disliked,
+            'like_count' => $comment->likeCount(),
+            'dislike_count' => $comment->dislikeCount()
+        ]);
+    }
 
     public function storeAjax(Request $request, Article $article)
     {
@@ -92,17 +117,50 @@ class CommentController extends Controller
             'parent_id' => $request->parent_id,
         ]);
 
-        $comment->load('user');
+        $comment->load('user', 'replies.user');
 
         return response()->json([
-    'success' => true,
-    'comment_html' => '<div class="animate-fade-in transition-opacity duration-500 rounded-md">' .
-        view('partials.comment', [
-            'comment' => $comment,
-            'article' => $article,
-        ])->render() .
-    '</div>',
-]);
+            'success' => true,
+            'comment' => [
+                'id' => $comment->id,
+                'content' => $comment->content,
+                'user_name' => $comment->user->name,
+                'created_at' => $comment->created_at->diffForHumans(),
+                'like_count' => $comment->likeCount(),
+                'dislike_count' => $comment->dislikeCount(),
+                'parent_id' => $comment->parent_id,
+                'can_delete' => auth()->user()->can('delete', $comment)
+            ]
+        ]);
+    }
 
+    public function getComments(Article $article, Request $request)
+    {
+        $sort = $request->get('sort', 'all');
+
+        $query = $article->comments()->whereNull('parent_id')->with(['user', 'replies.user', 'replies.replies']);
+
+        switch ($sort) {
+            case 'newest':
+                $query->orderBy('created_at', 'desc');
+                break;
+            case 'oldest':
+                $query->orderBy('created_at', 'asc');
+                break;
+            case 'most_liked':
+                $query->withCount(['likes as like_count' => function ($q) {
+                    $q->where('is_like', true);
+                }])->orderBy('like_count', 'desc');
+                break;
+            default:
+                $query->orderBy('created_at', 'desc');
+        }
+
+        $comments = $query->get();
+
+        return response()->json([
+            'success' => true,
+            'html' => view('partials.comments_list', compact('comments', 'article', 'sort'))->render()
+        ]);
     }
 }

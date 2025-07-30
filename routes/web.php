@@ -14,7 +14,6 @@ use App\Http\Controllers\DashboardSearchController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\CommentController;
 
-
 // Root redirect
 Route::get('/', function () {
     return redirect('/dashboard');
@@ -50,14 +49,13 @@ Route::get('/dashboard/{tag_slug}', function ($tag_slug) {
     return view('layout.user', compact('articles', 'tag'));
 })->name('dashboard.tag');
 
+// Articles
 Route::post('/articles', [ArticleController::class, 'store'])->name('articles.store');
 Route::get('/articles/{id}', [ArticleController::class, 'show'])->name('articles.show');
-Route::post('/articles/{article}/comments', [CommentController::class, 'store'])->name('comments.store');
-Route::delete('/comments/{comment}', [CommentController::class, 'destroy'])->name('comments.destroy');
 
-// ============================================================================
+// =========================================================================
 // AUTHENTICATION ROUTES
-// ============================================================================
+// =========================================================================
 Route::middleware('guest')->group(function () {
     Route::get('/login', [UserAuthController::class, 'showLogin'])->name('login');
     Route::get('/signup', [UserAuthController::class, 'showSignup'])->name('signup');
@@ -78,26 +76,15 @@ Route::middleware('guest')->group(function () {
     });
 });
 
-// Route::post('/articles/{article}/comments/ajax', [CommentController::class, 'storeAjax'])->name('comments.store.ajax');
-// Route::get('/comments', [CommentManageController::class, 'index'])->name('comments');
-// Route::post('/comments/{comment}/like', [CommentController::class, 'like'])->name('comments.like');
-// Route::post('/comments/{comment}/dislike', [CommentController::class, 'dislike'])->name('comments.dislike');
-// Route::post('/comments/{comment}/like', [CommentController::class, 'like'])->name('comments.like');
-// Route::post('/comments/{comment}/dislike', [CommentController::class, 'dislike'])->name('comments.dislike');
-
-// ============================================================================
+// =========================================================================
 // AUTHENTICATED ROUTES
-// ============================================================================
+// =========================================================================
 Route::middleware('auth')->group(function () {
-
     Route::post('/logout', [UserAuthController::class, 'logout'])->name('logout');
-
     Route::get('/set-display-name', [UserAuthController::class, 'showDisplayName']);
     Route::post('/set-display-name', [UserAuthController::class, 'storeDisplayName']);
-
     Route::get('/settings', [SettingsController::class, 'showSettings'])->name('settings');
     Route::post('/settings', [UserManagementController::class, 'update'])->name('settings.update');
-
     Route::get('/recent-searches', [RecentSearchController::class, 'index'])->name('recent-searches.index');
     Route::post('/recent-searches', [RecentSearchController::class, 'store'])->name('recent-searches.store');
     Route::delete('/recent-searches', [RecentSearchController::class, 'clear']);
@@ -106,10 +93,11 @@ Route::middleware('auth')->group(function () {
     // Comment management
     Route::get('/articles/{slug}', [CommentManageController::class, 'show'])->name('comment.manage.show');
 
+    // Comment routes - All inside auth group
+    Route::post('/articles/{article}/comments', [CommentController::class, 'store'])->name('comments.store');
+    Route::delete('/comments/{comment}', [CommentController::class, 'destroy'])->name('comments.destroy');
     Route::post('/articles/{article}/comments/ajax', [CommentController::class, 'storeAjax'])->name('comments.store.ajax');
-    Route::get('/comments', [CommentManageController::class, 'index'])->name('comments');
-    Route::post('/comments/{comment}/like', [CommentController::class, 'like'])->name('comments.like');
-    Route::post('/comments/{comment}/dislike', [CommentController::class, 'dislike'])->name('comments.dislike');
+    Route::get('/articles/{article}/comments', [CommentController::class, 'getComments'])->name('comments.get');
     Route::post('/comments/{comment}/like', [CommentController::class, 'like'])->name('comments.like');
     Route::post('/comments/{comment}/dislike', [CommentController::class, 'dislike'])->name('comments.dislike');
 
@@ -150,7 +138,8 @@ Route::middleware('auth')->group(function () {
 
             return view('admin-panel.post_management', compact('articles', 'tags'));
         })->name('articles');
-        // article management
+
+        // Article management
         Route::get('/add-article', [ArticleController::class, 'create'])->name('articles.create');
         Route::post('/articles/preview', [ArticleController::class, 'preview'])->name('articles.preview');
         Route::get('/edit-article/{id}', [ArticleController::class, 'edit'])->name('articles.edit');
@@ -162,11 +151,6 @@ Route::middleware('auth')->group(function () {
 
         // Comment management
         Route::get('/comments', [CommentManageController::class, 'index'])->name('comments');
-        // Route::post('/comments/{comment}/like', [CommentController::class, 'like'])->name('comments.like');
-        // Route::post('/comments/{comment}/dislike', [CommentController::class, 'dislike'])->name('comments.dislike');
-        // Route::post('/articles/{article}/comments/ajax', [CommentController::class, 'storeAjax'])->name('comments.store.ajax');
-        // Route::post('/comments/{comment}/like', [CommentController::class, 'like'])->name('comments.like');
-        // Route::post('/comments/{comment}/dislike', [CommentController::class, 'dislike'])->name('comments.dislike');
 
         // User management
         Route::get('/users', [UserManagementController::class, 'index'])->name('index');
