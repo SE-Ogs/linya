@@ -96,22 +96,7 @@ Route::middleware('auth')->group(function () {
     Route::delete('/recent-searches', [RecentSearchController::class, 'clear']);
     Route::get('/dashboard-search', [DashboardSearchController::class, 'search']);
 
-    Route::get('/add-article', [ArticleController::class, 'create'])->name('articles.create');
-    Route::post('/articles/preview', [ArticleController::class, 'preview'])->name('articles.preview');
-    Route::get('/edit-article/{id}', [ArticleController::class, 'edit'])->name('articles.edit');
-    Route::put('/edit-article/{id}', [ArticleController::class, 'update'])->name('articles.update');
-    Route::delete('/articles/{id}', [ArticleController::class, 'destroy'])->name('articles.destroy');
-
-    //comments
-    Route::post('/comments/{comment}/like', [CommentController::class, 'like'])->name('comments.like');
-Route::post('/comments/{comment}/dislike', [CommentController::class, 'dislike'])->name('comments.dislike');
-Route::post('/articles/{article}/comments/ajax', [CommentController::class, 'storeAjax'])->name('comments.store.ajax');
-Route::post('/comments/{comment}/like', [CommentController::class, 'like'])->name('comments.like');
-Route::post('/comments/{comment}/dislike', [CommentController::class, 'dislike'])->name('comments.dislike');
-
-
-
-
+    // Comment management
     Route::get('/articles/{slug}', [CommentManageController::class, 'show'])->name('comment.manage.show');
 
     Route::get('/comment-manage-searchbar', [SearchFilterController::class, 'index'])->name('search');
@@ -123,7 +108,8 @@ Route::post('/comments/{comment}/dislike', [CommentController::class, 'dislike']
 
         Route::get('/dashboard', [AdminDashboardController::class, 'index'])->name('dashboard');
 
-        Route::get('/posts', function (\Illuminate\Http\Request $request) {
+        // Post management
+        Route::get('/articles', function (\Illuminate\Http\Request $request) {
             $query = Article::with('tags');
 
             if ($request->filled('status') && $request->status !== 'All') {
@@ -149,7 +135,33 @@ Route::post('/comments/{comment}/dislike', [CommentController::class, 'dislike']
             $tags = Tag::all();
 
             return view('admin-panel.post_management', compact('articles', 'tags'));
-        })->name('posts');
+        })->name('articles');
+        // article management
+        Route::get('/add-article', [ArticleController::class, 'create'])->name('articles.create');
+        Route::post('/articles/preview', [ArticleController::class, 'preview'])->name('articles.preview');
+        Route::get('/edit-article/{id}', [ArticleController::class, 'edit'])->name('articles.edit');
+        Route::put('/edit-article/{id}', [ArticleController::class, 'update'])->name('articles.update');
+        Route::patch('/articles/{article}/approve', [ArticleController::class, 'approve'])->name('articles.approve');
+        Route::patch('/articles/{id}/reject', [ArticleController::class, 'reject'])->name('articles.reject');
+        Route::patch('/articles/{article}/publish', [ArticleController::class, 'publish'])->name('articles.publish');
+        Route::delete('/articles/{article}/delete', [ArticleController::class, 'destroy'])->name('articles.delete');
 
+        // Comment management
+        Route::get('/comments', [CommentManageController::class, 'index'])->name('comments');
+        Route::post('/comments/{comment}/like', [CommentController::class, 'like'])->name('comments.like');
+        Route::post('/comments/{comment}/dislike', [CommentController::class, 'dislike'])->name('comments.dislike');
+        Route::post('/articles/{article}/comments/ajax', [CommentController::class, 'storeAjax'])->name('comments.store.ajax');
+        Route::post('/comments/{comment}/like', [CommentController::class, 'like'])->name('comments.like');
+        Route::post('/comments/{comment}/dislike', [CommentController::class, 'dislike'])->name('comments.dislike');
+
+        // User management
+        Route::get('/users', [UserManagementController::class, 'index'])->name('index');
+        Route::prefix('users')->name('users.')->group(function () {
+            Route::get('{id}/edit', [UserManagementController::class, 'edit'])->name('edit');
+            Route::patch('{id}', [UserManagementController::class, 'update'])->name('update');
+            Route::post('{id}/report', [UserManagementController::class, 'report'])->name('report');
+            Route::patch('{id}/suspend', [UserManagementController::class, 'suspend'])->name('suspend');
+            Route::delete('{id}', [UserManagementController::class, 'destroy'])->name('destroy');
+        });
     });
 });

@@ -13,7 +13,7 @@ class HelperFunctionService
         switch ($tagName) {
             case 'software engineering':
                 return 'bg-indigo-600';
-            case 'multimedia arts':
+            case 'multimedia arts and design':
                 return 'bg-red-600';
             case 'animation':
                 return 'bg-yellow-500';
@@ -31,7 +31,7 @@ class HelperFunctionService
         switch ($tagName) {
             case 'software engineering':
                 return 'border-indigo-600';
-            case 'multimedia arts':
+            case 'multimedia arts and design':
                 return 'border-red-600';
             case 'animation':
                 return 'border-yellow-500';
@@ -50,7 +50,7 @@ class HelperFunctionService
         switch ($tagName) {
             case 'software engineering':
                 return 'text-indigo-600';
-            case 'multimedia arts':
+            case 'multimedia arts and design':
                 return 'text-red-600';
             case 'animation':
                 return 'text-yellow-500';
@@ -78,7 +78,7 @@ class HelperFunctionService
                 return 'REM';
             case 'game development':
                 return 'GD';
-            case 'multimedia arts':
+            case 'multimedia arts and design':
                 return 'MMA';
             default:
                 return strtoupper(substr($tagName, 0, 3));
