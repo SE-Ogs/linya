@@ -12,7 +12,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('comments', function (Blueprint $table) {
-            $table->foreignId('parent_id')->nullable()->after('article_id')->constrained('comments')->onDelete('cascade');
+            // $table->foreignId('parent_id')->nullable()->after(column: 'article_id')->constrained('comments')->onDelete('cascade');
             $table->integer('likes')->default(0)->after('content');
             $table->integer('dislikes')->default(0)->after('likes');
         });
@@ -24,8 +24,7 @@ return new class extends Migration
     public function down(): void
     {
         Schema::table('comments', function (Blueprint $table) {
-            $table->dropForeign(['parent_id']);
-            $table->dropColumn(['parent_id', 'likes', 'dislikes']);
+            $table->dropColumn(['likes', 'dislikes']);
         });
     }
 };
