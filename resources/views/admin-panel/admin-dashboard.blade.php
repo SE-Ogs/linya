@@ -167,29 +167,38 @@ function handleTrendingClick(element) {
                </div>`
             : `<div class="text-sm text-gray-400 mt-1">No tags</div>`;
 
-        analyticsContent.innerHTML = `
-            <div class="flex justify-center gap-6 w-full text-[#24317E]">
+analyticsContent.innerHTML = `
+    <div class="flex flex-col items-center justify-center w-full h-full text-[#24317E] space-y-6">
 
-                <!-- Views -->
-                <div class="flex-1 min-w-[150px] text-center space-y-2">
-                    <img src="/images/ViewsIcon.png" alt="Views" class="mx-auto h-10 w-10">
-                    <div class="text-xl font-semibold">Total: ${views}</div>
-                </div>
-
-                <!-- Comments -->
-                <div class="flex-1 min-w-[150px] text-center space-y-2">
-                    <img src="/images/CommentsIcon.png" alt="Comments" class="mx-auto h-10 w-10">
-                    <div class="text-xl font-semibold">Total: ${comments}</div>
-                </div>
-
-                <!-- Reports -->
-                <div class="flex-1 min-w-[150px] text-center space-y-2">
-                    <img src="/images/ReportsIcon.png" alt="Reports" class="mx-auto h-10 w-10">
-                    <div class="text-xl font-semibold">Total: N/A</div>
-                </div>
-
+        <!-- Analytics Stats -->
+        <div class="flex justify-center gap-6 w-full">
+            <!-- Views -->
+            <div class="flex-1 min-w-[150px] text-center space-y-2">
+                <img src="/images/ViewsIcon.png" alt="Views" class="mx-auto h-10 w-10">
+                <div class="text-xl font-semibold">Total: ${views}</div>
             </div>
-        `;
+
+            <!-- Comments -->
+            <div class="flex-1 min-w-[150px] text-center space-y-2">
+                <img src="/images/CommentsIcon.png" alt="Comments" class="mx-auto h-10 w-10">
+                <div class="text-xl font-semibold">Total: ${comments}</div>
+            </div>
+
+            <!-- Reports -->
+            <div class="flex-1 min-w-[150px] text-center space-y-2">
+                <img src="/images/ReportsIcon.png" alt="Reports" class="mx-auto h-10 w-10">
+                <div class="text-xl font-semibold">Total: N/A</div>
+            </div>
+        </div>
+
+        <!-- Visit Post Button -->
+        <a href="/articles/${postId}" class="mt-6 bg-[#FF8334] text-[#25317E] px-6 py-2 rounded-full font-semibold shadow hover:brightness-110 transition">
+            Visit Post
+        </a>
+    </div>
+`;
+
+
 
         selectedPostTitle.innerHTML = `
             <div class="mb-1">
