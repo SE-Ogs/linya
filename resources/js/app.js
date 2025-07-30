@@ -52,7 +52,14 @@ document.addEventListener("DOMContentLoaded", function () {
             contactModal.classList.remove("hidden");
             contactModal.classList.add("flex");
             // Ensure base transition classes are present
-            contactModal.classList.add("transition", "duration-300", "ease-out", "transform", "scale-95", "opacity-0");
+            contactModal.classList.add(
+                "transition",
+                "duration-300",
+                "ease-out",
+                "transform",
+                "scale-95",
+                "opacity-0",
+            );
             // Force reflow to enable transition
             void contactModal.offsetWidth;
             // Animate to visible
@@ -347,25 +354,25 @@ document.addEventListener("DOMContentLoaded", function () {
 
     // 👑 Admin sidebar toggle with content adjustment
 
-    document.addEventListener('DOMContentLoaded', () => {
-        const sidebarToggle = document.getElementById('sidebarToggle');
-        const sidebar = document.getElementById('sidebar');
-        const mainContent = document.getElementById('mainContent');
+    document.addEventListener("DOMContentLoaded", () => {
+        const sidebarToggle = document.getElementById("sidebarToggle");
+        const sidebar = document.getElementById("sidebar");
+        const mainContent = document.getElementById("mainContent");
 
         if (sidebarToggle) {
-            sidebarToggle.addEventListener('click', () => {
-                sidebar.classList.toggle('-translate-x-full');
-                mainContent.classList.toggle('ml-64');
+            sidebarToggle.addEventListener("click", () => {
+                sidebar.classList.toggle("-translate-x-full");
+                mainContent.classList.toggle("ml-64");
             });
         }
     });
 
-    document.addEventListener('DOMContentLoaded', function () {
+    document.addEventListener("DOMContentLoaded", function () {
         // Add event listener to all edit buttons
-        document.querySelectorAll('.edit-btn').forEach(btn => {
-            btn.addEventListener('click', function (e) {
+        document.querySelectorAll(".edit-btn").forEach((btn) => {
+            btn.addEventListener("click", function (e) {
                 e.preventDefault();
-                const articleId = btn.getAttribute('data-id'); // Get the article ID
+                const articleId = btn.getAttribute("data-id"); // Get the article ID
                 confirmEdit(articleId); // Pass the article ID to the confirmEdit function
             });
         });
@@ -470,51 +477,62 @@ function clearSearch() {
 
 window.clearSearch = clearSearch;
 
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener("DOMContentLoaded", () => {
+    const replyButtons = document.querySelectorAll(".reply-button");
 
-    const replyButtons = document.querySelectorAll('.reply-button');
-
-    replyButtons.forEach(button => {
-        button.addEventListener('click', (event) => {
+    replyButtons.forEach((button) => {
+        button.addEventListener("click", (event) => {
             event.preventDefault();
 
             const commentId = button.dataset.commentId;
-            const replyFormContainer = document.getElementById(`reply-form-${commentId}`);
+            const replyFormContainer = document.getElementById(
+                `reply-form-${commentId}`,
+            );
 
             if (replyFormContainer) {
-                document.querySelectorAll('.reply-form-container').forEach(form => {
-                    if (form.id !== `reply-form-${commentId}`) {
-                        form.style.display = 'none';
-                    }
-                });
+                document
+                    .querySelectorAll(".reply-form-container")
+                    .forEach((form) => {
+                        if (form.id !== `reply-form-${commentId}`) {
+                            form.style.display = "none";
+                        }
+                    });
 
-                if (replyFormContainer.style.display === 'none' || replyFormContainer.style.display === '') {
-                    replyFormContainer.style.display = 'block';
-                    const inputField = replyFormContainer.querySelector('input[type="text"]');
+                if (
+                    replyFormContainer.style.display === "none" ||
+                    replyFormContainer.style.display === ""
+                ) {
+                    replyFormContainer.style.display = "block";
+                    const inputField =
+                        replyFormContainer.querySelector('input[type="text"]');
                     if (inputField) {
                         inputField.focus();
                     }
                 } else {
-                    replyFormContainer.style.display = 'none';
+                    replyFormContainer.style.display = "none";
                 }
             }
         });
     });
 
-    const toggleRepliesButtons = document.querySelectorAll('.toggle-replies-btn');
+    const toggleRepliesButtons = document.querySelectorAll(
+        ".toggle-replies-btn",
+    );
 
-    toggleRepliesButtons.forEach(button => {
-        button.addEventListener('click', () => {
+    toggleRepliesButtons.forEach((button) => {
+        button.addEventListener("click", () => {
             const commentId = button.dataset.commentId;
             const repliesCount = button.dataset.repliesCount;
-            const repliesContainer = document.getElementById(`replies-container-${commentId}`);
+            const repliesContainer = document.getElementById(
+                `replies-container-${commentId}`,
+            );
 
             if (repliesContainer) {
-                if (repliesContainer.classList.contains('hidden')) {
-                    repliesContainer.classList.remove('hidden');
-                    button.textContent = 'Hide Replies';
+                if (repliesContainer.classList.contains("hidden")) {
+                    repliesContainer.classList.remove("hidden");
+                    button.textContent = "Hide Replies";
                 } else {
-                    repliesContainer.classList.add('hidden');
+                    repliesContainer.classList.add("hidden");
                     button.textContent = `See Replies (${repliesCount})`;
                 }
             }
@@ -522,45 +540,50 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 });
 
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener("DOMContentLoaded", () => {
     // Use the id if present, otherwise fallback to name selector
-    let textarea = document.getElementById('comment-box');
+    let textarea = document.getElementById("comment-box");
     if (!textarea) {
         textarea = document.querySelector('textarea[name="comment_text"]');
     }
-    const counter = document.getElementById('char-count');
+    const counter = document.getElementById("char-count");
 
     if (textarea && counter) {
         const updateCounter = () => {
             counter.textContent = `${textarea.value.length}/500`;
         };
 
-        textarea.addEventListener('input', updateCounter);
+        textarea.addEventListener("input", updateCounter);
 
         // Submit form on Enter (without Shift)
-        textarea.addEventListener('keydown', function (e) {
-            if (e.key === 'Enter' && !e.shiftKey) {
-                e.preventDefault();
-                this.closest('form').submit(); // Submit the form on Enter
-            }
-        });
+        // textarea.addEventListener("keydown", function (e) {
+        //     if (e.key === "Enter" && !e.shiftKey) {
+        //         e.preventDefault();
+        //         this.closest("form").submit(); // Submit the form on Enter
+        //     }
+        // });
 
         // Keyboard shortcut formatting: Ctrl+B, Ctrl+I, Ctrl+U
-        textarea.addEventListener('keydown', function (e) {
+        textarea.addEventListener("keydown", function (e) {
             if ((e.ctrlKey || e.metaKey) && !e.shiftKey) {
                 const start = this.selectionStart;
                 const end = this.selectionEnd;
                 const selectedText = this.value.substring(start, end);
 
-                if (e.key === 'b') {
+                if (e.key === "b") {
                     e.preventDefault();
-                    this.setRangeText(`**${selectedText}**`, start, end, 'end');
-                } else if (e.key === 'i') {
+                    this.setRangeText(`**${selectedText}**`, start, end, "end");
+                } else if (e.key === "i") {
                     e.preventDefault();
-                    this.setRangeText(`*${selectedText}*`, start, end, 'end');
-                } else if (e.key === 'u') {
+                    this.setRangeText(`*${selectedText}*`, start, end, "end");
+                } else if (e.key === "u") {
                     e.preventDefault();
-                    this.setRangeText(`<u>${selectedText}</u>`, start, end, 'end');
+                    this.setRangeText(
+                        `<u>${selectedText}</u>`,
+                        start,
+                        end,
+                        "end",
+                    );
                 }
             }
         });
@@ -572,61 +595,64 @@ document.addEventListener('DOMContentLoaded', () => {
     // Profanity filter for comment textarea
     if (textarea) {
         const profanityMap = {
-            "badword": "🐸",
-            "ugly": "🌸",
-            "stupid": "🍭",
-            "hate": "💖",
-            "fuck": "ദ്ദി(˵ •̀ ᴗ - ˵ ) ✧",
-            "shit": "˙ . ꒷ 🍰 . 𖦹˙—",
-            "asshole": "ᕙ(  •̀ ᗜ •́  )ᕗ",
-            "ass":"(⸝⸝๑﹏๑⸝⸝)",
-            "kys":"🎀🪞🩰🦢🕯️",
-            "faggot":"🫧",
-            "retarded": "▶︎ •၊၊||၊|။|||||||• 0:10",
+            badword: "🐸",
+            ugly: "🌸",
+            stupid: "🍭",
+            hate: "💖",
+            fuck: "ദ്ദി(˵ •̀ ᴗ - ˵ ) ✧",
+            shit: "˙ . ꒷ 🍰 . 𖦹˙—",
+            asshole: "ᕙ(  •̀ ᗜ •́  )ᕗ",
+            ass: "(⸝⸝๑﹏๑⸝⸝)",
+            kys: "🎀🪞🩰🦢🕯️",
+            faggot: "🫧",
+            retarded: "▶︎ •၊၊||၊|။|||||||• 0:10",
             "kill your self": "🌸˚˖⋆",
-            "bitch": "˙ . ꒷ 🍰 . 𖦹˙—",
-            "dick": "Ϟ(๑⚈ ․̫ ⚈๑)⋆",
-            "betch": "꧁ᬊᬁᴀɴɢᴇʟᬊ᭄꧂",
-            "nigga": "˙✧˖🌅📸 ༘ ⋆｡˚", //spyke ga type
-            "nigger": "˙⋆｡ﾟ☁︎｡⋆｡ ﾟ☾ ﾟ｡⋆",
-            "nazi": "𓆉𓆝 𓆟 𓆞 𓆝 𓆟𓇼",
-            "wtf": "* ੈ ♡ ⸝⸝🪐 ༘ ⋆",
-            "atay": "⁺˚⋆｡°✩₊✩°｡⋆˚⁺",
-            "bobo": "≽^•⩊•^≼" ,
-            "tanga": "₊ ⊹🪻 ✿˚. ᵎᵎ 🫐 ༘ ⋆｡˚",
-            "tangina": " *‧.₊˚*੭*ˊᵕˋ੭.*",
-            "putangina": "˙⋆.˚🦋༘⋆",
-            "sybau":"𖡼𖤣𖥧𖡼𓋼𖤣𖥧𓋼𓍊",
-            "syet": "⋆｡‧˚ʚ🍓ɞ˚‧｡⋆",
-            "puta": "₍^. .^₎⟆",
-            "sex": "˚.🎀༘⋆",
-            "kill": "༘⋆₊ ⊹★🔭๋࣭ ⭑⋆｡˚",
+            bitch: "˙ . ꒷ 🍰 . 𖦹˙—",
+            dick: "Ϟ(๑⚈ ․̫ ⚈๑)⋆",
+            betch: "꧁ᬊᬁᴀɴɢᴇʟᬊ᭄꧂",
+            nigga: "˙✧˖🌅📸 ༘ ⋆｡˚", //spyke ga type
+            nigger: "˙⋆｡ﾟ☁︎｡⋆｡ ﾟ☾ ﾟ｡⋆",
+            nazi: "𓆉𓆝 𓆟 𓆞 𓆝 𓆟𓇼",
+            wtf: "* ੈ ♡ ⸝⸝🪐 ༘ ⋆",
+            atay: "⁺˚⋆｡°✩₊✩°｡⋆˚⁺",
+            bobo: "≽^•⩊•^≼",
+            tanga: "₊ ⊹🪻 ✿˚. ᵎᵎ 🫐 ༘ ⋆｡˚",
+            tangina: " *‧.₊˚*੭*ˊᵕˋ੭.*",
+            putangina: "˙⋆.˚🦋༘⋆",
+            sybau: "𖡼𖤣𖥧𖡼𓋼𖤣𖥧𓋼𓍊",
+            syet: "⋆｡‧˚ʚ🍓ɞ˚‧｡⋆",
+            puta: "₍^. .^₎⟆",
+            sex: "˚.🎀༘⋆",
+            kill: "༘⋆₊ ⊹★🔭๋࣭ ⭑⋆｡˚",
             "tang ina": "⊹ ࣪ ﹏𓊝﹏𓂁﹏⊹ ࣪ ˖",
-            "kayata": "˗ˏˋ(ˊ•͈ω•͈ˋ)ˎˊ˗",
-            "kayasa": "✩₊˚.⋆☾𓃦☽⋆⁺₊✧",
-            "piss": "🪼⋆｡𖦹°🫧⋆.ೃ࿔*:･",
+            kayata: "˗ˏˋ(ˊ•͈ω•͈ˋ)ˎˊ˗",
+            kayasa: "✩₊˚.⋆☾𓃦☽⋆⁺₊✧",
+            piss: "🪼⋆｡𖦹°🫧⋆.ೃ࿔*:･",
             "pak you": "꧁⎝ 𓆩༺✧༻𓆪 ⎠꧂",
-            "pakyu": "꧁⎝ 𓆩༺✧༻𓆪 ⎠꧂",
-            "retard": "ᯓ★",
+            pakyu: "꧁⎝ 𓆩༺✧༻𓆪 ⎠꧂",
+            retard: "ᯓ★",
         };
-
-
 
         function filterProfanity(text) {
             // Normalization for spaced-out or symbol-separated profanity
-            const normalized = text.toLowerCase().replace(/[^a-zA-Z0-9]/g, '');
-            Object.keys(profanityMap).forEach(badWord => {
-                const compactBadWord = badWord.replace(/\s+/g, '').toLowerCase();
+            const normalized = text.toLowerCase().replace(/[^a-zA-Z0-9]/g, "");
+            Object.keys(profanityMap).forEach((badWord) => {
+                const compactBadWord = badWord
+                    .replace(/\s+/g, "")
+                    .toLowerCase();
                 if (normalized.includes(compactBadWord)) {
                     // e.g. "b a d w o r d" or "b-a-d-w-o-r-d" or "b_a_d_w_o_r_d"
-                    const regex = new RegExp(badWord.split('').join('[^a-zA-Z0-9]*'), 'gi');
+                    const regex = new RegExp(
+                        badWord.split("").join("[^a-zA-Z0-9]*"),
+                        "gi",
+                    );
                     text = text.replace(regex, profanityMap[badWord]);
                 }
             });
             // Standard word-boundary replacement for direct matches
             let result = text;
             for (const word in profanityMap) {
-                const regex = new RegExp(`\\b${word}\\b`, 'gi');
+                const regex = new RegExp(`\\b${word}\\b`, "gi");
                 result = result.replace(regex, profanityMap[word]);
             }
             return result;
@@ -635,7 +661,7 @@ document.addEventListener('DOMContentLoaded', () => {
         // Track if profanity was previously detected
         let profanityWasPresent = false;
 
-        textarea.addEventListener('input', () => {
+        textarea.addEventListener("input", () => {
             const originalValue = textarea.value;
             let newValue = filterProfanity(originalValue);
             let profanityDetected = newValue !== originalValue;
@@ -649,21 +675,29 @@ document.addEventListener('DOMContentLoaded', () => {
                 spookyAutoType(true);
                 profanityWasPresent = false;
             }
-            if (document.getElementById('char-count')) {
-                document.getElementById('char-count').textContent = `${newValue.length}/500`;
+            if (document.getElementById("char-count")) {
+                document.getElementById("char-count").textContent =
+                    `${newValue.length}/500`;
             }
         });
 
         // Spooky typing effect function with reverse animation
         function spookyAutoType(reverse = false) {
-            let warning = document.querySelector('.spooky-warning');
-            const message = "Not very punk rock of you to use that language, is it?";
+            let warning = document.querySelector(".spooky-warning");
+            const message =
+                "Not very punk rock of you to use that language, is it?";
 
             // Create if it doesn't exist
             if (!warning) {
-                warning = document.createElement('span');
-                warning.className = 'text-xs text-red-500 spooky-warning ml-2 block mt-1';
-                textarea.parentNode.appendChild(warning);
+                warning = document.createElement("span");
+                warning.className =
+                    "text-xs text-red-500 spooky-warning ml-2 block mt-1";
+                document
+                    .getElementById("below-textarea")
+                    .insertBefore(
+                        warning,
+                        document.getElementById("char-count"),
+                    );
             }
 
             let index = reverse ? message.length : 0;
@@ -693,5 +727,4 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 });
 
-import './comments.js';
-
+import "./comments.js";
