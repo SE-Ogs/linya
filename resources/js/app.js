@@ -692,3 +692,6 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 });
+
+import './comments.js';
+

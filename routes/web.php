@@ -12,6 +12,8 @@ use App\Models\Article;
 use App\Models\Tag;
 use App\Http\Controllers\DashboardSearchController;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\CommentController;
+
 
 // Root redirect
 Route::get('/', function () {
@@ -21,13 +23,12 @@ Route::get('/', function () {
 // ============================================================================
 // GUEST ROUTES (Dashboard - No Authentication Required)
 // ============================================================================
-// Dashboard routes
 Route::get('/dashboard', function () {
-
     $articles = Article::with('tags')
         ->where('status', 'Published')
         ->orderByDesc('views')
         ->get();
+
     return view('layout.user', compact('articles'));
 })->name('dashboard');
 
@@ -51,8 +52,12 @@ Route::get('/dashboard/{tag_slug}', function ($tag_slug) {
 
 Route::post('/articles', [ArticleController::class, 'store'])->name('articles.store');
 Route::get('/articles/{id}', [ArticleController::class, 'show'])->name('articles.show');
+Route::post('/articles/{article}/comments', [CommentController::class, 'store'])->name('comments.store');
+Route::delete('/comments/{comment}', [CommentController::class, 'destroy'])->name('comments.destroy');
 
-// Authentication routes
+// ============================================================================
+// AUTHENTICATION ROUTES
+// ============================================================================
 Route::middleware('guest')->group(function () {
     Route::get('/login', [UserAuthController::class, 'showLogin'])->name('login');
     Route::get('/signup', [UserAuthController::class, 'showSignup'])->name('signup');
@@ -60,7 +65,6 @@ Route::middleware('guest')->group(function () {
     Route::post('/signup', [UserAuthController::class, 'signup']);
     Route::post('/clear-signup-data', [UserAuthController::class, 'clearSignupData'])->name('clear-signup-data');
 
-    // Password reset routes
     Route::get('/reset-password', function () {
         return view('partials.reset_password');
     })->name('password.request');
@@ -75,22 +79,18 @@ Route::middleware('guest')->group(function () {
 });
 
 // ============================================================================
-// AUTHENTICATED ROUTES (Require Authentication)
+// AUTHENTICATED ROUTES
 // ============================================================================
 Route::middleware('auth')->group(function () {
 
-    // Logout
     Route::post('/logout', [UserAuthController::class, 'logout'])->name('logout');
 
-    // Display name setup
     Route::get('/set-display-name', [UserAuthController::class, 'showDisplayName']);
     Route::post('/set-display-name', [UserAuthController::class, 'storeDisplayName']);
 
-    // User settings
     Route::get('/settings', [SettingsController::class, 'showSettings'])->name('settings');
     Route::post('/settings', [UserManagementController::class, 'update'])->name('settings.update');
 
-    // Recent searches
     Route::get('/recent-searches', [RecentSearchController::class, 'index'])->name('recent-searches.index');
     Route::post('/recent-searches', [RecentSearchController::class, 'store'])->name('recent-searches.store');
     Route::delete('/recent-searches', [RecentSearchController::class, 'clear']);
@@ -99,22 +99,19 @@ Route::middleware('auth')->group(function () {
     // Comment management
     Route::get('/articles/{slug}', [CommentManageController::class, 'show'])->name('comment.manage.show');
 
-    // Search functionality
     Route::get('/comment-manage-searchbar', [SearchFilterController::class, 'index'])->name('search');
 
     // ========================================================================
-    // ADMIN ROUTES (Additional middleware can be added here if needed)
+    // ADMIN ROUTES
     // ========================================================================
     Route::middleware(['admin'])->prefix('admin')->name('admin.')->group(function () {
 
-        // Admin dashboard
         Route::get('/dashboard', [AdminDashboardController::class, 'index'])->name('dashboard');
 
         // Post management
         Route::get('/articles', function (\Illuminate\Http\Request $request) {
             $query = Article::with('tags');
 
-            // Apply filters
             if ($request->filled('status') && $request->status !== 'All') {
                 $query->where('status', $request->status);
             }
@@ -151,6 +148,11 @@ Route::middleware('auth')->group(function () {
 
         // Comment management
         Route::get('/comments', [CommentManageController::class, 'index'])->name('comments');
+        Route::post('/comments/{comment}/like', [CommentController::class, 'like'])->name('comments.like');
+        Route::post('/comments/{comment}/dislike', [CommentController::class, 'dislike'])->name('comments.dislike');
+        Route::post('/articles/{article}/comments/ajax', [CommentController::class, 'storeAjax'])->name('comments.store.ajax');
+        Route::post('/comments/{comment}/like', [CommentController::class, 'like'])->name('comments.like');
+        Route::post('/comments/{comment}/dislike', [CommentController::class, 'dislike'])->name('comments.dislike');
 
         // User management
         Route::get('/users', [UserManagementController::class, 'index'])->name('index');
