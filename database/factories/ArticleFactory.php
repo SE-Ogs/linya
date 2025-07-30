@@ -14,12 +14,16 @@ class ArticleFactory extends Factory
 
     public function definition(): array
     {
+        $article = $this->faker->paragraphs(3, true);
+        $status = $this->faker->randomElement(['Pending', 'Approved', 'Published', 'Rejected']);
+
         return [
             'title' => $this->faker->sentence(),
-            'article' => $this->faker->paragraphs(3, true),
-            'summary' => $this->faker->paragraph(),
-            'status' => $this->faker->randomElement(['pending', 'approved', 'published', 'rejected']),
-            'views' => $this->faker->numberBetween(1,50),
+            'article' => $article,
+            'summary' => substr($article, 0, 100),
+            'status' => $status,
+            'views' => $this->faker->numberBetween(1, 50),
+            'rejection_reason' => $status === 'Rejected' ? $this->faker->sentence() : null
         ];
     }
 }

@@ -14,56 +14,8 @@
 </head>
 
 <body class="flex flex-col min-h-screen">
-    <!--- Admin Sidebar -->
-    <aside id="sidebar" class="bg-[#23222E] w-64 h-screen text-white flex flex-col p-4 font-lexend fixed top-0 left-0 z-50 transition-transform duration-300">
-        <div class="flex justify-center mb-8 mt-2">
-            <img src="/images/linyaText.svg" alt="LINYA Logo" class="h-10 w-auto" />
-        </div>
-        <nav class="flex flex-col gap-2">
-            <a href="/dashboard" class="py-2 px-3 rounded hover:bg-[#35344a] transition text-lg font-bold">Dashboard</a>
-            <a href="/user-management" class="py-2 px-3 rounded hover:bg-[#35344a] transition text-base font-medium">User Management</a>
-            <div class="bg-orange-400 text-white rounded">
-                <button id="postMgmtToggle" class="w-full flex items-center justify-between py-2 px-3 text-base font-semibold">
-                    Post Management
-                    <svg class="w-4 h-4 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
-                    </svg>
-                </button>
-            </div>
-
-            <div id="postMgmtMenu" class="bg-orange-400 text-white rounded hidden">
-                <a href="/blog-analytics" class="block py-2 px-3 text-base font-semibold hover:underline">Blog Analytics</a>
-                <a href="/article-management" class="block pl-6 py-2 text-sm font-normal hover:underline">Article Management</a>
-            </div>
-            <a href="/comment-management" class="py-2 px-3 rounded hover:bg-[#35344a] transition text-base font-medium">Comment Management</a>
-        </nav>
-    </aside>
-
-    <!-- Header -->
-    <header class="bg-[#23222E] text-white px-8 py-4 flex justify-between items-center shadow-md h-20 flex-shrink-0">
-        <button id="sidebarToggle" class="p-2 bg-[#2C2B3C] hover:bg-[#35344a] transition">
-            <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>
-            </svg>
-        </button>
-        <div class="flex items-center space-x-4">
-            <button class="relative p-2 hover:bg-gray-700 rounded-full">
-                <svg class="w-6 h-6 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"/>
-                </svg>
-                <span class="absolute -top-1 -right-1 bg-red-500 text-xs rounded-full h-5 w-5 flex items-center justify-center font-medium">3</span>
-            </button>
-            <div class="flex items-center space-x-3">
-                <div class="w-10 h-10 bg-gray-600 rounded-full flex items-center justify-center">
-                    <span class="text-white font-semibold text-sm">JR</span>
-                </div>
-                <div>
-                    <span class="font-semibold text-sm">Jarod R.</span>
-                    <p class="text-xs text-gray-400 font-noto">Administrator</p>
-                </div>
-            </div>
-        </div>
-    </header>
+    @include('partials.admin_sidebar')
+    @include('partials.admin_header')
 
     <!--- Add Article -->
     <div id="mainContent" class="transition-all duration-300 ml-64 flex-1 min-h-0 flex flex-col bg-gray-50 p-8 overflow-auto">
@@ -107,14 +59,14 @@
                         @php
                             $dotColors = [
                                 'bg-blue-500',
-                                'bg-black', 
+                                'bg-black',
                                 'bg-gray-600',
                                 'bg-yellow-500',
                                 'bg-red-500',
                             ];
                             $dotColor = $dotColors[$index % count($dotColors)];
                         @endphp
-                        
+
                         <label class="tag-checkbox cursor-pointer">
                             <input type="checkbox" name="tags[]" value="{{ $tag->id }}" id="tag-{{ $tag->id }}"
                                 class="hidden"
@@ -134,7 +86,7 @@
                     @endforeach
                 </div>
             </div>
-            
+
 
             <!-- Description Field -->
             <div class="w-full flex-1 flex flex-col">
@@ -215,7 +167,7 @@
 
         document.getElementById('previewButton').addEventListener('click', function () {
             const form = this.closest('form');
-            form.action = "{{ route('articles.preview') }}";
+            form.action = "{{ route('admin.articles.preview') }}";
             form.submit();
         })
 

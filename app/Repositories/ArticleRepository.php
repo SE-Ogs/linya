@@ -40,4 +40,28 @@ class ArticleRepository
         $article = Article::findOrFail($id);
         $article->delete();
     }
+
+    public function approve($id)
+    {
+        $article = Article::findOrFail($id);
+        $article->update(['status' => 'Approved', 'rejection_reason' => null]);
+        return $article;
+    }
+
+    public function publish($id)
+    {
+        $article = Article::findOrFail($id);
+        $article->update(['status' => 'Published']);
+        return $article;
+    }
+
+    public function reject($id, $reason)
+    {
+        $article = Article::findOrFail($id);
+        $article->update([
+            'status' => 'Rejected',
+            'rejection_reason' => $reason
+        ]);
+        return $article;
+    }
 } 

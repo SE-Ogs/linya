@@ -28,7 +28,7 @@ class ArticleService
         $data['views'] = 0;
 
         if (!isset($data['status'])) {
-            $data['status'] = 'published'; // TODO CHANGE TO PENDING
+            $data['status'] = 'Published'; // TODO CHANGE TO PENDING
         }
         return $this->articleRepository->create($data);
     }
@@ -41,5 +41,20 @@ class ArticleService
     public function deleteArticle($id)
     {
         return $this->articleRepository->delete($id);
+    }
+
+    public function approveArticle($id)
+    {
+        return $this->articleRepository->approve($id);
+    }
+
+    public function publishArticle($id)
+    {
+        return $this->articleRepository->publish($id);
+    }
+
+    public function rejectArticle($id, $reason)
+    {
+        return $this->articleRepository->reject($id, $reason);
     }
 }

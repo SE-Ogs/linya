@@ -17,6 +17,93 @@ class UserAuthController extends Controller
         return view('layout.login-and-signup', ['show' => 'signup']);
     }
 
+    public function signup(Request $request)
+    {
+        // $request->session()->regenerate();
+        $credentials = $request->validate([
+            'username_signup' => ['required', 'string', 'max:255', 'unique:users,username'],
+            'email' => ['required', 'string', 'email', 'max:255', 'unique:users'],
+            'password' => ['required', 'string', 'min:8'],
+        ], [
+            'username_signup.unique' => 'That username is already taken. Try another one.',
+            'email.unique' => 'That email is already in use.',
+            'password.min' => 'Your password must be at least :min characters.',
+        ], [
+        ]);
+
+        // Store signup data in session temporarily
+        $request->session()->put('signup_data', [
+            'username' => $credentials['username_signup'],
+            'email' => $credentials['email'],
+            'password' => bcrypt($credentials['password']),
+        ]);
+
+        $request->session()->put('signup_data_expires_at', now()->addMinutes(5));
+
+        return redirect('/set-display-name');
+    }
+
+    public function showDisplayName()
+    {
+        $expiresAt = session('signup_data_expires_at');
+
+        if (!session()->has('signup_data') || !$expiresAt || now()->greaterThan($expiresAt)) {
+            session()->forget(['signup_data', 'signup_data_expires_at']); 
+            return redirect('/signup');
+        }
+
+        return response()
+            ->view('layout.set_displayname_page')
+            ->header('Cache-Control', 'no-store, no-cache, must-revalidate, max-age=0')
+            ->header('Pragma', 'no-cache')
+            ->header('Expires', 'Sat, 01 Jan 2000 00:00:00 GMT');
+    }
+
+
+    public function storeDisplayName(Request $request)
+    {
+        // Check if signup data exists in session
+        if (!session()->has('signup_data')) {
+            return redirect('/signup');
+        }
+
+        $request->validate([
+            'display_name' => ['nullable', 'string', 'max:255'],
+        ]);
+
+        // Get signup data from session
+        $signupData = session('signup_data');
+
+        // Create the user
+        $user = \App\Models\User::create([
+            'name' => $request->display_name ?: $signupData['username'], 
+            'username' => $signupData['username'],
+            'email' => $signupData['email'],
+            'password' => $signupData['password'],
+        ]);
+
+        // Clear signup data from session
+        session()->forget(['signup_data', 'signup_data_expires_at']);
+
+        // Log the user in
+        Auth::login($user);
+
+        // Redirect to dashboard
+        return redirect('/dashboard')->with('success', 'Account created successfully!');
+    }
+
+    public function clearSignupData(Request $request)
+    {
+        $request->session()->forget(['signup_data', 'signup_data_expires_at']);
+        return redirect('/signup')->withHeaders([
+            'Cache-Control' => 'no-cache, no-store, must-revalidate',
+            'Pragma' => 'no-cache',
+            'Expires' => '0',
+        ]);
+    }
+
+
+
     public function login(Request $request)
     {
         $credentials = $request->validate([

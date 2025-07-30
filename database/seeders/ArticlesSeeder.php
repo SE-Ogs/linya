@@ -13,11 +13,27 @@ class ArticlesSeeder extends Seeder
      */
     public function run(): void
     {
-        $tags = Tag::all();
+        // Slugs of the predefined tags (as per TagsSeeder)
+        $predefinedSlugs = [
+            'software-engineering',
+            'game-development',
+            'real-estate-management',
+            'animation',
+            'multimedia-arts-and-design'
+        ];
+
+        // Fetch the tags by slug
+        $tags = Tag::whereIn('slug', $predefinedSlugs)->get();
+
+        // Generate 100 articles and assign 1 random tag each
         Article::factory(100)->create()->each(function ($article) use ($tags) {
-            // Attach 1-3 random tags to each article
-            $randomTags = $tags->random(rand(1, min(3, $tags->count())));
-            $article->tags()->attach($randomTags->pluck('id')->toArray());
+            $randomTag = $tags->random();
+            $article->tags()->attach($randomTag->id);
+
+            // Simulate fake comment count
+            $article->update([
+                'comments_count' => rand(0, 30)
+            ]);
         });
     }
 }

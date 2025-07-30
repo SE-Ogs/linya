@@ -24,24 +24,9 @@ class Article extends Model
         return $this->belongsToMany(Tag::class);
     }
 
-    public function images(): HasMany
-    {
-        return $this->hasMany(Image::class);
-    }
+    public function comments()
+{
+    return $this->hasMany(Comment::class)->with('user', 'replies.user');
+}
 
-    public function featuredImage()
-    {
-        return $this->hasOne(Image::class)->where('is_featured', true);
-    }
-
-    public function addImage(string $path, bool $isFeatured = false, string $altText = null): images
-    {
-        return $this->images()->create([
-            'path' => $path,
-            'is_featured' => $isFeatured,
-            'alt_text' => $altText,
-        ]);
-
-
-    }
 }

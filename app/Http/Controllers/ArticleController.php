@@ -12,6 +12,7 @@ use Illuminate\View\View;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use App\Models\Article;
+use App\Models\Comment;
 
 class ArticleController extends Controller
 {
@@ -32,12 +33,46 @@ class ArticleController extends Controller
         return response()->json($dtos);
     }
 
-    public function show($id)
-    {
-        $article = $this->articleService->getArticle($id);
-        $article->increment('views');
-        return view('article-management.show_article', compact('article'));
+    public function show($id, Request $request)
+{
+    $article = $this->articleService->getArticle($id);
+    $article->increment('views');
+
+    $sort = $request->query('sort', 'all');
+
+    $commentsQuery = Comment::with([
+        'user',
+        'replies',
+        'likes' // Load likes for user reactions
+    ])
+        ->where('article_id', $article->id)
+        ->whereNull('parent_id');
+
+    switch ($sort) {
+        case 'newest':
+            $commentsQuery->orderByDesc('created_at');
+            break;
+        case 'oldest':
+            $commentsQuery->orderBy('created_at');
+            break;
+        case 'most_liked':
+            $commentsQuery->withCount('likes')->orderByDesc('likes_count');
+            break;
+        case 'all':
+        default:
+            $commentsQuery->orderByDesc('created_at');
+            break;
     }
+
+    $comments = $commentsQuery->get();
+
+    if ($request->ajax()) {
+        return view('partials.comments_list', compact('comments', 'article', 'sort'));
+    }
+
+    return view('article-management.show_article', compact('article', 'comments', 'sort'));
+}
+
 
     public function create(): View
     {
@@ -51,16 +86,11 @@ class ArticleController extends Controller
         return response()->json(ArticleDTO::fromModel($article), 201);
     }
 
-    public function update(UpdateArticleRequest $request, $id): JsonResponse
-    {
-        $article = $this->articleService->updateArticle($id, $request->validated());
-        return response()->json(ArticleDTO::fromModel($article));
-    }
-
-    public function destroy($id): JsonResponse
+    public function destroy($id)
     {
         $this->articleService->deleteArticle($id);
-        return response()->json(null, 204);
+
+        return redirect()->route('admin.articles')->with('success', 'Article deleted!');
     }
 
     public function preview(\Illuminate\Http\Request $request)
@@ -77,7 +107,7 @@ class ArticleController extends Controller
             'tagModels' => $tags,
         ]);
     }
-    
+
     public function backtoCreate(Request $request): RedirectResponse
     {
         return redirect()->route('articles.create')
@@ -86,8 +116,71 @@ class ArticleController extends Controller
 
     public function edit($id)
     {
+        // Find the article by ID
+        $article = Article::with('tags')->findOrFail($id);
+
+        // Get all available tags
+        $tags = Tag::all();
+
+        // Pass the article and tags to the view
+        return view('article-management.edit_article', compact('article', 'tags'));
+    }
+
+    public function update(Request $request, $id)
+    {
+        // Check if the request is coming from an API or a web form
+        if ($request->expectsJson()) {
+            // Handle API request
+            $article = $this->articleService->updateArticle($id, $request->validated());
+            return response()->json(ArticleDTO::fromModel($article));
+        }
+
+        // Handle web form request
+        $validatedData = $request->validate([
+            'title' => 'required|string|max:255',
+            'summary' => 'required|string|max:255',
+            'article' => 'required|string',
+            'tags' => 'array', // Optional: Ensure tags are an array
+            'tags.*' => 'exists:tags,id', // Ensure each tag exists in the tags table
+        ]);
+
+        // Find the article by ID
         $article = Article::findOrFail($id);
-        return view('admin-panel.articles.edit', compact('article'));
+
+        // Update the article fields
+        $article->title = $validatedData['title'];
+        $article->summary = $validatedData['summary'];
+        $article->article = $validatedData['article'];
+        $article->save();
+
+        // Sync the tags (if provided)
+        if (isset($validatedData['tags'])) {
+            $article->tags()->sync($validatedData['tags']);
+        }
+
+        // Redirect back with a success message
+        return redirect()->route('articles.edit', $id)->with('success', 'Article updated successfully!');
+    }
+
+    public function approve($id)
+    {
+        $this->articleService->approveArticle($id);
+        return redirect()->route('admin.articles')->with('success', 'Article approved!');
+    }
+
+    public function reject(Request $request, $id)
+    {
+        $request->validate([
+            'rejection_reason' => 'required|string|max:500'
+        ]);
+        $this->articleService->rejectArticle($id, $request->input('rejection_reason'));
+        return redirect()->route('admin.articles')->with('success', 'Article has been rejected.');
+    }
+
+    public function publish($id)
+    {
+        $this->articleService->publishArticle($id);
+        return redirect()->route('admin.articles')->with('success', 'Article published!');
     }
 
     public function deleteImage($imageId): JsonResponse

@@ -10,7 +10,7 @@
 
         <title>Linya</title>
 
-        @vite('resources/css/app.css')
+        @vite(['resources/css/app.css'])
 
     </head>
 
@@ -45,6 +45,20 @@
                     </a>
                 </div>
             @endguest
+
+            @auth
+                @if (auth()->user()->isAdmin)
+                    <div class="m-4">
+                        <a href="{{ route('admin.dashboard') }}">
+                            <button
+                                    class="cursor-pointer rounded-[6px] bg-[#4338CA] px-5 py-2 text-white transition duration-300 hover:bg-[#2C2891]">
+                                Admin Dashboard
+                            </button>
+                        </a>
+                    </div>
+                @endif
+            @endauth
+
         </div>
 
         <aside id="sidebar"
