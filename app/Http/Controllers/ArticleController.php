@@ -42,8 +42,8 @@ class ArticleController extends Controller
 
     $commentsQuery = Comment::with([
         'user',
-        'children',
-        'userReaction' // 🔥 include the current user's reaction
+        'replies',
+        'likes' // Load likes for user reactions
     ])
         ->where('article_id', $article->id)
         ->whereNull('parent_id');

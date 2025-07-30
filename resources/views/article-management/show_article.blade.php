@@ -97,7 +97,9 @@
 
        @include('partials.ad_space')
 
-        @include('partials.comments', ['article' => $article, 'comments' => $comments])
+        <div class="p-8 max-w-7xl mx-auto">
+            @include('partials.comments', ['article' => $article, 'comments' => $comments])
+        </div>
 
     </main>
 
