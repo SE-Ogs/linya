@@ -61,6 +61,8 @@ Route::middleware('guest')->group(function () {
     Route::get('/signup', [UserAuthController::class, 'showSignup'])->name('signup');
     Route::post('/login', [UserAuthController::class, 'login']);
     Route::post('/signup', [UserAuthController::class, 'signup']);
+    Route::get('/set-display-name', [UserAuthController::class, 'showDisplayName']);
+    Route::post('/set-display-name', [UserAuthController::class, 'storeDisplayName']);
     Route::post('/clear-signup-data', [UserAuthController::class, 'clearSignupData'])->name('clear-signup-data');
 
     Route::get('/reset-password', function () {
