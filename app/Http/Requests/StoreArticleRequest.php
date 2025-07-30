@@ -19,6 +19,7 @@ class StoreArticleRequest extends FormRequest
             'article' => 'required|string',
             'tags' => 'required|array',
             'tags.*' => 'exists:tags,id',
+            'imageData' => 'nullable|string',
         ];
     }
 }

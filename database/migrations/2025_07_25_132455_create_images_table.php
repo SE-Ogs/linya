@@ -15,7 +15,6 @@ return new class extends Migration
             $table->id();
             $table->foreignId('article_id')->constrained('articles')->onDelete('cascade');
             $table->string('image_path');
-            $table->string('alt_text')->nullable();
             $table->integer('order')->default(0);
             $table->boolean('is_featured')->default(false);
             $table->timestamps();

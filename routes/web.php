@@ -141,6 +141,7 @@ Route::middleware('auth')->group(function () {
         })->name('articles');
 
         Route::get('/add-article', [ArticleController::class, 'create'])->name('articles.create');
+        Route::post('/articles', [ArticleController::class, 'store'])->name('articles.store');
         Route::post('/articles/preview', [ArticleController::class, 'preview'])->name('articles.preview');
         Route::post('/articles/back-to-editor', [ArticleController::class, 'backToEditor'])->name('articles.back-to-editor');
         Route::get('/edit-article/{id}', [ArticleController::class, 'edit'])->name('articles.edit');
