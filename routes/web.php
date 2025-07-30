@@ -78,8 +78,12 @@ Route::middleware('guest')->group(function () {
     });
 });
 
-
-Route::post('/articles/{article}/comments/ajax', [CommentController::class, 'storeAjax'])->name('comments.store.ajax');
+// Route::post('/articles/{article}/comments/ajax', [CommentController::class, 'storeAjax'])->name('comments.store.ajax');
+// Route::get('/comments', [CommentManageController::class, 'index'])->name('comments');
+// Route::post('/comments/{comment}/like', [CommentController::class, 'like'])->name('comments.like');
+// Route::post('/comments/{comment}/dislike', [CommentController::class, 'dislike'])->name('comments.dislike');
+// Route::post('/comments/{comment}/like', [CommentController::class, 'like'])->name('comments.like');
+// Route::post('/comments/{comment}/dislike', [CommentController::class, 'dislike'])->name('comments.dislike');
 
 // ============================================================================
 // AUTHENTICATED ROUTES
@@ -103,6 +107,13 @@ Route::middleware('auth')->group(function () {
     Route::get('/articles/{slug}', [CommentManageController::class, 'show'])->name('comment.manage.show');
     Route::post('/articles/{article}/comments', [CommentController::class, 'store'])->name('comments.store');
     Route::delete('/comments/{comment}', [CommentController::class, 'destroy'])->name('comments.destroy');
+
+    Route::post('/articles/{article}/comments/ajax', [CommentController::class, 'storeAjax'])->name('comments.store.ajax');
+    Route::get('/comments', [CommentManageController::class, 'index'])->name('comments');
+    Route::post('/comments/{comment}/like', [CommentController::class, 'like'])->name('comments.like');
+    Route::post('/comments/{comment}/dislike', [CommentController::class, 'dislike'])->name('comments.dislike');
+    Route::post('/comments/{comment}/like', [CommentController::class, 'like'])->name('comments.like');
+    Route::post('/comments/{comment}/dislike', [CommentController::class, 'dislike'])->name('comments.dislike');
 
     Route::get('/comment-manage-searchbar', [SearchFilterController::class, 'index'])->name('search');
 
@@ -153,11 +164,11 @@ Route::middleware('auth')->group(function () {
 
         // Comment management
         Route::get('/comments', [CommentManageController::class, 'index'])->name('comments');
-        Route::post('/comments/{comment}/like', [CommentController::class, 'like'])->name('comments.like');
-        Route::post('/comments/{comment}/dislike', [CommentController::class, 'dislike'])->name('comments.dislike');
+        // Route::post('/comments/{comment}/like', [CommentController::class, 'like'])->name('comments.like');
+        // Route::post('/comments/{comment}/dislike', [CommentController::class, 'dislike'])->name('comments.dislike');
         // Route::post('/articles/{article}/comments/ajax', [CommentController::class, 'storeAjax'])->name('comments.store.ajax');
-        Route::post('/comments/{comment}/like', [CommentController::class, 'like'])->name('comments.like');
-        Route::post('/comments/{comment}/dislike', [CommentController::class, 'dislike'])->name('comments.dislike');
+        // Route::post('/comments/{comment}/like', [CommentController::class, 'like'])->name('comments.like');
+        // Route::post('/comments/{comment}/dislike', [CommentController::class, 'dislike'])->name('comments.dislike');
 
         // User management
         Route::get('/users', [UserManagementController::class, 'index'])->name('index');
