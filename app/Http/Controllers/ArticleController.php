@@ -182,4 +182,40 @@ class ArticleController extends Controller
         $this->articleService->publishArticle($id);
         return redirect()->route('admin.articles')->with('success', 'Article published!');
     }
+
+    public function deleteImage($imageId): JsonResponse
+    {
+        $image = ArticleImage::findOrFail($imageId);
+        $image->deleteImage($image);
+        return response()->json(null,204);
+    }
+
+    protected function storeImage($imageFile): string 
+    {
+        return $imageFile->store('article_images', 'public');
+    }
+
+    //maybe for more than one image
+    protected function storeAdditionalImages(Article $article, array $images): void 
+    {
+        foreach ($images as $image) {
+            $path = $this->storeImage($iamge);
+            $article->images()->create([
+                'path' => $path,
+                'is_featured' => false,
+            ]);
+        }
+    }
+
+    protected function deletetImage(ArticleImage $image): void
+    {
+        Storage::disk('public')->delete($image->path);
+        $image->delete();
+    }
+
+    protected function getTemporaryImageUrl($imageFile): string
+    {
+        return 'data:image/' . $imageFile->getClientOriginalExtension() . ';base64,' . base64_encode(file_get_contents($imageFile->getRealPath()));
+    }
+
 }
