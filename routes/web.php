@@ -156,7 +156,7 @@ Route::middleware('auth')->group(function () {
         Route::get('/comments', [CommentManageController::class, 'index'])->name('comments');
 
         // User management
-        Route::get('/users', [UserManagementController::class, 'index'])->name('users.index');
+        Route::get('/users', [UserManagementController::class, 'index'])->name('index');
         Route::prefix('users')->name('users.')->group(function () {
             Route::get('{id}/edit', [UserManagementController::class, 'edit'])->name('edit');
             Route::patch('{id}', [UserManagementController::class, 'update'])->name('update');
