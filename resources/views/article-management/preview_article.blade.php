@@ -99,13 +99,27 @@
         document.getElementById('imageUploadInput').addEventListener('change', function(e) {
             const file = e.target.files[0];
             if (file) {
-                const reader = new FileReader();
-                reader.onload = function(e) {
-                    // You can handle the image preview here
-                    console.log('Image uploaded:', e.target.result);
-                };
-                reader.readAsDataURL(file);
+                const formData = new FormData();
+                formData.append('image', file);
+            
+                fetch('/upload-image', {
+                    method: 'POST',
+                    body: formData,
+                    headers: {
+                        'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                    },
+                    body: formData
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.url) {
+                console.log('Image uploaded successfully:', data.url);
+            } else {
+                alert('Image upload failed.');
             }
+        })
+        .catch(() => alert('Upload error'));
+        }
         });
     </script>
 </body>
