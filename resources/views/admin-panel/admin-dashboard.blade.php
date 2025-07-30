@@ -171,7 +171,6 @@
                 analyticsContent.innerHTML = `
                     <div class="relative flex flex-col w-full h-full text-[#24317E] justify-between py-4">
 
-                        <!-- Analytics Stats -->
                         <div class="flex justify-center gap-6 mt-6 mb-6">
                             <!-- Views -->
                             <div class="flex-1 min-w-[150px] text-center space-y-2 bg-gray-100 rounded-2xl p-4 shadow">
@@ -179,20 +178,17 @@
                                 <div class="text-xl font-semibold">Views: ${views}</div>
                             </div>
 
-                            <!-- Comments -->
                             <div class="flex-1 min-w-[150px] text-center space-y-2 bg-gray-100 rounded-2xl p-4 shadow">
                                 <img src="/images/CommentsIcon.png" alt="Comments" class="mx-auto h-10 w-10">
                                 <div class="text-xl font-semibold">Comments: ${comments}</div>
                             </div>
 
-                            <!-- Reports -->
                             <div class="flex-1 min-w-[150px] text-center space-y-2 bg-gray-100 rounded-2xl p-4 shadow">
                                 <img src="/images/ReportsIcon.png" alt="Reports" class="mx-auto h-10 w-10">
                                 <div class="text-xl font-semibold">Reports: N/A</div>
                             </div>
                         </div>
 
-                        <!-- Visit Post Button (unchanged) -->
                         <div class="mt-4 flex justify-center">
                             <a href="/articles/${postId}" class="bg-[#FF8334] text-[#25317E] px-6 py-2 rounded-full font-semibold shadow hover:brightness-110 transition">
                                 Visit Post
