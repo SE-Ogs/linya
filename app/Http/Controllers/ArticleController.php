@@ -34,50 +34,54 @@ class ArticleController extends Controller
     }
 
     public function show($id, Request $request)
-{
-    $article = $this->articleService->getArticle($id);
-    $article->increment('views');
+    {
+        $article = $this->articleService->getArticle($id);
+        $article->increment('views');
 
-    $sort = $request->query('sort', 'all');
+        $sort = $request->query('sort', 'all');
 
-    $commentsQuery = Comment::with([
-        'user',
-        'replies',
-        'likes' // Load likes for user reactions
-    ])
-        ->where('article_id', $article->id)
-        ->whereNull('parent_id');
+        $commentsQuery = Comment::with([
+            'user',
+            'replies',
+            'likes' // Load likes for user reactions
+        ])
+            ->where('article_id', $article->id)
+            ->whereNull('parent_id');
 
-    switch ($sort) {
-        case 'newest':
-            $commentsQuery->orderByDesc('created_at');
-            break;
-        case 'oldest':
-            $commentsQuery->orderBy('created_at');
-            break;
-        case 'most_liked':
-            $commentsQuery->withCount('likes')->orderByDesc('likes_count');
-            break;
-        case 'all':
-        default:
-            $commentsQuery->orderByDesc('created_at');
-            break;
+        switch ($sort) {
+            case 'newest':
+                $commentsQuery->orderByDesc('created_at');
+                break;
+            case 'oldest':
+                $commentsQuery->orderBy('created_at');
+                break;
+            case 'most_liked':
+                $commentsQuery->withCount('likes')->orderByDesc('likes_count');
+                break;
+            case 'all':
+            default:
+                $commentsQuery->orderByDesc('created_at');
+                break;
+        }
+
+        $comments = $commentsQuery->get();
+
+        if ($request->ajax()) {
+            return view('partials.comments_list', compact('comments', 'article', 'sort'));
+        }
+
+        return view('article-management.show_article', compact('article', 'comments', 'sort'));
     }
-
-    $comments = $commentsQuery->get();
-
-    if ($request->ajax()) {
-        return view('partials.comments_list', compact('comments', 'article', 'sort'));
-    }
-
-    return view('article-management.show_article', compact('article', 'comments', 'sort'));
-}
 
 
     public function create(): View
     {
         $tags = Tag::all();
-        return view('article-management.add_article', compact('tags'));
+        
+        // Check if we have form data from preview
+        $formData = session('article_form_data');
+        
+        return view('article-management.add_article', compact('tags', 'formData'));
     }
 
     public function store(StoreArticleRequest $request): JsonResponse
@@ -95,9 +99,14 @@ class ArticleController extends Controller
 
     public function preview(\Illuminate\Http\Request $request)
     {
-
         $articleData = $request->all();
         $tags = Tag::find($articleData['tags'] ?? []);
+        
+        // Handle image data
+        $images = [];
+        if ($request->has('imageData')) {
+            $images = json_decode($request->input('imageData'), true) ?? [];
+        }
 
         return view('article-management.preview_article', [
             'title' => $articleData['title'] ?? '',
@@ -105,12 +114,17 @@ class ArticleController extends Controller
             'article' => $articleData['article'] ?? '',
             'tags' => $articleData['tags'] ?? '',
             'tagModels' => $tags,
+            'images' => $images,
+            'formData' => $articleData, // Store all form data for back to editor
         ]);
     }
 
-    public function backtoCreate(Request $request): RedirectResponse
+    public function backToEditor(Request $request): RedirectResponse
     {
-        return redirect()->route('articles.create')
+        // Store form data in session for restoration
+        $request->session()->put('article_form_data', $request->all());
+        
+        return redirect()->route('admin.articles.create')
             ->withInput($request->all());
     }
 
@@ -187,16 +201,16 @@ class ArticleController extends Controller
     {
         $image = ArticleImage::findOrFail($imageId);
         $image->deleteImage($image);
-        return response()->json(null,204);
+        return response()->json(null, 204);
     }
 
-    protected function storeImage($imageFile): string 
+    protected function storeImage($imageFile): string
     {
         return $imageFile->store('article_images', 'public');
     }
 
     //maybe for more than one image
-    protected function storeAdditionalImages(Article $article, array $images): void 
+    protected function storeAdditionalImages(Article $article, array $images): void
     {
         foreach ($images as $image) {
             $path = $this->storeImage($iamge);
@@ -217,5 +231,4 @@ class ArticleController extends Controller
     {
         return 'data:image/' . $imageFile->getClientOriginalExtension() . ';base64,' . base64_encode(file_get_contents($imageFile->getRealPath()));
     }
-
 }

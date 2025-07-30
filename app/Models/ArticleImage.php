@@ -10,7 +10,7 @@ class ArticleImage extends Model
     use HasFactory;
 
     protected $fillable = [
-        'post_id',
+        'article_id',
         'image_path',
         'alt_text',
         'order',

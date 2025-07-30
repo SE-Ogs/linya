@@ -150,6 +150,7 @@ Route::middleware('auth')->group(function () {
         // Article management
         Route::get('/add-article', [ArticleController::class, 'create'])->name('articles.create');
         Route::post('/articles/preview', [ArticleController::class, 'preview'])->name('articles.preview');
+        Route::post('/articles/back-to-editor', [ArticleController::class, 'backToEditor'])->name('articles.back-to-editor');
         Route::get('/edit-article/{id}', [ArticleController::class, 'edit'])->name('articles.edit');
         Route::put('/edit-article/{id}', [ArticleController::class, 'update'])->name('articles.update');
         Route::patch('/articles/{article}/approve', [ArticleController::class, 'approve'])->name('articles.approve');

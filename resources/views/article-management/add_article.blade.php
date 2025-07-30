@@ -36,7 +36,7 @@
             <!-- Title Field -->
             <div class="w-full">
                 <label for="title" class="block text-sm font-medium text-gray-700 mb-2">Title</label>
-                <input type="text" id="title" name="title" value="{{ old('title') }}" required
+                <input type="text" id="title" name="title" value="{{ $formData['title'] ?? old('title') }}" required
                     class="w-full px-4 py-2 border border-gray-300 rounded-[20px] focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-orange-500 bg-white text-gray-900 placeholder-gray-500
                     shadow-md hover:shadow-lg transition-shadow duration-200"
                     placeholder="Enter title of article...">
@@ -45,7 +45,7 @@
             <!-- Summary Field -->
             <div class="w-full">
                 <label for="summary" class="block text-sm font-medium text-gray-700 mb-2">Summary</label>
-                <input type="text" id="summary" name="summary" value="{{ old('summary') }}" required
+                <input type="text" id="summary" name="summary" value="{{ $formData['summary'] ?? old('summary') }}" required
                     class="w-full px-4 py-2 border border-gray-300 rounded-[20px] focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-orange-500 bg-white text-gray-900 placeholder-gray-500
                     shadow-md hover:shadow-lg transition-shadow duration-200"
                     placeholder="Enter summary of article...">
@@ -65,20 +65,21 @@
                                 'bg-red-500',
                             ];
                             $dotColor = $dotColors[$index % count($dotColors)];
+                            $isChecked = (is_array($formData['tags'] ?? old('tags')) && in_array($tag->id, $formData['tags'] ?? old('tags') ?? []));
                         @endphp
 
                         <label class="tag-checkbox cursor-pointer">
                             <input type="checkbox" name="tags[]" value="{{ $tag->id }}" id="tag-{{ $tag->id }}"
                                 class="hidden"
-                                {{ (is_array(old('tags')) && in_array($tag->id, old('tags'))) ? 'checked' : '' }}>
+                                {{ $isChecked ? 'checked' : '' }}>
                                 <div class="tag-display inline-flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium font-lexend transition-all duration-200 border-2
-                                bg-gray-100 text-gray-700 border-gray-200 hover:bg-gray-200 shadow-md shadow-black/30 hover:shadow-lg hover:shadow-black/40">
+                                {{ $isChecked ? 'bg-orange-500 text-white border-orange-500' : 'bg-gray-100 text-gray-700 border-gray-200 hover:bg-gray-200' }} shadow-md shadow-black/30 hover:shadow-lg hover:shadow-black/40">
                                 <span class="w-2 h-2 {{ $dotColor }} rounded-full"></span>
                                 <span>{{ $tag->name }}</span>
-                                <svg class="w-4 h-4 plus-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <svg class="w-4 h-4 plus-icon {{ $isChecked ? 'hidden' : '' }}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
                                 </svg>
-                                <svg class="w-4 h-4 close-icon hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <svg class="w-4 h-4 close-icon {{ $isChecked ? '' : 'hidden' }}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
                                 </svg>
                             </div>
@@ -87,12 +88,30 @@
                 </div>
             </div>
 
+            <!-- Image Upload Section -->
+            <div class="w-full">
+                <label class="block text-sm font-medium text-gray-700 mb-2">Article Images</label>
+                <div class="border border-dashed border-gray-300 bg-gray-50 rounded-lg p-6 text-center cursor-pointer hover:bg-gray-100 transition-all duration-200" id="imageUploadBox">
+                    <div class="mb-2 text-3xl text-gray-500">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mx-auto">
+                            <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+                            <circle cx="8.5" cy="8.5" r="1.5"></circle>
+                            <polyline points="21 15 16 10 5 21"></polyline>
+                        </svg>
+                    </div>
+                    <div class="text-sm text-gray-500">Click to upload images for this article</div>
+                    <input type="file" id="imageUploadInput" name="images[]" accept="image/*" class="hidden" multiple>
+                </div>
+                <!-- Image Previews -->
+                <div id="imagePreviewContainer" class="flex flex-wrap gap-4 mt-4"></div>
+            </div>
 
             <!-- Description Field -->
             <div class="w-full flex-1 flex flex-col">
                 <label for="description" class="block text-sm font-medium text-gray-700 mb-2">Description</label>
                 <div id="editor" class="border border-gray-300 rounded-lg min-h-[200px] flex-1 bg-white"></div>
-                <input type="hidden" name="article" id="article">
+                <input type="hidden" name="article" id="article" value="{{ $formData['article'] ?? old('article') }}">
+                <input type="hidden" name="imageData" value="{{ $formData['imageData'] ?? old('imageData') }}">
             </div>
 
             <!-- Submit Button -->
@@ -138,20 +157,61 @@
             toggleCase: true,
             codeBlock: true,
             codeInline: true,
-            // imageUpload: {
-            //     imageUploadUrl: '/upload-file/',
-            //     imageMaxSize: 20 * 1024 * 1024 // 20MB
-            // },
-            // fileUpload: {
-            //     fileUploadUrl: '/upload-file/',
-            //     fileMaxSize: 20 * 1024 * 1024 // 20MB
-            // },
             textColor: true,
             backgroundColor: true,
             link: true,
             table: true,
             textAlignment: true
         });
+
+        // Restore form data if coming back from preview
+        document.addEventListener('DOMContentLoaded', function() {
+            // Restore editor content
+            const articleContent = document.querySelector('input[name="article"]');
+            if (articleContent && articleContent.value) {
+                editor.setRayEditorContent(articleContent.value);
+            }
+
+            // Restore images if coming back from preview
+            const imageDataInput = document.querySelector('input[name="imageData"]');
+            if (imageDataInput && imageDataInput.value) {
+                try {
+                    const images = JSON.parse(imageDataInput.value);
+                    restoreImages(images);
+                } catch (e) {
+                    console.error('Error parsing image data:', e);
+                }
+            }
+        });
+
+        function restoreImages(images) {
+            const previewContainer = document.getElementById('imagePreviewContainer');
+            previewContainer.innerHTML = '';
+            
+            images.forEach((image, index) => {
+                const imgWrapper = document.createElement('div');
+                imgWrapper.className = 'relative';
+                
+                const img = document.createElement('img');
+                img.src = image.dataUrl;
+                img.className = 'h-24 w-24 object-cover rounded border border-gray-200 shadow';
+                img.dataset.index = index;
+                img.dataset.name = image.name;
+                
+                const removeBtn = document.createElement('button');
+                removeBtn.type = 'button';
+                removeBtn.className = 'absolute -top-2 -right-2 bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center text-xs hover:bg-red-600';
+                removeBtn.innerHTML = '×';
+                removeBtn.onclick = function() {
+                    imgWrapper.remove();
+                    updateImageData();
+                };
+                
+                imgWrapper.appendChild(img);
+                imgWrapper.appendChild(removeBtn);
+                previewContainer.appendChild(imgWrapper);
+            });
+        }
 
         document.querySelector('form').addEventListener('submit', function (e) {
             e.preventDefault();
@@ -160,16 +220,91 @@
             this.submit();
         });
 
-        document.querySelector('form').addEventListener('submit', function (e) {
-            const content = editor.getRayEditorContent();
-            document.getElementById('article').value = content;
-        });
-
         document.getElementById('previewButton').addEventListener('click', function () {
             const form = this.closest('form');
             form.action = "{{ route('admin.articles.preview') }}";
+            
+            // Add image data to form before submission
+            const imageData = getImageData();
+            const imageDataInput = document.createElement('input');
+            imageDataInput.type = 'hidden';
+            imageDataInput.name = 'imageData';
+            imageDataInput.value = JSON.stringify(imageData);
+            form.appendChild(imageDataInput);
+            
             form.submit();
         })
+
+        // Handle image upload
+        document.getElementById('imageUploadBox').addEventListener('click', function() {
+            document.getElementById('imageUploadInput').click();
+        });
+
+        document.getElementById('imageUploadInput').addEventListener('change', function(e) {
+            const files = e.target.files;
+            const previewContainer = document.getElementById('imagePreviewContainer');
+            
+            if (files.length > 0) {
+                Array.from(files).forEach((file, index) => {
+                    const reader = new FileReader();
+                    reader.onload = function(e) {
+                        const imgWrapper = document.createElement('div');
+                        imgWrapper.className = 'relative';
+                        
+                        const img = document.createElement('img');
+                        img.src = e.target.result;
+                        img.className = 'h-24 w-24 object-cover rounded border border-gray-200 shadow';
+                        img.dataset.index = getNextImageIndex();
+                        img.dataset.name = file.name;
+                        
+                        const removeBtn = document.createElement('button');
+                        removeBtn.type = 'button';
+                        removeBtn.className = 'absolute -top-2 -right-2 bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center text-xs hover:bg-red-600';
+                        removeBtn.innerHTML = '×';
+                        removeBtn.onclick = function() {
+                            imgWrapper.remove();
+                            updateImageData();
+                        };
+                        
+                        imgWrapper.appendChild(img);
+                        imgWrapper.appendChild(removeBtn);
+                        previewContainer.appendChild(imgWrapper);
+                    };
+                    reader.readAsDataURL(file);
+                });
+            }
+        });
+
+        // Function to get next available image index
+        function getNextImageIndex() {
+            const existingImages = document.querySelectorAll('#imagePreviewContainer img');
+            return existingImages.length;
+        }
+
+        // Function to get image data for form submission
+        function getImageData() {
+            const images = [];
+            const imageElements = document.querySelectorAll('#imagePreviewContainer img');
+            
+            imageElements.forEach((imgElement, index) => {
+                images.push({
+                    name: imgElement.dataset.name || `image_${index}.jpg`,
+                    size: 0, // We don't have file size for restored images
+                    type: 'image/jpeg', // Default type
+                    dataUrl: imgElement.src
+                });
+            });
+            
+            return images;
+        }
+
+        // Function to update image data when images are removed
+        function updateImageData() {
+            const imageElements = document.querySelectorAll('#imagePreviewContainer img');
+            imageElements.forEach((img, index) => {
+                img.dataset.index = index;
+            });
+        }
 
         document.getElementById('sidebarToggle').addEventListener('click', () => {
             appState.sidebarOpen = !appState.sidebarOpen;
