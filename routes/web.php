@@ -106,6 +106,8 @@ Route::middleware('auth')->group(function () {
     Route::get('/dashboard-search', [DashboardSearchController::class, 'search']);
 
     Route::get('/articles/{slug}', [CommentManageController::class, 'show'])->name('comment.manage.show');
+    Route::post('/articles/{article}/comments', [CommentController::class, 'store'])->name('comments.store');
+    Route::delete('/comments/{comment}', [CommentController::class, 'destroy'])->name('comments.destroy');
 
     Route::get('/comment-manage-searchbar', [SearchFilterController::class, 'index'])->name('search');
 
@@ -153,7 +155,7 @@ Route::middleware('auth')->group(function () {
         Route::patch('/articles/{id}/reject', [ArticleController::class, 'reject'])->name('articles.reject');
         Route::patch('/articles/{article}/publish', [ArticleController::class, 'publish'])->name('articles.publish');
         Route::delete('/articles/{article}/delete', [ArticleController::class, 'destroy'])->name('articles.delete');
-      
+
         // Comment management
         Route::get('/comments', [CommentManageController::class, 'index'])->name('comments');
 
