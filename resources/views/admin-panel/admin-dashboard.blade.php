@@ -52,7 +52,7 @@
               <!-- Comments -->
               <div class="flex-1 min-w-[150px] text-center space-y-2">
                 <img src="/images/CommentsIcon.png" alt="Comments" class="mx-auto h-10 w-10">
-                <div class="text-xl font-semibold" style="color: #24317E;">Comments: N/A</div>
+                <div class="text-xl font-semibold" style="color: #24317E;">Comments: {{ $totalComments }}</div>
               </div>
 
               <!-- Reports -->
