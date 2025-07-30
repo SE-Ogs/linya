@@ -1,76 +1,108 @@
+<?php
+
+namespace App\Http\Controllers;
+
+use App\Models\Article;
+use App\Models\Comment;
+use App\Models\CommentLike;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\File;
-use Carbon\Carbon;
 
 class CommentController extends Controller
 {
-    protected $commentsPath = 'storage/app/comments.txt';
-
-    public function index(Request $request)
-    {
-        $comments = $this->loadComments();
-
-        $sort = $request->query('sort', 'newest');
-
-        // Sort comments
-        usort($comments, function ($a, $b) use ($sort) {
-            return match ($sort) {
-                'newest' => $b['timestamp'] <=> $a['timestamp'],
-                'oldest' => $a['timestamp'] <=> $b['timestamp'],
-                'most_liked' => $b['likes'] <=> $a['likes'],
-                default => 0,
-            };
-        });
-
-        // Enrich comments with replies and time
-        foreach ($comments as &$comment) {
-            $comment['time_ago'] = Carbon::createFromTimestamp($comment['timestamp'])->diffForHumans();
-            $comment['replies'] = array_values(array_filter($comments, fn($c) => $c['parent_id'] === $comment['id']));
-            $comment['reply_count'] = count($comment['replies']);
-        }
-
-        return view('comments', [
-            'comments' => $comments,
-            'sort' => $sort
-        ]);
-    }
-
-    public function store(Request $request)
+    public function store(Request $request, Article $article)
     {
         $request->validate([
-            'username' => 'required|string|max:255',
-            'text' => 'required|string',
+            'content' => 'required|string|max:1000',
+            'parent_id' => 'nullable|exists:comments,id'
         ]);
 
-        $comments = $this->loadComments();
+        Comment::create([
+            'user_id' => auth()->id(),
+            'article_id' => $article->id,
+            'content' => $request->content,
+            'parent_id' => $request->parent_id,
+        ]);
 
-        $newComment = [
-            'id' => uniqid(),
-            'username' => $request->input('username'),
-            'text' => $request->input('text'),
-            'timestamp' => time(),
-            'parent_id' => $request->input('parent_id', null),
-            'likes' => 0,
-            'dislikes' => 0,
-        ];
-
-        $comments[] = $newComment;
-        $this->saveComments($comments);
-
-        return redirect()->route('comments.index');
+        return back();
     }
 
-     private function loadComments(): array
+    public function destroy(Comment $comment)
     {
-        if (!File::exists($this->commentsPath)) {
-            return [];
-        }
-
-        return json_decode(File::get($this->commentsPath), true) ?? [];
+        $this->authorize('delete', $comment);
+        $comment->delete();
+        return back();
     }
 
-    private function saveComments(array $comments): void
+    public function like(Request $request, Comment $comment)
+{
+    $user = auth()->user();
+
+    // Remove existing dislike from same user
+    $comment->likes()
+        ->where('user_id', $user->id)
+        ->where('is_like', false)
+        ->delete();
+
+    // Add or update like
+    $comment->likes()->updateOrCreate(
+        ['user_id' => $user->id],
+        ['is_like' => true]
+    );
+
+    return response()->json([
+        'success' => true,
+        'new_count' => $comment->likes()->where('is_like', true)->count()
+    ]);
+}
+
+    public function dislike(Request $request, Comment $comment)
+{
+    $user = auth()->user();
+
+    // Remove existing like from same user
+    $comment->likes()
+        ->where('user_id', $user->id)
+        ->where('is_like', true)
+        ->delete();
+
+    // Add or update dislike
+    $comment->likes()->updateOrCreate(
+        ['user_id' => $user->id],
+        ['is_like' => false]
+    );
+
+    return response()->json([
+        'success' => true,
+        'new_count' => $comment->likes()->where('is_like', false)->count()
+    ]);
+}
+
+
+    public function storeAjax(Request $request, Article $article)
     {
-        File::put($this->commentsPath, json_encode($comments, JSON_PRETTY_PRINT));
+        $request->validate([
+            'content' => 'required|string|max:1000',
+            'parent_id' => 'nullable|exists:comments,id'
+        ]);
+
+        $comment = Comment::create([
+            'user_id' => auth()->id(),
+            'article_id' => $article->id,
+            'content' => $request->content,
+            'parent_id' => $request->parent_id,
+        ]);
+
+        $comment->load('user');
+
+        return response()->json([
+    'success' => true,
+    'comment_html' => '<div class="animate-fade-in transition-opacity duration-500 rounded-md">' .
+        view('partials.comment', [
+            'comment' => $comment,
+            'article' => $article,
+        ])->render() .
+    '</div>',
+]);
+
     }
 }

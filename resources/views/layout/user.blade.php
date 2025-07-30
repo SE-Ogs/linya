@@ -10,7 +10,7 @@
 
         <title>Linya</title>
 
-        @vite(['resources/css/app.css', 'resources/css/comment.css'])
+        @vite(['resources/css/app.css'])
 
     </head>
 
