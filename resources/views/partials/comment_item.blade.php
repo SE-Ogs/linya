@@ -34,7 +34,8 @@
                 <div class="flex gap-2 mt-2 justify-end">
                     <button type="button"
                             class="bg-gray-300 text-gray-700 px-3 py-1 rounded text-sm hover:bg-gray-400 transition reply-cancel-btn">
-                        Cancel
+                       
+                            Cancel
                     </button>
                     <button type="submit"
                             class="bg-blue-500 text-white px-3 py-1 rounded text-sm hover:bg-blue-600 transition">
@@ -97,6 +98,12 @@
                     class="text-sm text-blue-500 hover:text-blue-700 reply-toggle-btn"
                     data-target-comment-id="{{ $comment->id }}">
                 Reply
+            </button>
+            {{-- New Report Button --}}
+            <button type="button"
+                    class="report-comment-btn text-sm text-yellow-600 hover:text-yellow-700"
+                    data-comment-id="{{ $comment->id }}">
+                Report
             </button>
         @endauth
     </div>

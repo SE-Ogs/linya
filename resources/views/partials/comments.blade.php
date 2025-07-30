@@ -111,7 +111,7 @@
         </div>
     @endguest
 </div>
-
+@include('partials.report_comment_modal')
 <script>
     // Comment-specific functionality only
     document.addEventListener('DOMContentLoaded', function() {
@@ -312,6 +312,24 @@
                     showMessage('An error occurred while deleting the comment.', 'error');
                 }
             }
+
+ // Report comment (DI KO KNOWS SA BACKENNDDD)
+            const reportBtn = e.target.closest('.report-comment-btn');
+            if (reportBtn) {
+                const commentId = reportBtn.getAttribute('data-comment-id');
+                document.getElementById('reportCommentId').value = commentId; // Set the comment ID in the hidden input
+                document.getElementById('reportCommentModal').classList.remove('hidden'); // Show the modal
+            }
+        });
+
+        // Handle report submission from the modal
+        document.getElementById('confirmReportCommentBtn')?.addEventListener('click', function() {
+            const commentId = document.getElementById('reportCommentId').value;
+            const reportModal = document.getElementById('reportCommentModal');
+            reportModal.classList.add('hidden'); // Hide the modal immediately
+
+            // Simulate a successful report without making an actual fetch request
+            showMessage('Comment reported successfully!');
         });
 
         // Sorting handler with active style update
