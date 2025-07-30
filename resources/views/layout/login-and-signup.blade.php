@@ -19,9 +19,6 @@
         <div class="w-screen flex-shrink-0 h-screen">
             @include('partials.signup')
         </div>
-        <div class="w-screen flex-shrink-0 h-screen">
-            @include('partials.set_displayname')
-        </div>
     </div>
     <script>
         document.addEventListener('DOMContentLoaded', function () {
@@ -34,8 +31,6 @@
             function setTransformFromPath(path) {
                 if (path.endsWith('/signup')) {
                     container.style.transform = 'translateX(-100vw)';
-                } else if (path.endsWith('/set-display-name')) {
-                    container.style.transform = 'translateX(-200vw)';
                 } else {
                     container.style.transform = 'translateX(0)';
                 }
