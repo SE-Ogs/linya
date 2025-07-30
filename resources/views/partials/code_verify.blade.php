@@ -28,11 +28,17 @@
         <p class="text-lg text-center text-black mb-8 max-w-md">
             Check your inbox, we’ve sent you a confirmation code! Make sure to check your <span class="text-orange-400">spam</span> folder.
         </p>
-        <form method="POST" action="#" class="w-full flex flex-col items-center gap-4">
+
+        <form method="POST" action="{{ url('/code-verify') }}" class="w-full flex flex-col items-center gap-4">
             @csrf
+
             <input type="text" name="code" placeholder="XXXX-XXXX"
                 class="w-full max-w-md rounded-2xl bg-[#E6E5E1] px-6 py-4 text-base placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-orange-400 font-normal text-center" required>
-            <span class="text-red-500 text-base font-medium">Code Expired.</span>
+
+            @if ($errors->has('code'))
+                <span class="text-red-500 text-base font-medium">{{ $errors->first('code') }}</span>
+            @endif
+
             <button type="submit"
                 class="w-40 bg-orange-400 text-white font-bold text-lg rounded-2xl py-3 transition active:scale-98 active:bg-orange-500 hover:scale-101">
                 Verify

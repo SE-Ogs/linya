@@ -1,24 +1,24 @@
 <?php
 
+use Illuminate\Support\Facades\Route;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+use App\Models\Article;
+use App\Models\Tag;
 use App\Http\Controllers\AdminDashboardController;
 use App\Http\Controllers\ArticleController;
+use App\Http\Controllers\CommentController;
 use App\Http\Controllers\CommentManageController;
+use App\Http\Controllers\DashboardSearchController;
 use App\Http\Controllers\RecentSearchController;
+use App\Http\Controllers\ResetPasswordController;
 use App\Http\Controllers\SearchFilterController;
 use App\Http\Controllers\SettingsController;
 use App\Http\Controllers\UserAuthController;
 use App\Http\Controllers\UserManagementController;
-use App\Http\Controllers\DashboardSearchController;
-use App\Models\Article;
-use App\Models\Tag;
-use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\CommentController;
-
 
 // Root redirect
-Route::get('/', function () {
-    return redirect('/dashboard');
-});
+Route::get('/', fn () => redirect('/dashboard'));
 
 // ============================================================================
 // GUEST ROUTES (Dashboard - No Authentication Required)
@@ -35,21 +35,18 @@ Route::get('/dashboard', function () {
 Route::get('/dashboard/{tag_slug}', function ($tag_slug) {
     $tag = Tag::where('slug', $tag_slug)->first();
 
-    if (!$tag) {
-        abort(404);
-    }
+    if (!$tag) abort(404);
 
     $articles = Article::with('tags')
         ->where('status', 'Published')
-        ->whereHas('tags', function ($query) use ($tag) {
-            $query->where('tags.id', $tag->id);
-        })
+        ->whereHas('tags', fn ($query) => $query->where('tags.id', $tag->id))
         ->orderByDesc('views')
         ->get();
 
     return view('layout.user', compact('articles', 'tag'));
 })->name('dashboard.tag');
 
+// Article and Comment Routes
 Route::post('/articles', [ArticleController::class, 'store'])->name('articles.store');
 Route::get('/articles/{id}', [ArticleController::class, 'show'])->name('articles.show');
 Route::post('/articles/{article}/comments', [CommentController::class, 'store'])->name('comments.store');
@@ -65,25 +62,30 @@ Route::middleware('guest')->group(function () {
     Route::post('/signup', [UserAuthController::class, 'signup']);
     Route::post('/clear-signup-data', [UserAuthController::class, 'clearSignupData'])->name('clear-signup-data');
 
-    Route::get('/reset-password', function () {
-        return view('partials.reset_password');
-    })->name('password.request');
+    // Password Reset Flow
+    Route::get('/forgot-password', fn () => view('partials.forgot_pass'))->name('password.email');
+    Route::get('/code-verify', fn () => view('partials.code_verify'))->name('password.code');
 
-    Route::get('/resetpass', function () {
-        return view('partials.reset_password');
+    // ✅ Added: POST handler for verifying the code and storing the email
+    Route::post('/code-verify', function (Request $request) {
+        $request->validate(['code' => 'required']);
+
+        $record = DB::table('password_resets')->where('token', $request->code)->first();
+
+        if (!$record) {
+            return back()->withErrors(['code' => 'Invalid or expired code.']);
+        }
+
+        // ✅ Store email in session
+        session(['email' => $record->email]);
+
+        return redirect('/reset-password');
     });
 
-    Route::get('/resetsuccess', function () {
-        return view('partials.reset_success');
-    });
+    Route::get('/reset-password', [ResetPasswordController::class, 'showResetForm'])->name('password.request');
+    Route::post('/reset-password', [ResetPasswordController::class, 'updatePassword'])->name('password.update');
 
-    Route::get('/forgot-password', function () {
-        return view('partials.forgot_pass');
-    });
-
-    Route::get('/code-verify', function () {
-        return view('partials.code_verify');
-    });
+    Route::get('/resetsuccess', fn () => view('partials.reset_success'))->name('resetsuccess');
 });
 
 // ============================================================================
@@ -104,13 +106,10 @@ Route::middleware('auth')->group(function () {
     Route::delete('/recent-searches', [RecentSearchController::class, 'clear']);
     Route::get('/dashboard-search', [DashboardSearchController::class, 'search']);
 
-    // Comment management
+    // Comment Management
     Route::get('/articles/{slug}', [CommentManageController::class, 'show'])->name('comment.manage.show');
-
     Route::post('/articles/{article}/comments/ajax', [CommentController::class, 'storeAjax'])->name('comments.store.ajax');
     Route::get('/comments', [CommentManageController::class, 'index'])->name('comments');
-    Route::post('/comments/{comment}/like', [CommentController::class, 'like'])->name('comments.like');
-    Route::post('/comments/{comment}/dislike', [CommentController::class, 'dislike'])->name('comments.dislike');
     Route::post('/comments/{comment}/like', [CommentController::class, 'like'])->name('comments.like');
     Route::post('/comments/{comment}/dislike', [CommentController::class, 'dislike'])->name('comments.dislike');
 
@@ -123,8 +122,8 @@ Route::middleware('auth')->group(function () {
 
         Route::get('/dashboard', [AdminDashboardController::class, 'index'])->name('dashboard');
 
-        // Post management
-        Route::get('/articles', function (\Illuminate\Http\Request $request) {
+        // Post Management
+        Route::get('/articles', function (Request $request) {
             $query = Article::with('tags');
 
             if ($request->filled('status') && $request->status !== 'All') {
@@ -133,17 +132,13 @@ Route::middleware('auth')->group(function () {
 
             if ($request->filled('search')) {
                 $search = $request->search;
-                $query->where(function ($q) use ($search) {
-                    $q->where('title', 'like', "%{$search}%")
-                        ->orWhere('summary', 'like', "%{$search}%");
-                });
+                $query->where(fn ($q) => $q->where('title', 'like', "%{$search}%")
+                    ->orWhere('summary', 'like', "%{$search}%"));
             }
 
             if ($request->filled('tags')) {
                 $tagIds = $request->tags;
-                $query->whereHas('tags', function ($q) use ($tagIds) {
-                    $q->whereIn('tags.id', $tagIds);
-                });
+                $query->whereHas('tags', fn ($q) => $q->whereIn('tags.id', $tagIds));
             }
 
             $articles = $query->get();
@@ -152,7 +147,6 @@ Route::middleware('auth')->group(function () {
             return view('admin-panel.post_management', compact('articles', 'tags'));
         })->name('articles');
 
-        // article management
         Route::get('/add-article', [ArticleController::class, 'create'])->name('articles.create');
         Route::post('/articles/preview', [ArticleController::class, 'preview'])->name('articles.preview');
         Route::get('/edit-article/{id}', [ArticleController::class, 'edit'])->name('articles.edit');
@@ -162,10 +156,10 @@ Route::middleware('auth')->group(function () {
         Route::patch('/articles/{article}/publish', [ArticleController::class, 'publish'])->name('articles.publish');
         Route::delete('/articles/{article}/delete', [ArticleController::class, 'destroy'])->name('articles.delete');
 
-        // Comment management
+        // Comment Management
         Route::get('/comments', [CommentManageController::class, 'index'])->name('comments');
 
-        // User management
+        // User Management
         Route::get('/users', [UserManagementController::class, 'index'])->name('index');
         Route::prefix('users')->name('users.')->group(function () {
             Route::get('{id}/edit', [UserManagementController::class, 'edit'])->name('edit');

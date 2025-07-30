@@ -39,7 +39,7 @@
                     </div>
                     <button type="submit"
                         class="bg-orange-400 text-white font-bold text-lg rounded-3xl py-4 mt-2 mb-1 transition active:scale-98 active:bg-orange-500 hover:scale-101">Login</button>
-                    <a href="{{ route('password.email') }}"
+                    <a href="{{ url('/forgot-password') }}"
                         class="text-orange-400 text-base underline transition hover:text-orange-500 hover:scale-102 w-fit">
                         Forgot your password?
                     </a>
