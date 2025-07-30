@@ -555,7 +555,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
         textarea.addEventListener("input", updateCounter);
 
-        // Submit form on Enter (without Shift)
+        // //Submit form on Enter (without Shift)
         // textarea.addEventListener("keydown", function (e) {
         //     if (e.key === "Enter" && !e.shiftKey) {
         //         e.preventDefault();

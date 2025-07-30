@@ -54,7 +54,14 @@
             class="like-dislike-btn transition-transform duration-150 ease-out hover:scale-110 active:scale-95"
             data-id="{{ $comment->id }}"
             data-type="like">
-            <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 inline transition-colors duration-150 ease-out {{ $reaction && $reaction->is_like ? 'text-blue-600' : 'text-gray-400' }}" fill="currentColor" viewBox="0 0 24 24">
+            <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 inline transition-colors duration-150 ease-out {{ $reaction && $reaction->is_like ? 'liked-gradient' : 'text-gray-400' }}"
+            fill="{{ $reaction && $reaction->is_like ? 'url(#likeGradient)' : 'currentColor' }}" viewBox="0 0 24 24">
+                <defs>
+                    <linearGradient id="likeGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+                        <stop offset="0%" stop-color="#FF6600"/> <!-- Bright orange -->
+                        <stop offset="100%" stop-color="#0066FF"/> <!-- Bright blue -->
+                    </linearGradient>
+                </defs>
                 <path d="M2 21h4V9H2v12zM22 9h-6.31l.95-4.57.03-.32c0-.41-.17-.79-.44-1.06L15.17 2 8.59 8.59C8.22 8.95 8 9.45 8 10v9c0 1.1.9 2 2 2h8c.83 0 1.54-.5 1.84-1.22l3.02-7.05c.09-.23.14-.47.14-.73v-2c0-1.1-.9-2-2-2z"/>
             </svg>
             <span class="like-count text-gray-500 {{ $reaction && $reaction->is_like ? '' : 'hidden' }}">
@@ -66,7 +73,14 @@
             class="like-dislike-btn transition-transform duration-150 ease-out hover:scale-110 active:scale-95"
             data-id="{{ $comment->id }}"
             data-type="dislike">
-            <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 inline transition-colors duration-150 ease-out {{ $reaction && $reaction->is_like === false ? 'text-red-600' : 'text-gray-400' }}" fill="currentColor" viewBox="0 0 24 24">
+            <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 inline transition-colors duration-150 ease-out {{ $reaction && $reaction->is_like === false ? 'disliked-gradient' : 'text-gray-400' }}"
+            fill="{{ $reaction && $reaction->is_like === false ? 'url(#dislikeGradient)' : 'currentColor' }}" viewBox="0 0 24 24">
+                <defs>
+                    <linearGradient id="dislikeGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+                        <stop offset="0%" stop-color="#FF5F7E"/> <!-- Vibrant pinkish coral -->
+                        <stop offset="100%" stop-color="#FF0054"/> <!-- Strong pink/red -->
+                    </linearGradient>
+                </defs>
                 <path d="M22 3h-4v12h4V3zM2 15h6.31l-.95 4.57-.03.32c0 .41.17.79.44 1.06L8.83 22l6.58-6.59c.37-.36.59-.86.59-1.41V5c0-1.1-.9-2-2-2H6c-.83 0-1.54.5-1.84 1.22l-3.02 7.05c-.09.23-.14.47-.14.73v2c0 1.1.9 2 2 2z"/>
             </svg>
             <span class="dislike-count text-gray-500 {{ $reaction && $reaction->is_like === false ? '' : 'hidden' }}">
@@ -127,21 +141,27 @@ const dislikeBtn = group.querySelector('[data-type="dislike"]');
             // Reset both buttons to gray
             likeBtn.querySelector('svg').classList.remove('text-blue-600');
             likeBtn.querySelector('svg').classList.add('text-gray-400');
+            likeBtn.querySelector('svg').setAttribute('fill', 'currentColor');
+            likeBtn.querySelector('svg').style.filter = '';
             dislikeBtn.querySelector('svg').classList.remove('text-red-600');
             dislikeBtn.querySelector('svg').classList.add('text-gray-400');
+            dislikeBtn.querySelector('svg').setAttribute('fill', 'currentColor');
 
             if (type === 'like') {
-                // Activate like button color
-                likeBtn.querySelector('svg').classList.remove('text-gray-400');
-                likeBtn.querySelector('svg').classList.add('text-blue-600');
+                const likeSvg = likeBtn.querySelector('svg');
+                // Activate like button gradient
+                likeSvg.setAttribute('fill', 'url(#likeGradient)');
+                likeSvg.classList.remove('text-gray-400');
+                likeSvg.style.filter = '';
 
                 likeCount.textContent = data.new_count;
                 likeCount.classList.remove('hidden');
                 dislikeCount.classList.add('hidden');
             } else {
-                // Activate dislike button color
-                dislikeBtn.querySelector('svg').classList.remove('text-gray-400');
-                dislikeBtn.querySelector('svg').classList.add('text-red-600');
+                // Activate dislike button gradient
+                const dislikeSvg = dislikeBtn.querySelector('svg');
+                dislikeSvg.setAttribute('fill', 'url(#dislikeGradient)');
+                dislikeSvg.classList.remove('text-gray-400');
 
                 dislikeCount.textContent = data.new_count;
                 dislikeCount.classList.remove('hidden');
