@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\User;
 use App\Models\Article;
+use Illuminate\Support\Facades\Auth;
+use App\Models\Comment;
 
 class AdminDashboardController extends Controller
 {
@@ -12,25 +14,18 @@ class AdminDashboardController extends Controller
     {
         $totalUsers = User::count();
         $totalPosts = Article::count();
+        $currentUser = Auth::user();
+        $totalComments = Comment::count();
 
-        return view('admin-panel.admin-dashboard', compact('totalUsers', 'totalPosts'));
+        // Grabs the top 3 most viewed articles and its description
+        $trendingPosts = Article::orderBy('views', 'desc')->limit(3)->get();
+
+        return view('admin-panel.admin-dashboard', compact(
+            'totalUsers',
+            'totalPosts',
+            'totalComments',
+            'currentUser',
+            'trendingPosts'
+        ));
     }
 }
-
-// <!-- namespace App\Http\Controllers;
-
-// use Illuminate\Http\Request;
-// use App\Models\User;
-
-// class AdminDashboardController extends Controller
-// {
-//     public function index()
-//     {
-//         // Get active user count from the database
-//         $userCount = User::where('status', 'Active')->count();
-
-//         // Pass the value to the view
-//         return view('dashboard', compact('userCount'));
-//     }
-// } -->
-

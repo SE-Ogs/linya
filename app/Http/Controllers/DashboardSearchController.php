@@ -10,7 +10,7 @@ use Illuminate\Support\Facades\DB;
 class DashboardSearchController extends Controller
 {
      public function search(Request $request) {
-        $query = $request->input('q');
+        $query = strtolower($request->input('q'));
 
         $articles = Article::with('tags')
         ->where('status', 'Published')

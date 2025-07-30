@@ -59,14 +59,14 @@
                         @php
                             $dotColors = [
                                 'bg-blue-500',
-                                'bg-black', 
+                                'bg-black',
                                 'bg-gray-600',
                                 'bg-yellow-500',
                                 'bg-red-500',
                             ];
                             $dotColor = $dotColors[$index % count($dotColors)];
                         @endphp
-                        
+
                         <label class="tag-checkbox cursor-pointer">
                             <input type="checkbox" name="tags[]" value="{{ $tag->id }}" id="tag-{{ $tag->id }}"
                                 class="hidden"
@@ -86,7 +86,7 @@
                     @endforeach
                 </div>
             </div>
-            
+
 
             <!-- Description Field -->
             <div class="w-full flex-1 flex flex-col">
@@ -167,7 +167,7 @@
 
         document.getElementById('previewButton').addEventListener('click', function () {
             const form = this.closest('form');
-            form.action = "{{ route('articles.preview') }}";
+            form.action = "{{ route('admin.articles.preview') }}";
             form.submit();
         })
 

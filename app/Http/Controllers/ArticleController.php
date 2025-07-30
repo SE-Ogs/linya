@@ -12,6 +12,7 @@ use Illuminate\View\View;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use App\Models\Article;
+use App\Models\Comment;
 
 class ArticleController extends Controller
 {
@@ -32,12 +33,46 @@ class ArticleController extends Controller
         return response()->json($dtos);
     }
 
-    public function show($id)
-    {
-        $article = $this->articleService->getArticle($id);
-        $article->increment('views');
-        return view('article-management.show_article', compact('article'));
+    public function show($id, Request $request)
+{
+    $article = $this->articleService->getArticle($id);
+    $article->increment('views');
+
+    $sort = $request->query('sort', 'all');
+
+    $commentsQuery = Comment::with([
+        'user',
+        'children',
+        'userReaction' // 🔥 include the current user's reaction
+    ])
+        ->where('article_id', $article->id)
+        ->whereNull('parent_id');
+
+    switch ($sort) {
+        case 'newest':
+            $commentsQuery->orderByDesc('created_at');
+            break;
+        case 'oldest':
+            $commentsQuery->orderBy('created_at');
+            break;
+        case 'most_liked':
+            $commentsQuery->withCount('likes')->orderByDesc('likes_count');
+            break;
+        case 'all':
+        default:
+            $commentsQuery->orderByDesc('created_at');
+            break;
     }
+
+    $comments = $commentsQuery->get();
+
+    if ($request->ajax()) {
+        return view('partials.comments_list', compact('comments', 'article', 'sort'));
+    }
+
+    return view('article-management.show_article', compact('article', 'comments', 'sort'));
+}
+
 
     public function create(): View
     {
@@ -50,10 +85,12 @@ class ArticleController extends Controller
         $article = $this->articleService->createArticle($request->validated());
         return response()->json(ArticleDTO::fromModel($article), 201);
     }
-    public function destroy($id): JsonResponse
+
+    public function destroy($id)
     {
         $this->articleService->deleteArticle($id);
-        return response()->json(null, 204);
+
+        return redirect()->route('admin.articles')->with('success', 'Article deleted!');
     }
 
     public function preview(\Illuminate\Http\Request $request)
@@ -123,5 +160,26 @@ class ArticleController extends Controller
 
         // Redirect back with a success message
         return redirect()->route('articles.edit', $id)->with('success', 'Article updated successfully!');
+    }
+
+    public function approve($id)
+    {
+        $this->articleService->approveArticle($id);
+        return redirect()->route('admin.articles')->with('success', 'Article approved!');
+    }
+
+    public function reject(Request $request, $id)
+    {
+        $request->validate([
+            'rejection_reason' => 'required|string|max:500'
+        ]);
+        $this->articleService->rejectArticle($id, $request->input('rejection_reason'));
+        return redirect()->route('admin.articles')->with('success', 'Article has been rejected.');
+    }
+
+    public function publish($id)
+    {
+        $this->articleService->publishArticle($id);
+        return redirect()->route('admin.articles')->with('success', 'Article published!');
     }
 }
