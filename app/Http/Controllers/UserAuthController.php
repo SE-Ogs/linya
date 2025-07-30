@@ -17,14 +17,18 @@ class UserAuthController extends Controller
         return view('layout.login-and-signup', ['show' => 'signup']);
     }
 
-     public function signup(Request $request)
+    public function signup(Request $request)
     {
         // $request->session()->regenerate();
-
         $credentials = $request->validate([
             'username_signup' => ['required', 'string', 'max:255', 'unique:users,username'],
             'email' => ['required', 'string', 'email', 'max:255', 'unique:users'],
             'password' => ['required', 'string', 'min:8'],
+        ], [
+            'username_signup.unique' => 'That username is already taken. Try another one.',
+            'email.unique' => 'That email is already in use.',
+            'password.min' => 'Your password must be at least :min characters.',
+        ], [
         ]);
 
         // Store signup data in session temporarily
@@ -34,18 +38,27 @@ class UserAuthController extends Controller
             'password' => bcrypt($credentials['password']),
         ]);
 
+        $request->session()->put('signup_data_expires_at', now()->addMinutes(5));
+
         return redirect('/set-display-name');
     }
 
     public function showDisplayName()
     {
-        // Check if signup data exists in session
-        if (!session()->has('signup_data')) {
+        $expiresAt = session('signup_data_expires_at');
+
+        if (!session()->has('signup_data') || !$expiresAt || now()->greaterThan($expiresAt)) {
+            session()->forget(['signup_data', 'signup_data_expires_at']); 
             return redirect('/signup');
         }
 
-        return view('layout.login-and-signup', ['show' => 'set-display-name']);
+        return response()
+            ->view('layout.set_displayname_page')
+            ->header('Cache-Control', 'no-store, no-cache, must-revalidate, max-age=0')
+            ->header('Pragma', 'no-cache')
+            ->header('Expires', 'Sat, 01 Jan 2000 00:00:00 GMT');
     }
+
 
     public function storeDisplayName(Request $request)
     {
@@ -70,7 +83,7 @@ class UserAuthController extends Controller
         ]);
 
         // Clear signup data from session
-        session()->forget('signup_data');
+        session()->forget(['signup_data', 'signup_data_expires_at']);
 
         // Log the user in
         Auth::login($user);
@@ -81,14 +94,14 @@ class UserAuthController extends Controller
 
     public function clearSignupData(Request $request)
     {
-        // Clear signup data from session
-        $request->session()->forget('signup_data');
+        $request->session()->forget(['signup_data', 'signup_data_expires_at']);
         return redirect('/signup')->withHeaders([
             'Cache-Control' => 'no-cache, no-store, must-revalidate',
             'Pragma' => 'no-cache',
-            'Expires' => '0'
+            'Expires' => '0',
         ]);
     }
+
 
 
     public function login(Request $request)
