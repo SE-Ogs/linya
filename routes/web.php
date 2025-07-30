@@ -17,7 +17,6 @@ use App\Http\Controllers\SettingsController;
 use App\Http\Controllers\UserAuthController;
 use App\Http\Controllers\UserManagementController;
 
-
 // Root redirect
 Route::get('/', fn () => redirect('/dashboard'));
 
@@ -62,24 +61,20 @@ Route::middleware('guest')->group(function () {
     Route::post('/set-display-name', [UserAuthController::class, 'storeDisplayName']);
     Route::post('/clear-signup-data', [UserAuthController::class, 'clearSignupData'])->name('clear-signup-data');
 
-    // Password Reset Flow
+    // Password Reset Flow (hardcoded for demo)
     Route::get('/forgot-password', fn () => view('partials.forgot_pass'))->name('password.email');
+    Route::post('/forgot-password', function () {
+        session(['email' => 'test@example.com']);
+        return redirect('/code-verify')->with('success', 'Demo: session email set.');
+    });
+
     Route::get('/code-verify', fn () => view('partials.code_verify'))->name('password.code');
-
-    // ✅ Added: POST handler for verifying the code and storing the email
-    Route::post('/code-verify', function (Request $request) {
-        $request->validate(['code' => 'required']);
-
-        $record = DB::table('password_resets')->where('token', $request->code)->first();
-
-        if (!$record) {
-            return back()->withErrors(['code' => 'Invalid or expired code.']);
+    Route::post('/code-verify', function () {
+        // Skip real code check — simulate verified code
+        if (!session()->has('email')) {
+            session(['email' => 'test@example.com']);
         }
-
-        // ✅ Store email in session
-        session(['email' => $record->email]);
-
-        return redirect('/reset-password');
+        return redirect('/reset-password')->with('success', 'Demo: code accepted.');
     });
 
     Route::get('/reset-password', [ResetPasswordController::class, 'showResetForm'])->name('password.request');
@@ -88,9 +83,8 @@ Route::middleware('guest')->group(function () {
 });
 
 // ============================================================================
-// =========================================================================
 // AUTHENTICATED ROUTES
-// =========================================================================
+// ============================================================================
 Route::middleware('auth')->group(function () {
     Route::post('/logout', [UserAuthController::class, 'logout'])->name('logout');
     Route::get('/set-display-name', [UserAuthController::class, 'showDisplayName']);
@@ -105,7 +99,7 @@ Route::middleware('auth')->group(function () {
     // Comment Management
     Route::get('/articles/{slug}', [CommentManageController::class, 'show'])->name('comment.manage.show');
 
-    // Comment routes - All inside auth group
+    // Comment routes
     Route::post('/articles/{article}/comments', [CommentController::class, 'store'])->name('comments.store');
     Route::delete('/comments/{comment}', [CommentController::class, 'destroy'])->name('comments.destroy');
     Route::post('/articles/{article}/comments/ajax', [CommentController::class, 'storeAjax'])->name('comments.store.ajax');
@@ -122,7 +116,6 @@ Route::middleware('auth')->group(function () {
 
         Route::get('/dashboard', [AdminDashboardController::class, 'index'])->name('dashboard');
 
-        // Post Management
         Route::get('/articles', function (Request $request) {
             $query = Article::with('tags');
 
@@ -147,7 +140,6 @@ Route::middleware('auth')->group(function () {
             return view('admin-panel.post_management', compact('articles', 'tags'));
         })->name('articles');
 
-        // Article management
         Route::get('/add-article', [ArticleController::class, 'create'])->name('articles.create');
         Route::post('/articles/preview', [ArticleController::class, 'preview'])->name('articles.preview');
         Route::get('/edit-article/{id}', [ArticleController::class, 'edit'])->name('articles.edit');
@@ -157,10 +149,8 @@ Route::middleware('auth')->group(function () {
         Route::patch('/articles/{article}/publish', [ArticleController::class, 'publish'])->name('articles.publish');
         Route::delete('/articles/{article}/delete', [ArticleController::class, 'destroy'])->name('articles.delete');
 
-        // Comment Management
         Route::get('/comments', [CommentManageController::class, 'index'])->name('comments');
 
-        // User Management
         Route::get('/users', [UserManagementController::class, 'index'])->name('index');
         Route::prefix('users')->name('users.')->group(function () {
             Route::get('{id}/edit', [UserManagementController::class, 'edit'])->name('edit');
