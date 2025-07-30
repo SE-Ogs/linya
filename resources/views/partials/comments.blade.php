@@ -314,11 +314,23 @@
             }
         });
 
-        // Sorting handler
+        // Sorting handler with active style update
         document.querySelector('.comment-filters')?.addEventListener('click', async function(e) {
             const sortBtn = e.target.closest('a');
             if (sortBtn) {
                 e.preventDefault();
+
+                // Remove active class styles from all filter buttons
+                document.querySelectorAll('.comment-filters a').forEach(a => {
+                    a.classList.remove('bg-blue-800', 'text-white', 'border-blue-800', 'shadow-sm');
+                    a.classList.add('bg-gray-100', 'text-gray-800', 'border-gray-300');
+                });
+
+                // Add active styles to the clicked filter button
+                sortBtn.classList.remove('bg-gray-100', 'text-gray-800', 'border-gray-300');
+                sortBtn.classList.add('bg-blue-800', 'text-white', 'border-blue-800', 'shadow-sm');
+
+                // Get sort parameter and reload comments
                 const sort = new URL(sortBtn.href).searchParams.get('sort');
                 await reloadComments(sort);
             }

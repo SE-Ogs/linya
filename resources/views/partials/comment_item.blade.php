@@ -31,14 +31,16 @@
 
                 <input type="hidden" name="parent_id" value="{{ $comment->id }}">
 
-                <button type="submit"
-                        class="absolute top-2 right-2 bg-blue-500 text-white px-3 py-1 rounded text-sm hover:bg-blue-600 transition">
-                    Reply
-                </button>
-                <button type="button"
-                        class="absolute top-2 right-16 bg-gray-300 text-gray-700 px-3 py-1 rounded text-sm hover:bg-gray-400 transition reply-cancel-btn">
-                    Cancel
-                </button>
+                <div class="flex gap-2 mt-2 justify-end">
+                    <button type="button"
+                            class="bg-gray-300 text-gray-700 px-3 py-1 rounded text-sm hover:bg-gray-400 transition reply-cancel-btn">
+                        Cancel
+                    </button>
+                    <button type="submit"
+                            class="bg-blue-500 text-white px-3 py-1 rounded text-sm hover:bg-blue-600 transition">
+                        Reply
+                    </button>
+                </div>
             </div>
         </form>
 
