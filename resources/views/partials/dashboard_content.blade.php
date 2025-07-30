@@ -60,9 +60,15 @@
                            id="main_post"
                            class="relative h-96 cursor-pointer overflow-hidden rounded-lg bg-gradient-to-br from-indigo-50 to-pink-50">
                             <div class="gradient-overlay absolute inset-0">
-                                <img src="/images/placeholder.jpg"
-                                     alt="placeholder image"
-                                     class="h-full w-full object-cover object-center">
+                                @if ($main->first_image)
+                                    <img src="{{ asset('storage/' . $main->first_image->image_path) }}"
+                                         alt="{{ $main->title }}"
+                                         class="h-full w-full object-cover object-center">
+                                @else
+                                    <img src="/images/placeholder.jpg"
+                                         alt="placeholder image"
+                                         class="h-full w-full object-cover object-center">
+                                @endif
                             </div>
                             <div class="absolute inset-0 bg-gradient-to-t from-black/70 via-black/30 to-transparent">
                             </div>
@@ -82,7 +88,7 @@
                                         {{ $main->title }}
                                     </h1>
                                     <p class="text-lg leading-relaxed text-gray-200">
-                                        {{ $main->summary }}
+                                        {!! Str::limit(strip_tags($main->summary), 200) !!}
                                     </p>
                                 </div>
                                 <div class="flex items-center gap-4 text-sm text-gray-300">
@@ -138,9 +144,15 @@
                             <a href="{{ route('articles.show', $sub->id) }}"
                                class="flex-1 cursor-pointer overflow-hidden rounded-lg border border-gray-200 bg-white shadow-sm">
                                 <div>
-                                    <img src="/images/placeholder.jpg"
-                                         alt="placeholder image"
-                                         class="h-48 w-full object-cover">
+                                    @if ($sub->first_image)
+                                        <img src="{{ asset('storage/' . $sub->first_image->image_path) }}"
+                                             alt="{{ $sub->title }}"
+                                             class="h-48 w-full object-cover">
+                                    @else
+                                        <img src="/images/placeholder.jpg"
+                                             alt="placeholder image"
+                                             class="h-48 w-full object-cover">
+                                    @endif
                                 </div>
                                 <div class="min-h-[4.5rem] px-6 pb-6">
                                     @if ($sub->tags->count())
@@ -157,7 +169,7 @@
                                         {{ $sub->title }}
                                     </h3>
                                     <p class="mb-5 min-h-[10rem] text-base leading-relaxed text-gray-600">
-                                        {{ $sub->summary }}
+                                        {!! Str::limit(strip_tags($sub->summary), 150) !!}
                                     </p>
                                     <div class="flex items-center justify-between text-sm text-gray-500">
                                         <p>{{ $sub->author->name ?? 'Unknown Author' }}</p>
@@ -233,9 +245,15 @@
                     <a href="{{ route('articles.show', $blog->id) }}"
                        class="max-w-90 flex h-auto w-full flex-shrink-0 flex-col rounded bg-gray-200 p-6">
                         <div>
-                            <img src="/images/placeholder.jpg"
-                                 alt="placeholder image"
-                                 class="h-24 w-full object-cover">
+                            @if ($blog->first_image)
+                                <img src="{{ asset('storage/' . $blog->first_image->image_path) }}"
+                                     alt="{{ $blog->title }}"
+                                     class="h-24 w-full object-cover">
+                            @else
+                                <img src="/images/placeholder.jpg"
+                                     alt="placeholder image"
+                                     class="h-24 w-full object-cover">
+                            @endif
                         </div>
                         <div class="min-h-[4.5rem]">
                             <h3 class="mb-2 line-clamp-2 text-lg font-bold">{{ $blog->title }}</h3>
@@ -251,7 +269,7 @@
                             </div>
                         @endif
                         <p class="line-clamp-4 flex-1 overflow-hidden text-sm text-gray-600">
-                            {{ Str::limit($blog->summary, 120) }}</p>
+                            {!! Str::limit(strip_tags($blog->summary), 120) !!}</p>
                     </a>
                 @endforeach
             </div>

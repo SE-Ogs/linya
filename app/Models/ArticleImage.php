@@ -12,7 +12,6 @@ class ArticleImage extends Model
     protected $fillable = [
         'article_id',
         'image_path',
-        'alt_text',
         'order',
         'is_featured',
     ];
@@ -24,6 +23,6 @@ class ArticleImage extends Model
 
     public function getUrlAttribute()
     {
-        return asset('storage/'. $this->path);
+        return asset('storage/' . $this->image_path);
     }
 }

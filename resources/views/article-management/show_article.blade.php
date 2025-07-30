@@ -6,45 +6,10 @@
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>Linya - Article</title>
     @vite('resources/css/app.css')
+    <!-- Add Swiper CSS for carousel -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css"/>
 </head>
 <body class="flex min-h-screen flex-col">
-    {{-- <div class="flex justify-between"> --}}
-    {{--     <button id="toggleSideBar" --}}
-    {{--             class="ml-4 mt-3 h-12 cursor-pointer rounded-[10px] p-2 text-[#9A9A9A] transition duration-300 hover:bg-gray-100"> --}}
-    {{--         <svg xmlns="http://www.w3.org/2000/svg" --}}
-    {{--              fill="none" --}}
-    {{--              viewBox="0 0 24 24" --}}
-    {{--              stroke-width="1.5" --}}
-    {{--              stroke="currentColor" --}}
-    {{--              class="size-8"> --}}
-    {{--             <path stroke-linecap="round" --}}
-    {{--                   stroke-linejoin="round" --}}
-    {{--                   d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" /> --}}
-    {{--         </svg> --}}
-    {{--     </button> --}}
-    {{--     <div class="m-4 space-x-1"> --}}
-    {{--         <button type="button" --}}
-    {{--                 id="signup" --}}
-    {{--                 class="cursor-pointer rounded-[6px] border border-[#4338CA] px-5 py-2 text-[14px] text-[#4338CA] transition duration-300 hover:bg-[#4338CA] hover:text-white">Sign --}}
-    {{--             Up</button> --}}
-    {{--         <a href="{{ route('login') }}"> --}}
-    {{--             <button type="button" --}}
-    {{--                     id="login" --}}
-    {{--                     class="cursor-pointer rounded-[6px] border-[#4338CA] px-5 py-2 text-[14px] text-[#4B5563] transition duration-300 hover:bg-[#FF8334] hover:text-white">Log --}}
-    {{--                 In</button> --}}
-    {{--         </a> --}}
-    {{--     </div> --}}
-    {{-- </div> --}}
-
-    {{-- <aside id="sidebar" --}}
-    {{--        class="fixed left-0 top-0 z-50 -translate-x-full transform transition-transform duration-300"> --}}
-    {{--     @include('partials.sidebar') --}}
-    {{-- </aside> --}}
-    {{----}}
-    {{-- <div id="header"> --}}
-    {{--     @include('partials.dashboard_header') --}}
-    {{-- </div> --}}
-
     <main class="flex-grow">
         @php
             use App\Services\HelperFunctionService;
@@ -89,8 +54,35 @@
                     </div>
                 </div>
 
+                <!-- Image Carousel -->
+                @if($article->images->count() > 0)
+                    <div class="swiper mb-8 rounded-lg overflow-hidden">
+                        <div class="swiper-wrapper">
+                            @foreach($article->images as $image)
+                                <div class="swiper-slide">
+                                    <img src="{{ asset('storage/' . $image->image_path) }}"
+                                         alt="{{ $article->title }}"
+                                         class="w-full h-96 object-cover">
+                                </div>
+                            @endforeach
+                        </div>
+                        <!-- Add pagination -->
+                        <div class="swiper-pagination"></div>
+                        <!-- Add navigation buttons -->
+                        <div class="swiper-button-prev"></div>
+                        <div class="swiper-button-next"></div>
+                    </div>
+                @else
+                    <!-- Placeholder if no images -->
+                    <div class="mb-8">
+                        <img src="/images/placeholder.jpg"
+                             alt="No images available"
+                             class="w-full h-96 object-cover rounded-lg">
+                    </div>
+                @endif
+
                 <div class="text-gray-700 leading-relaxed whitespace-pre-line">
-                    <p>{{ $article->article }}</p>
+                    {!! $article->article !!}
                 </div>
             </div>
         </div>
@@ -108,6 +100,33 @@
     </footer>
 
     @include('partials.contact_us')
+
+    <!-- Add Swiper JS -->
+    <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
+    <script>
+        // Initialize Swiper
+        document.addEventListener('DOMContentLoaded', function() {
+            const swiper = new Swiper('.swiper', {
+                // Optional parameters
+                loop: true,
+                autoplay: {
+                    delay: 5000,
+                },
+
+                // If we need pagination
+                pagination: {
+                    el: '.swiper-pagination',
+                    clickable: true,
+                },
+
+                // Navigation arrows
+                navigation: {
+                    nextEl: '.swiper-button-next',
+                    prevEl: '.swiper-button-prev',
+                },
+            });
+        });
+    </script>
     @vite('resources/js/app.js')
 </body>
 </html>

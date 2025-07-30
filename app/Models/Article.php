@@ -25,8 +25,33 @@ class Article extends Model
     }
 
     public function comments()
-{
-    return $this->hasMany(Comment::class)->with('user', 'replies.user');
-}
+    {
+        return $this->hasMany(Comment::class)->with('user', 'replies.user');
+    }
 
+    public function images()
+    {
+        return $this->hasMany(ArticleImage::class)->orderBy('order');
+    }
+
+    public function featuredImage()
+    {
+        return $this->hasOne(ArticleImage::class)->where('is_featured', true);
+    }
+
+    public function getFirstImageAttribute()
+    {
+        return $this->featuredImage ?? $this->images()->first();
+    }
+
+    // For navigation between articles
+    public function getPrevious()
+    {
+        return static::where('id', '<', $this->id)->orderBy('id', 'desc')->first();
+    }
+
+    public function getNext()
+    {
+        return static::where('id', '>', $this->id)->orderBy('id', 'asc')->first();
+    }
 }

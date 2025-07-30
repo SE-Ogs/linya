@@ -30,7 +30,14 @@
             </div>
         @endif
 
-        <form method="POST" action="/articles" class="flex flex-col flex-1 space-y-6 w-full">
+        @if ($formData)
+            <div class="bg-blue-100 border border-blue-400 text-blue-700 px-4 py-3 rounded mb-6 w-full">
+                <h3 class="font-bold">Debug: Form Data from Session</h3>
+                <pre>{{ print_r($formData, true) }}</pre>
+            </div>
+        @endif
+
+        <form method="POST" action="{{ route('admin.articles.store') }}" class="flex flex-col flex-1 space-y-6 w-full">
             @csrf
 
             <!-- Title Field -->
@@ -65,7 +72,8 @@
                                 'bg-red-500',
                             ];
                             $dotColor = $dotColors[$index % count($dotColors)];
-                            $isChecked = (is_array($formData['tags'] ?? old('tags')) && in_array($tag->id, $formData['tags'] ?? old('tags') ?? []));
+                            $selectedTags = $formData['tags'] ?? old('tags') ?? [];
+                            $isChecked = is_array($selectedTags) && in_array($tag->id, $selectedTags);
                         @endphp
 
                         <label class="tag-checkbox cursor-pointer">
@@ -100,7 +108,7 @@
                         </svg>
                     </div>
                     <div class="text-sm text-gray-500">Click to upload images for this article</div>
-                    <input type="file" id="imageUploadInput" name="images[]" accept="image/*" class="hidden" multiple>
+                    <input type="file" id="imageUploadInput" accept="image/*" class="hidden" multiple>
                 </div>
                 <!-- Image Previews -->
                 <div id="imagePreviewContainer" class="flex flex-wrap gap-4 mt-4"></div>
@@ -217,12 +225,34 @@
             e.preventDefault();
             const content = editor.getRayEditorContent();
             document.getElementById('article').value = content;
+            
+            // Add image data to form before submission
+            const imageData = getImageData();
+            console.log('Form submission - imageData:', imageData);
+            
+            const imageDataInput = document.createElement('input');
+            imageDataInput.type = 'hidden';
+            imageDataInput.name = 'imageData';
+            imageDataInput.value = JSON.stringify(imageData);
+            this.appendChild(imageDataInput);
+            
+            console.log('Form data before submission:', {
+                title: this.querySelector('[name="title"]').value,
+                summary: this.querySelector('[name="summary"]').value,
+                article: this.querySelector('[name="article"]').value,
+                imageData: imageDataInput.value
+            });
+            
             this.submit();
         });
 
         document.getElementById('previewButton').addEventListener('click', function () {
             const form = this.closest('form');
             form.action = "{{ route('admin.articles.preview') }}";
+            
+            // Capture editor content before submission
+            const content = editor.getRayEditorContent();
+            document.getElementById('article').value = content;
             
             // Add image data to form before submission
             const imageData = getImageData();
@@ -286,15 +316,20 @@
             const images = [];
             const imageElements = document.querySelectorAll('#imagePreviewContainer img');
             
+            console.log('Found ' + imageElements.length + ' image elements');
+            
             imageElements.forEach((imgElement, index) => {
-                images.push({
+                const imageData = {
                     name: imgElement.dataset.name || `image_${index}.jpg`,
                     size: 0, // We don't have file size for restored images
                     type: 'image/jpeg', // Default type
                     dataUrl: imgElement.src
-                });
+                };
+                images.push(imageData);
+                console.log('Image ' + index + ':', imageData.name, 'Data URL length:', imageData.dataUrl.length);
             });
             
+            console.log('Total images to submit:', images.length);
             return images;
         }
 

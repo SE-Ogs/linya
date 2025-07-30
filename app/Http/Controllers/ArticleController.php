@@ -13,6 +13,8 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use App\Models\Article;
 use App\Models\Comment;
+use App\Models\ArticleImage;
+use Illuminate\Support\Facades\Storage;
 
 class ArticleController extends Controller
 {
@@ -81,13 +83,33 @@ class ArticleController extends Controller
         // Check if we have form data from preview
         $formData = session('article_form_data');
         
+        // Debug: Log the form data to see what's being retrieved
+        if ($formData) {
+            \Log::info('Form data from session:', $formData);
+            // Clear the session data after retrieving it
+            session()->forget('article_form_data');
+        }
+        
         return view('article-management.add_article', compact('tags', 'formData'));
     }
 
-    public function store(StoreArticleRequest $request): JsonResponse
+    public function store(StoreArticleRequest $request)
     {
-        $article = $this->articleService->createArticle($request->validated());
-        return response()->json(ArticleDTO::fromModel($article), 201);
+        $validatedData = $request->validated();
+        
+        // Create the article
+        $article = $this->articleService->createArticle($validatedData);
+        
+        // Handle image processing
+        $this->processArticleImages($article, $request);
+        
+        // Check if this is an AJAX request
+        if ($request->expectsJson()) {
+            return response()->json(ArticleDTO::fromModel($article), 201);
+        }
+        
+        // For regular form submissions, redirect to admin articles page
+        return redirect()->route('admin.articles')->with('success', 'Article created successfully!');
     }
 
     public function destroy($id)
@@ -122,10 +144,22 @@ class ArticleController extends Controller
     public function backToEditor(Request $request): RedirectResponse
     {
         // Store form data in session for restoration
-        $request->session()->put('article_form_data', $request->all());
+        $formData = $request->all();
         
-        return redirect()->route('admin.articles.create')
-            ->withInput($request->all());
+        // Debug: Log the incoming form data
+        \Log::info('Incoming form data in backToEditor:', $formData);
+        
+        // Ensure tags are properly stored as an array
+        if (isset($formData['tags']) && !is_array($formData['tags'])) {
+            $formData['tags'] = [$formData['tags']];
+        }
+        
+        $request->session()->put('article_form_data', $formData);
+        
+        // Debug: Log what's being stored in session
+        \Log::info('Stored form data in session:', $formData);
+        
+        return redirect()->route('admin.articles.create');
     }
 
     public function edit($id)
@@ -197,38 +231,84 @@ class ArticleController extends Controller
         return redirect()->route('admin.articles')->with('success', 'Article published!');
     }
 
-    public function deleteImage($imageId): JsonResponse
+    public function deleteArticleImage($imageId): JsonResponse
     {
         $image = ArticleImage::findOrFail($imageId);
-        $image->deleteImage($image);
+        $this->deleteImage($image);
         return response()->json(null, 204);
     }
 
-    protected function storeImage($imageFile): string
+    protected function processArticleImages(Article $article, Request $request): void
     {
-        return $imageFile->store('article_images', 'public');
+        $images = [];
+        
+        // Debug: Log the request data
+        \Log::info('Processing article images for article ID: ' . $article->id);
+        \Log::info('Request has imageData: ' . ($request->has('imageData') ? 'yes' : 'no'));
+        
+        // Handle imageData (base64 images from frontend)
+        if ($request->has('imageData') && $request->imageData) {
+            \Log::info('ImageData content: ' . $request->imageData);
+            $imageData = json_decode($request->imageData, true);
+            \Log::info('Decoded imageData: ', $imageData ?? []);
+            
+            if (is_array($imageData)) {
+                foreach ($imageData as $index => $imageInfo) {
+                    if (isset($imageInfo['dataUrl'])) {
+                        \Log::info('Processing image ' . $index . ': ' . ($imageInfo['name'] ?? 'unnamed'));
+                        $path = $this->storeBase64Image($imageInfo['dataUrl'], $imageInfo['name'] ?? "image_{$index}.jpg");
+                        $images[] = [
+                            'image_path' => $path,
+                            'order' => $index,
+                            'is_featured' => $index === 0, // First image is featured
+                        ];
+                        \Log::info('Stored image at path: ' . $path);
+                    }
+                }
+            }
+        }
+        
+        \Log::info('Total images to create: ' . count($images));
+        
+        // Create article images
+        foreach ($images as $imageData) {
+            $articleImage = $article->images()->create($imageData);
+            \Log::info('Created article image with ID: ' . $articleImage->id);
+        }
+    }
+
+    protected function storeBase64Image(string $dataUrl, string $filename): string
+    {
+        // Extract the base64 data from the data URL
+        $base64Data = substr($dataUrl, strpos($dataUrl, ',') + 1);
+        $imageData = base64_decode($base64Data);
+        
+        // Generate a unique filename
+        $extension = pathinfo($filename, PATHINFO_EXTENSION) ?: 'jpg';
+        $uniqueFilename = uniqid() . '.' . $extension;
+        
+        // Store the file
+        Storage::disk('public')->put('article_images/' . $uniqueFilename, $imageData);
+        
+        return 'article_images/' . $uniqueFilename;
     }
 
     //maybe for more than one image
     protected function storeAdditionalImages(Article $article, array $images): void
     {
-        foreach ($images as $image) {
-            $path = $this->storeImage($iamge);
+        foreach ($images as $index => $image) {
+            $path = $this->storeBase64Image($image['dataUrl'], $image['name'] ?? "image_{$index}.jpg");
             $article->images()->create([
-                'path' => $path,
-                'is_featured' => false,
+                'image_path' => $path,
+                'order' => $index,
+                'is_featured' => $index === 0,
             ]);
         }
     }
 
-    protected function deletetImage(ArticleImage $image): void
+    protected function deleteImage(ArticleImage $image): void
     {
-        Storage::disk('public')->delete($image->path);
+        Storage::disk('public')->delete($image->image_path);
         $image->delete();
-    }
-
-    protected function getTemporaryImageUrl($imageFile): string
-    {
-        return 'data:image/' . $imageFile->getClientOriginalExtension() . ';base64,' . base64_encode(file_get_contents($imageFile->getRealPath()));
     }
 }
