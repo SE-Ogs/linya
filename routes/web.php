@@ -16,6 +16,11 @@ use App\Http\Controllers\SearchFilterController;
 use App\Http\Controllers\SettingsController;
 use App\Http\Controllers\UserAuthController;
 use App\Http\Controllers\UserManagementController;
+use App\Models\Article;
+use App\Models\Tag;
+use App\Http\Controllers\DashboardSearchController;
+use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\CommentController;
 
 // Root redirect
 Route::get('/', fn () => redirect('/dashboard'));
@@ -46,20 +51,19 @@ Route::get('/dashboard/{tag_slug}', function ($tag_slug) {
     return view('layout.user', compact('articles', 'tag'));
 })->name('dashboard.tag');
 
-// Article and Comment Routes
 Route::post('/articles', [ArticleController::class, 'store'])->name('articles.store');
 Route::get('/articles/{id}', [ArticleController::class, 'show'])->name('articles.show');
-Route::post('/articles/{article}/comments', [CommentController::class, 'store'])->name('comments.store');
-Route::delete('/comments/{comment}', [CommentController::class, 'destroy'])->name('comments.destroy');
 
-// ============================================================================
+// =========================================================================
 // AUTHENTICATION ROUTES
-// ============================================================================
+// =========================================================================
 Route::middleware('guest')->group(function () {
     Route::get('/login', [UserAuthController::class, 'showLogin'])->name('login');
     Route::get('/signup', [UserAuthController::class, 'showSignup'])->name('signup');
     Route::post('/login', [UserAuthController::class, 'login']);
     Route::post('/signup', [UserAuthController::class, 'signup']);
+    Route::get('/set-display-name', [UserAuthController::class, 'showDisplayName']);
+    Route::post('/set-display-name', [UserAuthController::class, 'storeDisplayName']);
     Route::post('/clear-signup-data', [UserAuthController::class, 'clearSignupData'])->name('clear-signup-data');
 
     // Password Reset Flow
@@ -84,23 +88,19 @@ Route::middleware('guest')->group(function () {
 
     Route::get('/reset-password', [ResetPasswordController::class, 'showResetForm'])->name('password.request');
     Route::post('/reset-password', [ResetPasswordController::class, 'updatePassword'])->name('password.update');
-
     Route::get('/resetsuccess', fn () => view('partials.reset_success'))->name('resetsuccess');
 });
 
 // ============================================================================
+// =========================================================================
 // AUTHENTICATED ROUTES
-// ============================================================================
+// =========================================================================
 Route::middleware('auth')->group(function () {
-
     Route::post('/logout', [UserAuthController::class, 'logout'])->name('logout');
-
     Route::get('/set-display-name', [UserAuthController::class, 'showDisplayName']);
     Route::post('/set-display-name', [UserAuthController::class, 'storeDisplayName']);
-
     Route::get('/settings', [SettingsController::class, 'showSettings'])->name('settings');
     Route::post('/settings', [UserManagementController::class, 'update'])->name('settings.update');
-
     Route::get('/recent-searches', [RecentSearchController::class, 'index'])->name('recent-searches.index');
     Route::post('/recent-searches', [RecentSearchController::class, 'store'])->name('recent-searches.store');
     Route::delete('/recent-searches', [RecentSearchController::class, 'clear']);
@@ -108,8 +108,12 @@ Route::middleware('auth')->group(function () {
 
     // Comment Management
     Route::get('/articles/{slug}', [CommentManageController::class, 'show'])->name('comment.manage.show');
+
+    // Comment routes - All inside auth group
+    Route::post('/articles/{article}/comments', [CommentController::class, 'store'])->name('comments.store');
+    Route::delete('/comments/{comment}', [CommentController::class, 'destroy'])->name('comments.destroy');
     Route::post('/articles/{article}/comments/ajax', [CommentController::class, 'storeAjax'])->name('comments.store.ajax');
-    Route::get('/comments', [CommentManageController::class, 'index'])->name('comments');
+    Route::get('/articles/{article}/comments', [CommentController::class, 'getComments'])->name('comments.get');
     Route::post('/comments/{comment}/like', [CommentController::class, 'like'])->name('comments.like');
     Route::post('/comments/{comment}/dislike', [CommentController::class, 'dislike'])->name('comments.dislike');
 
@@ -147,6 +151,7 @@ Route::middleware('auth')->group(function () {
             return view('admin-panel.post_management', compact('articles', 'tags'));
         })->name('articles');
 
+        // Article management
         Route::get('/add-article', [ArticleController::class, 'create'])->name('articles.create');
         Route::post('/articles/preview', [ArticleController::class, 'preview'])->name('articles.preview');
         Route::get('/edit-article/{id}', [ArticleController::class, 'edit'])->name('articles.edit');
