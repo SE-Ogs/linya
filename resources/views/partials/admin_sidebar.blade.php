@@ -16,36 +16,3 @@
 
     </nav>
 </aside>
-
-<script>
-    const sidebar = document.getElementById('sidebar');
-    const toggleBtn = document.getElementById('toggleAdminSidebar');
-
-    function collapseSidebar() {
-        sidebar.classList.add('-translate-x-full');
-        toggleBtn.classList.remove('hidden');
-        document.body.classList.add('sidebar-collapsed');
-    }
-
-    function expandSidebar() {
-        sidebar.classList.remove('-translate-x-full');
-        toggleBtn.classList.add('hidden');
-        document.body.classList.remove('sidebar-collapsed');
-    }
-
-    // Show sidebar on hamburger click
-    toggleBtn.addEventListener('click', expandSidebar);
-
-    // Collapse sidebar when clicking outside
-    document.addEventListener('click', (e) => {
-        const isClickInside = sidebar.contains(e.target) || toggleBtn.contains(e.target);
-        if (!isClickInside && !sidebar.classList.contains('-translate-x-full')) {
-            collapseSidebar();
-        }
-    });
-
-    // Optional: Collapse sidebar by default on small screens
-    if (window.innerWidth < 1024) {
-        collapseSidebar();
-    }
-</script>

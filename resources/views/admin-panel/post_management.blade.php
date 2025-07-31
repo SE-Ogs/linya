@@ -8,7 +8,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="csrf-token" content="{{ csrf_token() }}">
-    <title>Linya CMS</title>
+    <title>Post Management</title>
     @vite('resources/css/app.css')
 </head>
 <body class="bg-[#f4f4f4] font-lexend">
