@@ -24,10 +24,9 @@
 
     @guest
         <div class="w-full py-6 text-center">
-            <p
-               class="rainbow-text inline-block text-base font-medium underline transition-all duration-300 hover:scale-105 hover:opacity-90">
+            <p>
                 You are not logged in. Please
-                <a href="{{ route('login') }}">
+                <a href="{{ route('login') }}" class="rainbow-text inline-block text-base font-medium underline transition-all duration-300 hover:scale-105 hover:opacity-90">
                     log in
                 </a>
                 to comment.

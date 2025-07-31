@@ -49,10 +49,6 @@ class Comment extends Model
         return $this->hasMany(CommentLike::class);
     }
 
-    public function reactions()
-    {
-        return $this->hasMany(CommentLike::class);
-    }
 
     // Helper methods for like/dislike counts
     public function likeCount()
