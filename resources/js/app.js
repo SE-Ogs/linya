@@ -382,62 +382,6 @@ document.addEventListener("DOMContentLoaded", function () {
         // Redirect to the edit page for the specific article
         window.location.href = `/admin/articles/${articleId}/edit`;
     }
-
-    // 🏷️ Tag toggle functionality
-    function toggleTag(label) {
-        const checkbox = label.querySelector('input[type="checkbox"]');
-        const tagDisplay = label.querySelector(".tag-display");
-        const plusIcon = label.querySelector(".plus-icon");
-        const closeIcon = label.querySelector(".close-icon");
-
-        checkbox.checked = !checkbox.checked;
-
-        if (checkbox.checked) {
-            // Selected state (dark like your image)
-            tagDisplay.classList.remove(
-                "bg-gray-100",
-                "text-gray-700",
-                "border-gray-200",
-                "hover:bg-gray-200",
-            );
-            tagDisplay.classList.add(
-                "bg-gray-800",
-                "text-white",
-                "border-gray-800",
-            );
-            plusIcon.classList.add("hidden");
-            closeIcon.classList.remove("hidden");
-        } else {
-            // Unselected state (light)
-            tagDisplay.classList.remove(
-                "bg-gray-800",
-                "text-white",
-                "border-gray-800",
-            );
-            tagDisplay.classList.add(
-                "bg-gray-100",
-                "text-gray-700",
-                "border-gray-200",
-                "hover:bg-gray-200",
-            );
-            plusIcon.classList.remove("hidden");
-            closeIcon.classList.add("hidden");
-        }
-    }
-
-    // Add click handlers to tag checkboxes
-    document.querySelectorAll(".tag-checkbox").forEach((label) => {
-        label.addEventListener("click", function (e) {
-            e.preventDefault();
-            toggleTag(this);
-        });
-
-        // Initialize checked tags
-        const checkbox = label.querySelector('input[type="checkbox"]');
-        if (checkbox.checked) {
-            toggleTag(label);
-        }
-    });
 });
 
 function clearSearch() {

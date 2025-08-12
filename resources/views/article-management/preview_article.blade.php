@@ -6,7 +6,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     @vite('resources/css/app.css')
     @vite('resources/js/app.js')
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/yeole-rohan/ray-editor@main/ray-editor.css">
     <style>
         .prose {
             max-width: none;
@@ -57,6 +56,10 @@
 <body class="bg-gray-50 font-inter">
     @include('partials.admin_sidebar')
     @include('partials.admin_header')
+
+    @php
+        $routePrefix = Auth::user()->isAdmin ? "admin" : "writer";
+    @endphp
     <div class="ml-0 lg:ml-64 pt-20">
         <div class="mx-auto max-w-5xl mt-10 mb-10">
             <div class="bg-white rounded-lg shadow-lg overflow-hidden">
@@ -148,7 +151,7 @@
                     <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4 border-t border-gray-200 pt-6">
                         <div class="text-sm text-gray-500">Status: <span class="font-semibold text-orange-500">Preview</span></div>
                         <div class="flex items-center gap-2">
-                            <form method="POST" action="{{ route('admin.articles.back-to-editor') }}" class="inline">
+                            <form method="POST" action="{{ route($routePrefix . '.articles.back-to-editor') }}" class="inline">
                                 @csrf
                                 <input type="hidden" name="title" value="{{ $title }}">
                                 <input type="hidden" name="summary" value="{{ $summary }}">

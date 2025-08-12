@@ -19,7 +19,15 @@
             </div>
             <div class="flex flex-col">
                 <span class="font-semibold text-white text-sm">{{ Auth::user()->name }}</span>
-                <span class="font-noto text-gray-400 text-xs">Administrator</span>
+                <span class="font-noto text-gray-400 text-xs">
+                    @if(Auth::user()->isAdmin())
+                        Administrator
+                    @elseif(Auth::user()->isWriter())
+                        Writer
+                    @else
+                        User
+                    @endif
+                </span>
             </div>
         </div>
     </div>

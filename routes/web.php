@@ -46,7 +46,7 @@ Route::get('/dashboard/{tag_slug}', function ($tag_slug) {
     return view('layout.user', compact('articles', 'tag'));
 })->name('dashboard.tag');
 
-Route::post('/articles', [ArticleController::class, 'store'])->name('articles.store');
+    Route::post('/articles', [ArticleController::class, 'store'])->name('articles.store');
 Route::get('/articles/{id}', [ArticleController::class, 'show'])->name('articles.show');
 
 // =========================================================================
@@ -87,8 +87,6 @@ Route::middleware('guest')->group(function () {
 // ============================================================================
 Route::middleware('auth')->group(function () {
     Route::post('/logout', [UserAuthController::class, 'logout'])->name('logout');
-    Route::get('/set-display-name', [UserAuthController::class, 'showDisplayName']);
-    Route::post('/set-display-name', [UserAuthController::class, 'storeDisplayName']);
     Route::get('/settings', [SettingsController::class, 'showSettings'])->name('settings');
     Route::post('/settings', [UserManagementController::class, 'update'])->name('settings.update');
     Route::get('/recent-searches', [RecentSearchController::class, 'index'])->name('recent-searches.index');
@@ -109,26 +107,25 @@ Route::middleware('auth')->group(function () {
 
     Route::get('/comment-manage-searchbar', [SearchFilterController::class, 'index'])->name('search');
 
-    // ========================================================================
-    // ADMIN ROUTES
-    // ========================================================================
-    Route::middleware(['admin'])->prefix('admin')->name('admin.')->group(function () {
+    /**
+     * WRITER & ADMIN SHARED DASHBOARD (writer middleware)
+     */
 
-        Route::get('/dashboard', [AdminDashboardController::class, 'index'])->name('dashboard');
-
+    // Shared routes function
+    function writerAndAdminSharedRoutes() {
         Route::get('/articles', function (Request $request) {
             $query = Article::with('tags');
 
             if ($request->filled('status') && $request->status !== 'All') {
                 $query->where('status', $request->status);
             }
-
             if ($request->filled('search')) {
                 $search = $request->search;
-                $query->where(fn ($q) => $q->where('title', 'like', "%{$search}%")
-                    ->orWhere('summary', 'like', "%{$search}%"));
+                $query->where(fn ($q) =>
+                    $q->where('title', 'like', "%{$search}%")
+                      ->orWhere('summary', 'like', "%{$search}%")
+                );
             }
-
             if ($request->filled('tags')) {
                 $tagIds = $request->tags;
                 $query->whereHas('tags', fn ($q) => $q->whereIn('tags.id', $tagIds));
@@ -140,10 +137,24 @@ Route::middleware('auth')->group(function () {
             return view('admin-panel.post_management', compact('articles', 'tags'));
         })->name('articles');
 
+        Route::get('/dashboard', [AdminDashboardController::class, 'index'])->name('dashboard');
+
         Route::get('/add-article', [ArticleController::class, 'create'])->name('articles.create');
         Route::post('/articles', [ArticleController::class, 'store'])->name('articles.store');
         Route::post('/articles/preview', [ArticleController::class, 'preview'])->name('articles.preview');
         Route::post('/articles/back-to-editor', [ArticleController::class, 'backToEditor'])->name('articles.back-to-editor');
+    }
+
+    // Writer routes
+    Route::middleware('writer')->prefix('writer')->name('writer.')->group(function () {
+        writerAndAdminSharedRoutes();
+    });
+
+    // Admin routes (shared writer routes + admin-only)
+    Route::middleware('admin')->prefix('admin')->name('admin.')->group(function () {
+        writerAndAdminSharedRoutes();
+
+        // Admin-only routes here
         Route::get('/edit-article/{id}', [ArticleController::class, 'edit'])->name('articles.edit');
         Route::put('/edit-article/{id}', [ArticleController::class, 'update'])->name('articles.update');
         Route::patch('/articles/{article}/approve', [ArticleController::class, 'approve'])->name('articles.approve');
@@ -155,10 +166,13 @@ Route::middleware('auth')->group(function () {
 
         Route::get('/users', [UserManagementController::class, 'index'])->name('index');
         Route::prefix('users')->name('users.')->group(function () {
-            Route::get('{id}/edit', [UserManagementController::class, 'edit'])->name('edit');
-            Route::patch('{id}', [UserManagementController::class, 'update'])->name('update');
+            Route::patch('{id}/admin-update', [UserManagementController::class, 'adminUpdate'])->name('admin-update');
             Route::post('{id}/report', [UserManagementController::class, 'report'])->name('report');
             Route::patch('{id}/suspend', [UserManagementController::class, 'suspend'])->name('suspend');
+            Route::patch('{id}/activate', [UserManagementController::class, 'activate'])->name('activate');
+            Route::patch('{id}/ban', [UserManagementController::class, 'ban'])->name('ban');
+            Route::patch('{id}/unban', [UserManagementController::class, 'unban'])->name('unban');
+            Route::patch('{id}/role', [UserManagementController::class, 'setRole'])->name('set-role');
             Route::delete('{id}', [UserManagementController::class, 'destroy'])->name('destroy');
         });
     });

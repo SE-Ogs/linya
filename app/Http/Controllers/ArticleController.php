@@ -79,37 +79,41 @@ class ArticleController extends Controller
     public function create(): View
     {
         $tags = Tag::all();
-        
+
         // Check if we have form data from preview
         $formData = session('article_form_data');
-        
+
         // Debug: Log the form data to see what's being retrieved
         if ($formData) {
             \Log::info('Form data from session:', $formData);
             // Clear the session data after retrieving it
             session()->forget('article_form_data');
         }
-        
+
         return view('article-management.add_article', compact('tags', 'formData'));
     }
 
     public function store(StoreArticleRequest $request)
     {
         $validatedData = $request->validated();
-        
+
         // Create the article
         $article = $this->articleService->createArticle($validatedData);
-        
+
         // Handle image processing
         $this->processArticleImages($article, $request);
-        
+
         // Check if this is an AJAX request
         if ($request->expectsJson()) {
             return response()->json(ArticleDTO::fromModel($article), 201);
         }
-        
+
         // For regular form submissions, redirect to admin articles page
-        return redirect()->route('admin.articles')->with('success', 'Article created successfully!');
+        if (auth()->user()->isAdmin()) {
+            return redirect()->route('admin.articles')->with('success', 'Article created successfully!');
+        } else {
+            return redirect()->route('writer.articles')->with('success', 'Article created successfully!');
+        }
     }
 
     public function destroy($id)
@@ -123,7 +127,7 @@ class ArticleController extends Controller
     {
         $articleData = $request->all();
         $tags = Tag::find($articleData['tags'] ?? []);
-        
+
         // Handle image data
         $images = [];
         if ($request->has('imageData')) {
@@ -145,21 +149,25 @@ class ArticleController extends Controller
     {
         // Store form data in session for restoration
         $formData = $request->all();
-        
+
         // Debug: Log the incoming form data
         \Log::info('Incoming form data in backToEditor:', $formData);
-        
+
         // Ensure tags are properly stored as an array
         if (isset($formData['tags']) && !is_array($formData['tags'])) {
             $formData['tags'] = [$formData['tags']];
         }
-        
+
         $request->session()->put('article_form_data', $formData);
-        
+
         // Debug: Log what's being stored in session
         \Log::info('Stored form data in session:', $formData);
-        
-        return redirect()->route('admin.articles.create');
+
+        if (auth()->user()->isAdmin()) {
+            return redirect()->route('admin.articles.create');
+        } else {
+            return redirect()->route('writer.articles.create');
+        }
     }
 
     public function edit($id)
@@ -241,17 +249,17 @@ class ArticleController extends Controller
     protected function processArticleImages(Article $article, Request $request): void
     {
         $images = [];
-        
+
         // Debug: Log the request data
         \Log::info('Processing article images for article ID: ' . $article->id);
         \Log::info('Request has imageData: ' . ($request->has('imageData') ? 'yes' : 'no'));
-        
+
         // Handle imageData (base64 images from frontend)
         if ($request->has('imageData') && $request->imageData) {
             \Log::info('ImageData content: ' . $request->imageData);
             $imageData = json_decode($request->imageData, true);
             \Log::info('Decoded imageData: ', $imageData ?? []);
-            
+
             if (is_array($imageData)) {
                 foreach ($imageData as $index => $imageInfo) {
                     if (isset($imageInfo['dataUrl'])) {
@@ -267,9 +275,9 @@ class ArticleController extends Controller
                 }
             }
         }
-        
+
         \Log::info('Total images to create: ' . count($images));
-        
+
         // Create article images
         foreach ($images as $imageData) {
             $articleImage = $article->images()->create($imageData);
@@ -282,14 +290,14 @@ class ArticleController extends Controller
         // Extract the base64 data from the data URL
         $base64Data = substr($dataUrl, strpos($dataUrl, ',') + 1);
         $imageData = base64_decode($base64Data);
-        
+
         // Generate a unique filename
         $extension = pathinfo($filename, PATHINFO_EXTENSION) ?: 'jpg';
         $uniqueFilename = uniqid() . '.' . $extension;
-        
+
         // Store the file
         Storage::disk('public')->put('article_images/' . $uniqueFilename, $imageData);
-        
+
         return 'article_images/' . $uniqueFilename;
     }
 

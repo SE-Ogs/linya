@@ -12,7 +12,6 @@
 
         @vite('resources/css/app.css')
         @vite('resources/js/app.js')
-        <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/yeole-rohan/ray-editor@main/ray-editor.css">
         <script defer src="//unpkg.com/alpinejs" ></script> <!-- This apprently help the Filter Button have that pop-up effect to the tag selection -->
     </head>
 
@@ -55,7 +54,7 @@
                     <div x-show="open" @click.away="open = false"
                         class="absolute right-0 mt-2 w-64 bg-white border border-gray-200 rounded-lg shadow-lg z-50 p-4 space-y-4"
                         x-cloak>
-                        
+
                         <!-- Tags -->
                         <div>
                             <p class="text-sm font-semibold mb-1">Tags</p>

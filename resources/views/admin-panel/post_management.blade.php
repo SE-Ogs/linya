@@ -14,6 +14,11 @@
 <body class="bg-[#f4f4f4] font-lexend">
 
 <div id="app" class="flex min-h-screen">
+
+    @php
+        $rolePrefix = auth()->user()->role === 'admin' ? 'admin' : 'writer';
+    @endphp
+
     <!-- Sidebar -->
     @include('partials.admin_sidebar')
 
@@ -23,11 +28,11 @@
         @include('partials.admin_header')
 
         <div class="p-6 space-y-6">
-            <form method="GET" action="{{ route('admin.articles') }}" class="flex flex-col gap-4">
+            <form method="GET" action="{{ route($rolePrefix . '.articles') }}" class="flex flex-col gap-4">
                 <div id="statusFilters" class="flex space-x-2 bg-white rounded shadow overflow-hidden w-full">
                     @php $statuses = ['All', 'Pending', 'Approved', 'Published', 'Rejected']; @endphp
                     @foreach ($statuses as $status)
-                        <a href="{{ route('admin.articles', array_merge(request()->except('status'), ['status' => $status])) }}"
+                        <a href="{{ route($rolePrefix . '.articles', array_merge(request()->except('status'), ['status' => $status])) }}"
                            class="px-6 py-5 text-base font-semibold w-full text-center {{ request('status', 'All') === $status ? 'bg-blue-600 text-white' : 'hover:bg-gray-100' }}">
                             {{ $status }}
                         </a>
@@ -37,16 +42,16 @@
                     <div class="flex space-x-2">
                         <input type="text" name="search" value="{{ request('search') }}" placeholder="Search post..." class="rounded-full px-6 py-3 border border-gray-300 focus:outline-none shadow-sm w-72">
                         <button type="submit" class="px-5 py-3 bg-blue-500 text-white rounded-full hover:bg-blue-600 transition">Search</button>
-                        <button id="addPostBtn" type="button" onclick="window.location.href='/admin/add-article'" class="px-5 py-3 bg-gradient-to-r from-orange-400 to-orange-500 text-white rounded-full hover:scale-105 transform transition cursor-pointer">+ Add New Post</button>
-                    </div>
+                        <button id="addPostBtn" type="button" onclick="window.location.href='{{ route($rolePrefix . '.articles.create') }}'" class="px-5 py-3 bg-gradient-to-r from-orange-400 to-orange-500 text-white rounded-full hover:scale-105 transform transition cursor-pointer"> + Add New Post </button>
+                   </div>
                     <div class="relative">
                         <button id="filterBtn" type="button" class="flex items-center gap-2 px-4 py-2 text-sm text-gray-700 bg-white border border-gray-300 rounded-md shadow hover:bg-gray-100 focus:outline-none">Filter</button>
                         <div id="filterDropdown" class="absolute right-0 mt-2 w-48 bg-white border border-gray-200 rounded shadow z-50 p-2 space-y-2 hidden">
-                            <form method="GET" action="{{ route('admin.articles') }}">
+                            <form method="GET" action="{{ route($rolePrefix . '.articles') }}">
                                 @foreach(request()->except('tags') as $key => $value)
                                     <input type="hidden" name="{{ $key }}" value="{{ $value }}">
                                 @endforeach
-                                <a href="{{ route('admin.articles', array_merge(request()->except('tags'))) }}" class="w-full text-left px-3 py-1 text-sm rounded bg-gray-200 hover:bg-gray-300 mb-2 block">Clear Filters</a>
+                                <a href="{{ route($rolePrefix . '.articles', array_merge(request()->except('tags'))) }}" class="w-full text-left px-3 py-1 text-sm rounded bg-gray-200 hover:bg-gray-300 mb-2 block">Clear Filters</a>
                                 @foreach ($tags as $tag)
                                     <button type="submit" name="tags[]" value="{{ $tag->id }}" class="w-full text-left px-3 py-1 text-sm rounded {{ in_array($tag->id, (array)request('tags', [])) ? 'bg-orange-400 text-white' : 'hover:bg-gray-100' }}">{{ $tag->name }}</button>
                                 @endforeach
@@ -100,6 +105,8 @@
                                 </div>
                             </div>
 
+
+                        @if(auth()->user()->isAdmin())
                             <div class="flex items-center space-x-3">
                                 @if($article->status === 'Pending')
                                     <button type="button" class="approve-btn px-3 py-1 bg-blue-500 text-white rounded hover:bg-blue-600" data-id="{{ $article->id }}">Approve</button>
@@ -120,6 +127,7 @@
                                     Delete
                                 </button>
                             </div>
+                    @endif
                         </div>
 
                         @if($article->status === 'Rejected')

@@ -17,16 +17,26 @@ class UserManagementController extends Controller
         $perPage = (int) $request->input('per_page', 5);
         $perPage = max(1, min($perPage, 100));
 
-        $query = $request->input('query');
+        $searchQuery = $request->input('query');
+        $statusFilter = $request->input('status');
 
-        $usersQuery = User::query()
-            ->where('role', $type === 'admins' ? 'admin' : 'user');
+        $role = match ($type) {
+            'admins' => 'admin',
+            'writers' => 'writer',
+            default => 'user',
+        };
 
-        if ($query) {
-            $usersQuery->where(function ($q) use ($query) {
-                $q->where('name', 'ILIKE', "%{$query}%")
-                    ->orWhere('email', 'ILIKE', "%{$query}%");
+        $usersQuery = User::query()->where('role', $role);
+
+        if ($searchQuery) {
+            $usersQuery->where(function ($q) use ($searchQuery) {
+                $q->where('name', 'ILIKE', "%{$searchQuery}%")
+                    ->orWhere('email', 'ILIKE', "%{$searchQuery}%");
             });
+        }
+
+        if ($statusFilter && in_array($statusFilter, ['Active', 'Banned'])) {
+            $usersQuery->where('status', $statusFilter);
         }
 
         $users = $usersQuery->paginate($perPage)->appends($request->all());
@@ -34,6 +44,7 @@ class UserManagementController extends Controller
         return view('admin-panel.user-manage', compact('users', 'type'));
     }
 
+    // User self-service update (settings page)
     public function update(Request $request)
     {
         switch ($request->input('form_type')) {
@@ -48,6 +59,20 @@ class UserManagementController extends Controller
             default:
                 return back()->with('error', 'Invalid form submission');
         }
+    }
+
+    // Admin updates another user's profile (name/email)
+    public function adminUpdate(Request $request, $id)
+    {
+        $validated = $request->validate([
+            'name' => 'required|string|max:255',
+            'email' => 'required|email|unique:users,email,' . $id,
+        ]);
+
+        $user = User::findOrFail($id);
+        $user->update($validated);
+
+        return back()->with('message', "User {$user->id} has been updated.");
     }
 
     public function report($id)
@@ -66,6 +91,64 @@ class UserManagementController extends Controller
         $user->save();
 
         return back()->with('message', "User {$user->id} has been suspended.");
+    }
+
+    public function activate($id)
+    {
+        $user = User::findOrFail($id);
+        $user->status = 'Active';
+        $user->save();
+
+        return back()->with('message', "User {$user->id} has been activated.");
+    }
+
+    public function ban($id)
+    {
+        $user = User::findOrFail($id);
+
+        // Safety: prevent banning yourself or other admins
+        if (auth()->id() === $user->id) {
+            return back()->with('error', 'You cannot ban your own account.');
+        }
+        if ($user->role === 'admin') {
+            return back()->with('error', 'You cannot ban another admin.');
+        }
+
+        $user->status = 'Banned';
+        $user->save();
+
+        return back()->with('message', "User {$user->id} has been banned.");
+    }
+
+    public function unban($id)
+    {
+        $user = User::findOrFail($id);
+        $user->status = 'Active';
+        $user->save();
+
+        return back()->with('message', "User {$user->id} has been unbanned.");
+    }
+
+    public function setRole(Request $request, $id)
+    {
+        $validated = $request->validate([
+            'role' => 'required|in:user,writer,admin',
+        ]);
+
+        $user = User::findOrFail($id);
+
+        // Safety checks
+        if (auth()->id() === $user->id && $validated['role'] !== 'admin') {
+            return back()->with('error', 'You cannot change your own role to non-admin.');
+        }
+        if ($user->role === 'admin' && auth()->id() !== $user->id && $validated['role'] !== 'admin') {
+            return back()->with('error', 'You cannot change another admin\'s role.');
+        }
+
+        $user->role = $validated['role'];
+        $user->save();
+
+        return back()->with('message', "User {$user->id} role set to {$user->role}.");
     }
 
     public function destroy($id)

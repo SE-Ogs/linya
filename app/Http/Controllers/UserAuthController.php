@@ -48,7 +48,7 @@ class UserAuthController extends Controller
         $expiresAt = session('signup_data_expires_at');
 
         if (!session()->has('signup_data') || !$expiresAt || now()->greaterThan($expiresAt)) {
-            session()->forget(['signup_data', 'signup_data_expires_at']); 
+            session()->forget(['signup_data', 'signup_data_expires_at']);
             return redirect('/signup');
         }
 
@@ -76,7 +76,7 @@ class UserAuthController extends Controller
 
         // Create the user
         $user = \App\Models\User::create([
-            'name' => $request->display_name ?: $signupData['username'], 
+            'name' => $request->display_name ?: $signupData['username'],
             'username' => $signupData['username'],
             'email' => $signupData['email'],
             'password' => $signupData['password'],
@@ -113,7 +113,13 @@ class UserAuthController extends Controller
 
         if (Auth::attempt(['username' => $credentials['username'], 'password' => $credentials['password']])) {
             $request->session()->regenerate();
-            return redirect()->intended('/dashboard'); // TODO: make separate route for admins when logging innn
+            // Block banned users after successful auth check
+            if (auth()->user()->status === 'Banned') {
+                Auth::logout();
+                return back()->withErrors(['username' => 'Your account is banned. Contact support.'])->withInput();
+            }
+
+            return redirect()->intended('/dashboard');
         }
 
         return back()->withErrors([

@@ -28,7 +28,7 @@ class ArticleService
         $data['views'] = 0;
 
         if (!isset($data['status'])) {
-            $data['status'] = 'Published'; // TODO CHANGE TO PENDING
+            $data['status'] = 'Pending';
         }
         return $this->articleRepository->create($data);
     }

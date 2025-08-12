@@ -3,10 +3,17 @@
         <img src="/images/linyaText.svg" alt="LINYA Logo" class="h-10 w-auto" />
     </div>
     <nav class="flex flex-col gap-2">
+        @if(Auth::user()->isWriter())
+        <a href="/writer/dashboard" class="py-2 px-3 rounded hover:bg-orange-500 transition text-base font-medium">Dashboard</a>
+        <a href="/writer/articles" class="py-2 px-3 rounded hover:bg-orange-500 transition text-base font-medium">Post Management</a>
+        @elseif(Auth::user()->isAdmin())
         <a href="/admin/dashboard" class="py-2 px-3 rounded hover:bg-orange-500 transition text-base font-medium">Dashboard</a>
-        <a href="/admin/users" class="py-2 px-3 rounded hover:bg-orange-500 transition text-base font-medium">User Management</a>
         <a href="/admin/articles" class="py-2 px-3 rounded hover:bg-orange-500 transition text-base font-medium">Post Management</a>
-        <a href="/admin/comments" class="py-2 px-3 rounded hover:bg-orange-500 transition text-base font-medium">Comment Management</a>
+
+            <a href="/admin/users" class="py-2 px-3 rounded hover:bg-orange-500 transition text-base font-medium">User Management</a>
+            <a href="/admin/users?type=writers" class="py-2 px-3 rounded hover:bg-orange-500 transition text-base font-medium">Writer Management</a>
+            <a href="/admin/comments" class="py-2 px-3 rounded hover:bg-orange-500 transition text-base font-medium">Comment Management</a>
+        @endif
 
         <!-- Just a divider for main dashboard button -->
     <div class="my-4 border-t border-gray-400"></div>

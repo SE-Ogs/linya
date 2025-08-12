@@ -22,7 +22,6 @@ class User extends Authenticatable
         'username',
         'email',
         'password',
-        'isAdmin',
         'status',
         'avatar',
         'role',
@@ -53,5 +52,37 @@ class User extends Authenticatable
 
     public function recentSearches(){
         return $this->hasMany(RecentSearch::class);
+    }
+
+    /**
+     * Convenience method to check if the user is an admin (via role only).
+     */
+    public function isAdmin(): bool
+    {
+        return $this->role === 'admin';
+    }
+
+    /**
+     * Convenience method to check if the user is a writer.
+     */
+    public function isWriter(): bool
+    {
+        return $this->role === 'writer';
+    }
+
+    /**
+     * Accessor to allow `$user->isWriter` in views.
+     */
+    public function getIsWriterAttribute(): bool
+    {
+        return $this->role === 'writer';
+    }
+
+    /**
+     * Accessor to allow `$user->isAdmin` in views.
+     */
+    public function getIsAdminAttribute(): bool
+    {
+        return $this->role === 'admin';
     }
 }

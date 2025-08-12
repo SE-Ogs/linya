@@ -8,9 +8,6 @@
 
     @vite('resources/css/app.css')
     @vite('resources/js/app.js')
-
-    <!-- RayEditor CSS -->
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/yeole-rohan/ray-editor@main/ray-editor.css">
 </head>
 
 <body class="flex flex-col min-h-screen">
@@ -108,41 +105,24 @@
         </form>
     </div>
 
-    <!-- RayEditor JS -->
-    <script src='https://cdn.jsdelivr.net/gh/yeole-rohan/ray-editor@main/ray-editor.js'></script>
+
+    <!-- QuillJS CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/quill@2.0.3/dist/quill.snow.css" rel="stylesheet">
+
+    <!-- QuillJS -->
+    <script src="https://cdn.jsdelivr.net/npm/quill@2.0.3/dist/quill.js"></script>
     <script>
-        // Initialize RayEditor
-        const editor = new RayEditor('editor', {
-            bold: true,
-            italic: true,
-            underline: true,
-            strikethrough: true,
-            redo: true,
-            undo: true,
-            headings: true,
-            lowercase: true,
-            uppercase: true,
-            superscript: true,
-            subscript: true,
-            orderedList: true,
-            unorderedList: true,
-            toggleCase: true,
-            codeBlock: true,
-            codeInline: true,
-            textColor: true,
-            backgroundColor: true,
-            link: true,
-            table: true,
-            textAlignment: true
+        // Initialize Quill
+        const quill = new Quill('#editor', {
+            theme: 'snow'
         });
 
-        // Set initial content
-        editor.setRayEditorContent(`{!! old('article', $article->article) !!}`);
+        // Load existing article HTML into Quill
+        quill.root.innerHTML = `{!! old('article', $article->article) !!}`;
 
-        // Sync editor content with the hidden input field
-        document.querySelector('form').addEventListener('submit', function (e) {
-            const content = editor.getRayEditorContent();
-            document.getElementById('article').value = content;
+        // On form submit, copy Quill HTML into hidden input
+        document.querySelector('form').addEventListener('submit', function () {
+            document.getElementById('article').value = quill.root.innerHTML;
         });
     </script>
 </body>

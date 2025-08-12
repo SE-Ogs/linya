@@ -15,7 +15,6 @@
     </head>
 
     <body class="flex min-h-screen flex-col">
-
         <div class="flex justify-between">
             <button id="toggleSideBar"
                     class="ml-4 mt-3 h-12 cursor-pointer rounded-[10px] p-2 text-[#9A9A9A] transition duration-300 hover:bg-gray-100">
@@ -33,10 +32,9 @@
             </button>
             @guest
                 <div class="m-4 space-x-1">
-                    <button type="button"
-                            id="signup"
-                            class="cursor-pointer rounded-[6px] border border-[#4338CA] px-5 py-2 text-[14px] text-[#4338CA] transition duration-300 hover:bg-[#4338CA] hover:text-white">Sign
-                        Up</button>
+                    <a href="{{ route('signup') }}"
+                       id="signup"
+                       class="cursor-pointer rounded-[6px] border border-[#4338CA] px-5 py-2 text-[14px] text-[#4338CA] transition duration-300 hover:bg-[#4338CA] hover:text-white">Sign Up</a>
                     <a href="{{ route('login') }}">
                         <button type="button"
                                 id="login"
@@ -47,12 +45,21 @@
             @endguest
 
             @auth
-                @if (auth()->user()->isAdmin)
+                @if (Auth::user()->isAdmin())
                     <div class="m-4">
                         <a href="{{ route('admin.dashboard') }}">
                             <button
                                     class="cursor-pointer rounded-[6px] bg-[#4338CA] px-5 py-2 text-white transition duration-300 hover:bg-[#2C2891]">
                                 Admin Dashboard
+                            </button>
+                        </a>
+                    </div>
+                @elseif (Auth::user()->isWriter())
+                    <div class="m-4">
+                        <a href="{{ route('writer.dashboard') }}">
+                            <button
+                                    class="cursor-pointer rounded-[6px] bg-[#4338CA] px-5 py-2 text-white transition duration-300 hover:bg-[#2C2891]">
+                                Writer Dashboard
                             </button>
                         </a>
                     </div>

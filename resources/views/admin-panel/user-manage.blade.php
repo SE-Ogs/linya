@@ -30,12 +30,12 @@
 
         <!-- Search Bar -->
         <div class="max-w-17xl relative ml-64 mt-6 flex items-center justify-between px-8">
-            <form action="{{ route('search') }}"
+            <form action="{{ route('admin.index') }}"
                   method="GET"
                   class="mr-20 w-full max-w-4xl">
                 <input type="hidden"
                        name="type"
-                       value="users">
+                       value="{{ $type }}">
                 <div class="flex items-center rounded-full bg-gray-100 px-6 py-3 shadow">
                     <svg class="mr-3 h-5 w-5 text-gray-400"
                          fill="none"
@@ -68,6 +68,13 @@
                         Users
                     </a>
 
+                    <a href="{{ route('admin.index', ['type' => 'writers', 'per_page' => request('per_page', 10)]) }}"
+                       class="{{ $type === 'writers'
+                           ? 'bg-gradient-to-r from-red-400 to-orange-300 text-white scale-105'
+                           : 'bg-white text-gray-700 shadow-sm hover:bg-orange-50' }} rounded-t-lg px-6 py-2 font-medium shadow transition-all duration-150">
+                        Writers
+                    </a>
+
                     <a href="{{ route('admin.index', ['type' => 'admins', 'per_page' => request('per_page', 10)]) }}"
                        class="{{ $type === 'admins'
                            ? 'bg-gradient-to-r from-red-400 to-orange-300 text-white scale-105'
@@ -76,9 +83,9 @@
                     </a>
                 </div>
 
-                <!-- Per Page Dropdown -->
+                <!-- Per Page + Status Filter -->
                 <form method="GET"
-                      class="flex w-full items-center justify-end md:w-auto md:justify-start">
+                      class="flex w-full items-center justify-end gap-3 md:w-auto md:justify-start">
                     @foreach (request()->except('per_page') as $key => $value)
                         @if (is_array($value))
                             @foreach ($value as $v)
@@ -105,6 +112,14 @@
                             </option>
                         @endforeach
                     </select>
+                    <label for="status"
+                           class="ml-4 mr-2 text-sm font-medium text-gray-700">Status:</label>
+                    @php $statuses = ['All','Active','Banned']; @endphp
+                    <select name="status" id="status" onchange="this.form.submit()" class="rounded border border-gray-300 px-2 py-1 text-sm">
+                        @foreach ($statuses as $s)
+                            <option value="{{ $s }}" {{ request('status') === $s ? 'selected' : '' }}>{{ $s }}</option>
+                        @endforeach
+                    </select>
                 </form>
             </div>
 
@@ -117,6 +132,7 @@
                             <th class="p-4">Picture</th>
                             <th class="p-4">Name</th>
                             <th class="p-4">Email Address</th>
+                             <th class="p-4">Role</th>
                             <th class="p-4">Status</th>
                             <th class="p-4">Actions</th>
                         </tr>
@@ -132,6 +148,7 @@
                                 </td>
                                 <td class="p-4 align-middle font-medium text-orange-600">{{ $user->name }}</td>
                                 <td class="p-4 align-middle text-gray-600">{{ $user->email }}</td>
+                                <td class="p-4 align-middle text-gray-600">{{ ucfirst($user->role) }}</td>
                                 <td class="p-4 align-middle">
                                     <span
                                           class="{{ $user->status === 'Active'
@@ -151,35 +168,47 @@
                                         <!-- Edit -->
                                         <button type="button"
                                                 title="Edit Info"
+                                                class="px-3 py-1 rounded bg-blue-600 text-white text-xs hover:bg-blue-700"
                                                 onclick="openEditModal({{ $user->id }}, '{{ $user->name }}', '{{ $user->email }}')">
-                                            <img src="{{ asset('images/icon-edit.png') }}"
-                                                 alt="Edit"
-                                                 class="h-5 w-5 hover:opacity-75">
+                                            Edit
                                         </button>
-
-                                        <!-- Report -->
-                                        <form action="{{ route('admin.users.report', ['id' => $user->id]) }}"
-                                              method="POST">
+                                        <!-- Ban/Unban -->
+                                        @if($user->status !== 'Banned')
+                                            <form action="{{ route('admin.users.ban', ['id' => $user->id]) }}" method="POST" onsubmit="return confirm('Ban this user?')">
+                                                @csrf
+                                                @method('PATCH')
+                                                <button type="submit" title="Ban" class="text-red-600 hover:opacity-75">
+                                                    Ban
+                                                </button>
+                                            </form>
+                                        @else
+                                            <form action="{{ route('admin.users.unban', ['id' => $user->id]) }}" method="POST" onsubmit="return confirm('Unban this user?')">
                                             @csrf
-                                            <button type="submit"
-                                                    title="Report">
-                                                <img src="{{ asset('images/icon-report.png') }}"
-                                                     alt="Report"
-                                                     class="h-5 w-5 hover:opacity-75">
+                                                @method('PATCH')
+                                                <button type="submit" title="Unban" class="text-green-600 hover:opacity-75">
+                                                    Unban
                                             </button>
                                         </form>
+                                        @endif
 
-                                        <!-- Suspend -->
-                                        <form action="{{ route('admin.users.suspend', ['id' => $user->id]) }}"
-                                              method="POST">
+                                        <!-- Activate (from Suspended/Reported) -->
+                                        @if(in_array($user->status, ['Suspended','Reported']))
+                                            <form action="{{ route('admin.users.activate', ['id' => $user->id]) }}" method="POST">
+                                                @csrf
+                                                @method('PATCH')
+                                                <button type="submit" title="Activate" class="text-green-600 hover:opacity-75">Activate</button>
+                                            </form>
+                                        @endif
+
+                                        <!-- Role dropdown -->
+                                        <form action="{{ route('admin.users.set-role', ['id' => $user->id]) }}" method="POST">
                                             @csrf
                                             @method('PATCH')
-                                            <button type="submit"
-                                                    title="Suspend">
-                                                <img src="{{ asset('images/icon-suspend.png') }}"
-                                                     alt="Suspend"
-                                                     class="h-5 w-5 hover:opacity-75">
-                                            </button>
+                                            <select name="role" class="text-xs border rounded px-1 py-0.5" onchange="this.form.submit()">
+                                                <option value="user" {{ $user->role === 'user' ? 'selected' : '' }}>User</option>
+                                                <option value="writer" {{ $user->role === 'writer' ? 'selected' : '' }}>Writer</option>
+                                                <option value="admin" {{ $user->role === 'admin' ? 'selected' : '' }}>Admin</option>
+                                            </select>
                                         </form>
 
                                         <!-- Delete -->
@@ -271,7 +300,7 @@
                 document.getElementById('editUserEmail').value = email;
 
                 const form = document.getElementById('editUserForm');
-                form.action = `/admin/users/${id}`; // PATCH route
+                form.action = `/admin/users/${id}/admin-update`; // PATCH route for admin updating name/email
 
                 document.getElementById('editModal').classList.remove('hidden');
                 document.getElementById('editModal').classList.add('flex');

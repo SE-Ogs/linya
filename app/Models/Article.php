@@ -17,6 +17,8 @@ class Article extends Model
         'status',
         'article',
         'status',
+        'views',
+        'rejection_reason',
     ];
 
     public function tags()
