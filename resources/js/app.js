@@ -203,7 +203,7 @@ document.addEventListener("DOMContentLoaded", function () {
             loadingText.classList.remove("hidden");
             content.classList.add("hidden");
 
-            fetch(`/dashboard-search?q=${encodeURIComponent(query)}`)
+            fetch(`/home-search?q=${encodeURIComponent(query)}`)
                 .then((res) => res.json())
                 .then((data) => {
                     resultsGrid.innerHTML = "";

@@ -18,21 +18,21 @@ use App\Http\Controllers\UserAuthController;
 use App\Http\Controllers\UserManagementController;
 
 // Root redirect
-Route::get('/', fn () => redirect('/dashboard'));
+Route::get('/', fn () => redirect('/home'));
 
 // ============================================================================
 // GUEST ROUTES (Dashboard - No Authentication Required)
 // ============================================================================
-Route::get('/dashboard', function () {
+Route::get('/home', function () {
     $articles = Article::with('tags')
         ->where('status', 'Published')
         ->orderByDesc('views')
         ->get();
 
-    return view('layout.user', compact('articles'));
-})->name('dashboard');
+    return view('home.home', compact('articles'));
+})->name('home');
 
-Route::get('/dashboard/{tag_slug}', function ($tag_slug) {
+Route::get('/home/{tag_slug}', function ($tag_slug) {
     $tag = Tag::where('slug', $tag_slug)->first();
 
     if (!$tag) abort(404);
@@ -43,8 +43,8 @@ Route::get('/dashboard/{tag_slug}', function ($tag_slug) {
         ->orderByDesc('views')
         ->get();
 
-    return view('layout.user', compact('articles', 'tag'));
-})->name('dashboard.tag');
+    return view('home.home', compact('articles', 'tag'));
+})->name('home.tag');
 
     Route::post('/articles', [ArticleController::class, 'store'])->name('articles.store');
 Route::get('/articles/{id}', [ArticleController::class, 'show'])->name('articles.show');
@@ -92,7 +92,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/recent-searches', [RecentSearchController::class, 'index'])->name('recent-searches.index');
     Route::post('/recent-searches', [RecentSearchController::class, 'store'])->name('recent-searches.store');
     Route::delete('/recent-searches', [RecentSearchController::class, 'clear']);
-    Route::get('/dashboard-search', [DashboardSearchController::class, 'search']);
+    Route::get('/home-search', [HomeSearchController::class, 'search']);
 
     // Comment Management
     Route::get('/articles/{slug}', [CommentManageController::class, 'show'])->name('comment.manage.show');

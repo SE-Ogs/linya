@@ -89,7 +89,7 @@ class UserAuthController extends Controller
         Auth::login($user);
 
         // Redirect to dashboard
-        return redirect('/dashboard')->with('success', 'Account created successfully!');
+        return redirect('/home')->with('success', 'Account created successfully!');
     }
 
     public function clearSignupData(Request $request)
@@ -119,7 +119,7 @@ class UserAuthController extends Controller
                 return back()->withErrors(['username' => 'Your account is banned. Contact support.'])->withInput();
             }
 
-            return redirect()->intended('/dashboard');
+            return redirect()->intended('/home');
         }
 
         return back()->withErrors([
@@ -133,7 +133,7 @@ class UserAuthController extends Controller
         Auth::logout();
         $request->session()->invalidate();
         $request->session()->regenerateToken();
-        return redirect('/dashboard');
+        return redirect('/home');
     }
 
     public function preview(Request $request)

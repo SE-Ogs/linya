@@ -7,7 +7,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\DB;
 
-class DashboardSearchController extends Controller
+class HomeSearchController extends Controller
 {
      public function search(Request $request) {
         $query = strtolower($request->input('q'));
