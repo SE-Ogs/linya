@@ -54,8 +54,8 @@
     </style>
 </head>
 <body class="bg-gray-50 font-inter">
-    @include('partials.admin_sidebar')
-    @include('partials.admin_header')
+    @include('partials.admin-sidebar')
+    @include('partials.admin-header')
 
     @php
         $routePrefix = Auth::user()->isAdmin ? "admin" : "writer";

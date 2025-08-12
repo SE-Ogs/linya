@@ -10,13 +10,13 @@
 <div id="app" class="flex min-h-screen">
 
     <!-- Sidebar -->
-    @include('partials.admin_sidebar')
+    @include('partials.admin-sidebar')
 
     <!-- Main Content -->
     <div id="mainContent" class="flex-1 flex flex-col transition-[margin] duration-300 ml-64">
 
     <!-- Header -->
-    @include('partials.admin_header')
+    @include('partials.admin-header')
 
     <!-- WELCOME MESSAGE -->
     <div class="p-6 space-y-6 font-[Lexend]">
@@ -90,7 +90,7 @@
                 <span class="text-sm">Please Select A Post To View Analytics</span>
             </div>
         </div>
-    
+
         </div>
         <!-- Trending Posts -->
             <!-- Trending Posts Square to section them-->
@@ -104,7 +104,7 @@
                     <!-- Contents of Trending Posts -->
                     <div class="space-y-4">
                     @forelse ($trendingPosts as $post)
-                    <div 
+                    <div
                         class="bg-gray-100 rounded-xl p-3 cursor-pointer hover:bg-gray-200"
                         data-id="{{ $post->id }}"
                         data-title="{{ $post->title }}"
@@ -163,7 +163,7 @@
         } else {
         // Show it to analytics section
         const tagsHtml = tags.length
-            ? `<div class="text-sm text-gray-600 mt-1">Tags: 
+            ? `<div class="text-sm text-gray-600 mt-1">Tags:
                     ${tags.map(tag => `<span class="bg-gray-200 text-gray-800 px-2 py-1 rounded-full text-xs mr-1">${tag}</span>`).join('')}
                </div>`
             : `<div class="text-sm text-gray-400 mt-1">No tags</div>`;

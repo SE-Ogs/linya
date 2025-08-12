@@ -69,10 +69,10 @@ class ArticleController extends Controller
         $comments = $commentsQuery->get();
 
         if ($request->ajax()) {
-            return view('partials.comments_list', compact('comments', 'article', 'sort'));
+            return view('partials.comments-list', compact('comments', 'article', 'sort'));
         }
 
-        return view('article-management.show_article', compact('article', 'comments', 'sort'));
+        return view('article-management.show-article', compact('article', 'comments', 'sort'));
     }
 
 
@@ -90,7 +90,7 @@ class ArticleController extends Controller
             session()->forget('article_form_data');
         }
 
-        return view('article-management.add_article', compact('tags', 'formData'));
+        return view('article-management.add-article', compact('tags', 'formData'));
     }
 
     public function store(StoreArticleRequest $request)
@@ -179,7 +179,7 @@ class ArticleController extends Controller
         $tags = Tag::all();
 
         // Pass the article and tags to the view
-        return view('article-management.edit_article', compact('article', 'tags'));
+        return view('article-management.edit-article', compact('article', 'tags'));
     }
 
     public function update(Request $request, $id)
@@ -215,7 +215,7 @@ class ArticleController extends Controller
         }
 
         // Redirect back with a success message
-        return redirect()->route('articles.edit', $id)->with('success', 'Article updated successfully!');
+        return redirect()->route('admin.articles.edit', $id)->with('success', 'Article updated successfully!');
     }
 
     public function approve($id)

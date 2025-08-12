@@ -10,8 +10,7 @@
 
         <title>Linya</title>
 
-        @vite(['resources/css/app.css'])
-
+        @vite(['resources/css/app.css', 'resources/js/app.js'])
     </head>
 
     <body class="flex min-h-screen flex-col">
@@ -65,7 +64,6 @@
                     </div>
                 @endif
             @endauth
-
         </div>
 
         <aside id="sidebar"
@@ -75,23 +73,18 @@
         </aside>
 
         <div id="header">
-            @include('partials.dashboard_header')
+            @include('partials.dashboard-header')
         </div>
 
         <main class="flex-grow">
-            @include ('partials.dashboard_content')
+            @include ('partials.dashboard-content')
         </main>
 
         <footer>
             @include('partials.footer')
-
         </footer>
 
-        @include('partials.contact_us')
-        @include('partials.are_you_sure_modal')
-
-        @vite('resources/js/app.js')
-
+        @include('partials.contact-us')
+        @include('partials.are-you-sure-modal')
     </body>
-
 </html>

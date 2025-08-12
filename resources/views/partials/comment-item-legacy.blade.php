@@ -54,7 +54,7 @@
     <div class="replies ml-8 mt-4">
         @foreach($comment->replies as $reply)
             {{-- Recursively include the single_comment partial for each reply --}}
-            @include('partials.comment_item_legacy', ['comment' => $reply, 'articleId' => $article->id ?? $articleId ?? null])
+            @include('partials.comment-item-legacy', ['comment' => $reply, 'articleId' => $article->id ?? $articleId ?? null])
         @endforeach
     </div>
 </div>

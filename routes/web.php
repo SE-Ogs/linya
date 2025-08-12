@@ -134,7 +134,7 @@ Route::middleware('auth')->group(function () {
             $articles = $query->get();
             $tags = Tag::all();
 
-            return view('admin-panel.post_management', compact('articles', 'tags'));
+            return view('admin-panel.article-management', compact('articles', 'tags'));
         })->name('articles');
 
         Route::get('/dashboard', [AdminDashboardController::class, 'index'])->name('dashboard');
