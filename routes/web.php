@@ -9,7 +9,7 @@ use App\Http\Controllers\AdminDashboardController;
 use App\Http\Controllers\ArticleController;
 use App\Http\Controllers\CommentController;
 use App\Http\Controllers\CommentManageController;
-use App\Http\Controllers\DashboardSearchController;
+use App\Http\Controllers\HomeSearchController;
 use App\Http\Controllers\RecentSearchController;
 use App\Http\Controllers\ResetPasswordController;
 use App\Http\Controllers\SearchFilterController;
