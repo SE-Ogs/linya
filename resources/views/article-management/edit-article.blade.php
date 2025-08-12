@@ -11,8 +11,8 @@
 </head>
 
 <body class="flex flex-col min-h-screen">
-    @include('partials.admin_sidebar')
-    @include('partials.admin_header')
+    @include('partials.admin-sidebar')
+    @include('partials.admin-header')
 
     <div id="mainContent" class="transition-all duration-300 ml-64 flex-1 min-h-0 flex flex-col bg-gray-50 p-8 overflow-auto">
         <!-- Success Message -->

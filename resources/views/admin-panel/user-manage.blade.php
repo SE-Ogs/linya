@@ -25,8 +25,8 @@
 
     <body>
         <!-- Sidebar -->
-        @include('partials.admin_header')
-        @include('partials.admin_sidebar')
+        @include('partials.admin-header')
+        @include('partials.admin-sidebar')
 
         <!-- Search Bar -->
         <div class="max-w-17xl relative ml-64 mt-6 flex items-center justify-between px-8">

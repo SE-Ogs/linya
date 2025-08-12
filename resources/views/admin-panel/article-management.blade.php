@@ -20,12 +20,12 @@
     @endphp
 
     <!-- Sidebar -->
-    @include('partials.admin_sidebar')
+    @include('partials.admin-sidebar')
 
     <!-- Main Content -->
     <div id="mainContent" class="ml-64 flex-1 transition-all duration-300">
         <!-- Header -->
-        @include('partials.admin_header')
+        @include('partials.admin-header')
 
         <div class="p-6 space-y-6">
             <form method="GET" action="{{ route($rolePrefix . '.articles') }}" class="flex flex-col gap-4">

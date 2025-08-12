@@ -17,8 +17,8 @@
 
     <body>
         <!-- Sidebar -->
-        @include('partials.admin_header')
-        @include('partials.admin_sidebar')
+        @include('partials.admin-header')
+        @include('partials.admin-sidebar')
 
         <!-- Search & Filter Form (both elements side by side) -->
         <div class="ml-64 mt-6 px-8 relative max-w-8xl">
