@@ -73,11 +73,11 @@
         </aside>
 
         <div id="header">
-            @include('partials.dashboard-header')
+            @include('partials.home-header')
         </div>
 
         <main class="flex-grow">
-            @include ('partials.dashboard-content')
+            @include ('partials.home-content')
         </main>
 
         <footer>

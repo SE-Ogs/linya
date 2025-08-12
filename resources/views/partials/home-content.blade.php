@@ -7,7 +7,7 @@
         <div class="mx-auto max-w-7xl border-b border-gray-200 bg-white px-8 py-6">
             <div class="flex items-center justify-between">
                 <h1 class="text-3xl font-bold text-black">{{ $tag->name }}</h1>
-                <a href="/dashboard"
+                <a href="/home"
                    class="text-sm font-medium text-blue-600 transition-colors duration-200 hover:text-blue-800">
                     ← View All Articles
                 </a>

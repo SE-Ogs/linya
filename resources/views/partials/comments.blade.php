@@ -102,7 +102,7 @@
         {{-- Comments List --}}
         <div class="comments-list"
              id="comments-container">
-            @include('partials.comments_list', [
+            @include('partials.comments-list', [
                 'comments' => $comments,
                 'article' => $article,
                 'sort' => $sort ?? 'all',
@@ -110,7 +110,7 @@
         </div>
     @endguest
 </div>
-@include('partials.report_comment_modal')
+@include('partials.report-comment-modal')
 <script>
     // Comment-specific functionality only
     document.addEventListener('DOMContentLoaded', function() {

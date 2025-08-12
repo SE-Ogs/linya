@@ -19,7 +19,7 @@
     <div class="my-4 border-t border-gray-400"></div>
 
         <!-- Back to main dashboard link -->
-    <a href="/dashboard" class="py-2 px-3 rounded hover:bg-orange-500 transition text-base font-medium"> Back to Main Dashboard</a>
+    <a href="/home" class="py-2 px-3 rounded hover:bg-orange-500 transition text-base font-medium"> Back to Main Dashboard</a>
 
     </nav>
 </aside>
