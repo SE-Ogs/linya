@@ -18,7 +18,8 @@
         }
     }
 </style>
-<div class="fixed inset-0 z-50 hidden items-center justify-center bg-black/50 p-4 text-black">
+<div id="bannedModal"
+     class="fixed inset-0 z-50 hidden items-center justify-center bg-black/50 p-4 text-black">
     <div class="flex h-[420px] w-[609px] flex-col flex-wrap items-center justify-center rounded-[60px] bg-white">
         <div class="flex flex-col flex-wrap items-center justify-center pl-20 pr-20 pt-5">
             <h1 class="rainbow-text mb-5 text-[35px] font-bold transition-all duration-300">Access Denied</h1>
@@ -43,7 +44,8 @@
         <hr class="mb-4 w-full border-gray-300">
         <h2 class="rainbow-text mb-4 font-bold transition-all duration-300">Contact Support</h2>
         <hr class="mb-4 w-full border-gray-300">
-        <h2 class="rainbow-text font-bold transition-all duration-300">Dismiss</h2>
+        <h2 id="closeBannedModal"
+            class="rainbow-text cursor-pointer font-bold transition-all duration-300">Dismiss</h2>
 
     </div>
 </div>

@@ -11,7 +11,8 @@
         @vite('resources/js/app.js')
     </head>
 
-    <body class="min-h-screen overflow-x-hidden bg-white">
+    <body class="min-h-screen overflow-x-hidden bg-white"
+          data-banned="{{ session('Banned') ? 'true' : 'false' }}">
         <div id="authContainer"
              class="duration-800 flex min-h-screen w-[200vw] transition-transform"
              style="transform: translateX({{ $show === 'signup' ? '-100vw' : '0' }});">
@@ -23,7 +24,8 @@
                 @include('partials.signup')
             </div>
         </div>
-        @include('partials.banned-account-modal');
+
+        @include('partials.banned-account-modal')
 
         <script>
             document.addEventListener('DOMContentLoaded', function() {
@@ -64,6 +66,23 @@
                 window.addEventListener('popstate', function() {
                     setTransformFromPath(window.location.pathname);
                 });
+
+                const banned = document.body.dataset.banned === 'true';
+                if (banned) {
+                    const bannedModal = document.getElementById('bannedModal');
+                    if (bannedModal) {
+                        bannedModal.classList.remove('hidden');
+                        bannedModal.classList.add('flex');
+
+                        const closeBtn = document.getElementById('closeBannedModal');
+                        if (closeBtn) {
+                            closeBtn.addEventListener('click', () => {
+                                bannedModal.classList.add('hidden');
+                                bannedModal.classList.remove('flex');
+                            });
+                        }
+                    }
+                }
             });
         </script>
 

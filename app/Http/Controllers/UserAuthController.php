@@ -114,10 +114,11 @@ class UserAuthController extends Controller
         if (Auth::attempt(['username' => $credentials['username'], 'password' => $credentials['password']])) {
             $request->session()->regenerate();
             // Block banned users after successful auth check
-            if (auth()->user()->status === 'Banned') {
-                Auth::logout();
-                return back()->withErrors(['username' => 'Your account is banned. Contact support.'])->withInput();
-            }
+           if (auth()->user()->status === 'Banned') {
+    Auth::logout();
+    return back()->with('Banned', true)->withInput();
+}
+
 
             return redirect()->intended('/home');
         }
