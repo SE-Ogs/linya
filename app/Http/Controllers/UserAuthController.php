@@ -9,12 +9,12 @@ class UserAuthController extends Controller
 {
     public function showLogin()
     {
-        return view('layout.login-and-signup', ['show' => 'login']);
+        return view('signin-and-signup.login-and-signup', ['show' => 'login']);
     }
 
     public function showSignup()
     {
-        return view('layout.login-and-signup', ['show' => 'signup']);
+        return view('signin-and-signup.login-and-signup', ['show' => 'signup']);
     }
 
     public function signup(Request $request)
