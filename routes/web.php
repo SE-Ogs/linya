@@ -16,6 +16,9 @@ use App\Http\Controllers\SearchFilterController;
 use App\Http\Controllers\SettingsController;
 use App\Http\Controllers\UserAuthController;
 use App\Http\Controllers\UserManagementController;
+use App\Http\Controllers\ContactController;
+use App\Http\Controllers\HomeSearchController;
+
 
 // Root redirect
 Route::get('/', fn () => redirect('/home'));
@@ -48,6 +51,10 @@ Route::get('/home/{tag_slug}', function ($tag_slug) {
 
     Route::post('/articles', [ArticleController::class, 'store'])->name('articles.store');
 Route::get('/articles/{id}', [ArticleController::class, 'show'])->name('articles.show');
+    Route::get('/home-search', [HomeSearchController::class, 'search']);
+        Route::post('/contact', [ContactController::class, 'send'])->name('contact.send');
+
+
 
 // =========================================================================
 // AUTHENTICATION ROUTES
@@ -60,6 +67,7 @@ Route::middleware('guest')->group(function () {
     Route::get('/set-display-name', [UserAuthController::class, 'showDisplayName']);
     Route::post('/set-display-name', [UserAuthController::class, 'storeDisplayName']);
     Route::post('/clear-signup-data', [UserAuthController::class, 'clearSignupData'])->name('clear-signup-data');
+
 
     // Password Reset Flow (hardcoded for demo)
     Route::get('/forgot-password', fn () => view('partials.forgot_pass'))->name('password.email');
@@ -92,7 +100,6 @@ Route::middleware('auth')->group(function () {
     Route::get('/recent-searches', [RecentSearchController::class, 'index'])->name('recent-searches.index');
     Route::post('/recent-searches', [RecentSearchController::class, 'store'])->name('recent-searches.store');
     Route::delete('/recent-searches', [RecentSearchController::class, 'clear']);
-    Route::get('/home-search', [HomeSearchController::class, 'search']);
 
     // Comment Management
     Route::get('/articles/{slug}', [CommentManageController::class, 'show'])->name('comment.manage.show');
