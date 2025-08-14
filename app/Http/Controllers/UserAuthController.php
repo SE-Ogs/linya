@@ -53,7 +53,7 @@ class UserAuthController extends Controller
         }
 
         return response()
-            ->view('layout.set_displayname_page')
+            ->view('signin-and-signup.set-displayname-page')
             ->header('Cache-Control', 'no-store, no-cache, must-revalidate, max-age=0')
             ->header('Pragma', 'no-cache')
             ->header('Expires', 'Sat, 01 Jan 2000 00:00:00 GMT');
@@ -134,7 +134,7 @@ class UserAuthController extends Controller
         Auth::logout();
         $request->session()->invalidate();
         $request->session()->regenerateToken();
-        return redirect('/home');
+        return redirect('/home')->with('success', 'Logout successful');
     }
 
     public function preview(Request $request)
