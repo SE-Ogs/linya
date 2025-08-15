@@ -33,7 +33,8 @@
                 <div class="m-4 space-x-1">
                     <a href="{{ route('signup') }}"
                        id="signup"
-                       class="cursor-pointer rounded-[6px] border border-[#4338CA] px-5 py-2 text-[14px] text-[#4338CA] transition duration-300 hover:bg-[#4338CA] hover:text-white">Sign Up</a>
+                       class="cursor-pointer rounded-[6px] border border-[#4338CA] px-5 py-2 text-[14px] text-[#4338CA] transition duration-300 hover:bg-[#4338CA] hover:text-white">Sign
+                        Up</a>
                     <a href="{{ route('login') }}">
                         <button type="button"
                                 id="login"
@@ -87,4 +88,5 @@
         @include('partials.contact-us')
         @include('partials.are-you-sure-modal')
     </body>
+
 </html>
