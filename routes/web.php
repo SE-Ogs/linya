@@ -15,6 +15,7 @@ use App\Http\Controllers\UserAuthController;
 use App\Http\Controllers\UserManagementController;
 use App\Http\Controllers\ContactController;
 use App\Http\Controllers\HomeSearchController;
+use App\Http\Controllers\CommentReportController;
 
 
 // Root redirect
@@ -111,6 +112,9 @@ Route::middleware('auth')->group(function () {
 
     Route::get('/comment-manage-searchbar', [SearchFilterController::class, 'index'])->name('search');
 
+    Route::post('/comments/{comment}/report', [CommentReportController::class, 'store'])->name('comments.report');
+    Route::get('/comment-reports/reasons', [CommentReportController::class, 'getReasons'])->name('comment-reports.reasons');
+
     /**
      * WRITER & ADMIN SHARED DASHBOARD (writer middleware)
      */
@@ -167,6 +171,9 @@ Route::middleware('auth')->group(function () {
         Route::delete('/articles/{article}/delete', [ArticleController::class, 'destroy'])->name('articles.delete');
 
         Route::get('/comments', [CommentController::class, 'index'])->name('comments');
+
+        Route::get('/comment-reports', [CommentReportController::class, 'index'])->name('admin.comment-reports.index');
+        Route::patch('/comment-reports/{report}', [CommentReportController::class, 'update'])->name('admin.comment-reports.update');
 
         Route::get('/users', [UserManagementController::class, 'index'])->name('index');
         Route::prefix('users')->name('users.')->group(function () {
