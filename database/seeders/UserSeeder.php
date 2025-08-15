@@ -15,8 +15,8 @@ class UserSeeder extends Seeder
             'username' => 'admin',
             'email' => 'admin@loremipsum.com',
             'password' => Hash::make('1234'),
-            'status' => 'Active',
             'role' => 'admin',
+            'status' => 'Active',
             'avatar' => 'https://i.pravatar.cc/40?img=1',
         ]);
 
@@ -25,8 +25,8 @@ class UserSeeder extends Seeder
             'username' => 'user',
             'email' => 'user@loremipsum.com',
             'password' => Hash::make('1234'),
-            'status' => 'Active',
             'role' => 'user',
+            'status' => 'Active',
             'avatar' => 'https://i.pravatar.cc/40?img=2',
         ]);
 
@@ -65,7 +65,7 @@ class UserSeeder extends Seeder
             'username' => 'emilyrose',
             'email' => 'emily@example.com',
             'password' => Hash::make('1234'),
-            'status' => 'Reported',
+            'status' => 'Active',
             'role' => 'user',
             'avatar' => 'https://i.pravatar.cc/40?img=6',
         ]);
