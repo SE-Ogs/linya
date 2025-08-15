@@ -2,14 +2,11 @@
 
 use Illuminate\Support\Facades\Route;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
 use App\Models\Article;
 use App\Models\Tag;
 use App\Http\Controllers\AdminDashboardController;
 use App\Http\Controllers\ArticleController;
 use App\Http\Controllers\CommentController;
-use App\Http\Controllers\CommentManageController;
-use App\Http\Controllers\DashboardSearchController;
 use App\Http\Controllers\RecentSearchController;
 use App\Http\Controllers\ResetPasswordController;
 use App\Http\Controllers\SearchFilterController;
@@ -102,7 +99,7 @@ Route::middleware('auth')->group(function () {
     Route::delete('/recent-searches', [RecentSearchController::class, 'clear']);
 
     // Comment Management
-    Route::get('/articles/{slug}', [CommentManageController::class, 'show'])->name('comment.manage.show');
+    Route::get('/articles/{slug}', [CommentController::class, 'show'])->name('comment.manage.show');
 
     // Comment routes
     Route::post('/articles/{article}/comments', [CommentController::class, 'store'])->name('comments.store');
@@ -169,7 +166,7 @@ Route::middleware('auth')->group(function () {
         Route::patch('/articles/{article}/publish', [ArticleController::class, 'publish'])->name('articles.publish');
         Route::delete('/articles/{article}/delete', [ArticleController::class, 'destroy'])->name('articles.delete');
 
-        Route::get('/comments', [CommentManageController::class, 'index'])->name('comments');
+        Route::get('/comments', [CommentController::class, 'index'])->name('comments');
 
         Route::get('/users', [UserManagementController::class, 'index'])->name('index');
         Route::prefix('users')->name('users.')->group(function () {
