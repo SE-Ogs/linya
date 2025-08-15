@@ -49,6 +49,53 @@ class Comment extends Model
         return $this->hasMany(CommentLike::class);
     }
 
+    /**
+     * Get all reports for this comment.
+     */
+    public function reports(): HasMany
+    {
+        return $this->hasMany(CommentReport::class);
+    }
+
+    /**
+     * Get pending reports for this comment.
+     */
+    public function pendingReports(): HasMany
+    {
+        return $this->hasMany(CommentReport::class)->where('status', 'pending');
+    }
+
+    /**
+     * Check if the comment has been reported by a specific user.
+     */
+    public function hasBeenReportedBy(int $userId): bool
+    {
+        return $this->reports()->where('user_id', $userId)->exists();
+    }
+
+    /**
+     * Get the total number of reports for this comment.
+     */
+    public function getReportsCount(): int
+    {
+        return $this->reports()->count();
+    }
+
+    /**
+     * Get the number of pending reports for this comment.
+     */
+    public function getPendingReportsCount(): int
+    {
+        return $this->pendingReports()->count();
+    }
+
+    /**
+     * Check if the comment has any pending reports.
+     */
+    public function hasPendingReports(): bool
+    {
+        return $this->getPendingReportsCount() > 0;
+    }
 
     // Helper methods for like/dislike counts
     public function likeCount()
