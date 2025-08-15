@@ -111,6 +111,22 @@
                 <textarea name="article" id="article" class="hidden"></textarea>
             </div>
 
+            <!-- Author Field -->
+            <div class="w-full">
+            <label for="author" class="block text-sm font-medium text-gray-700 mb-2">Author</label>
+            <input
+                type="text"
+                id="author"
+                name="author"
+                value="{{ old('author', auth()->user()->name ?? '') }}"
+                placeholder="Enter author name..."
+                class="w-full px-4 py-2 border border-gray-300 rounded-[20px] focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-orange-500 bg-white text-gray-900 placeholder-gray-500 shadow-md hover:shadow-lg transition-shadow duration-200"
+            >
+            @error('author')
+                <p class="mt-2 text-sm text-red-600">{{ $message }}</p>
+            @enderror
+            </div>
+
             <!-- Submit Button -->
             <div class="flex justify-end w-full space-x-3">
                 <button type="button"
@@ -618,6 +634,12 @@
                         featured: imageData.isFeatured
                     });
                 });
+        }
+
+        // Validating author
+        const author = document.getElementById('author').value.trim();
+        if (!author) {
+        errors.push('• Author is required');
         }
 
         function initializeSidebarToggle() {

@@ -97,10 +97,12 @@ class ArticleController extends Controller
     {
         $validatedData = $request->validated();
 
+        $validatedData['author'] = $validatedData['author'] ?? (auth()->user()->name ?? null);
+
         // Create the article
         $article = $this->articleService->createArticle($validatedData);
 
-        // Handle image processing
+        // Handle image processing (unchanged)
         $this->processArticleImages($article, $request);
 
         // Check if this is an AJAX request
@@ -141,6 +143,7 @@ class ArticleController extends Controller
             'tags' => $articleData['tags'] ?? '',
             'tagModels' => $tags,
             'images' => $images,
+            'author' => $articleData['author'] ?? (auth()->user()->name ?? ''), 
             'formData' => $articleData, // Store all form data for back to editor
         ]);
     }
@@ -198,6 +201,7 @@ class ArticleController extends Controller
             'article' => 'required|string',
             'tags' => 'array', // Optional: Ensure tags are an array
             'tags.*' => 'exists:tags,id', // Ensure each tag exists in the tags table
+            'author' => 'nullable|string|max:100', 
         ]);
 
         // Find the article by ID
@@ -207,6 +211,7 @@ class ArticleController extends Controller
         $article->title = $validatedData['title'];
         $article->summary = $validatedData['summary'];
         $article->article = $validatedData['article'];
+        $article->author = $validatedData['author'] ?? $article->author; 
         $article->save();
 
         // Sync the tags (if provided)
