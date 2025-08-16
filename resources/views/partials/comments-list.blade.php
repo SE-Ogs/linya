@@ -18,7 +18,7 @@
         <div class="space-y-4">
             @foreach($comments as $comment)
                 <div class="comment-wrapper animate-fade-in transition-all duration-300 hover:shadow-sm">
-                    @include('partials.comment_item', [
+                    @include('partials.comment-item', [
                         'comment' => $comment,
                         'article' => $article,
                         'level' => 0

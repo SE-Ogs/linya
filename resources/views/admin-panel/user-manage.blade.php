@@ -24,6 +24,8 @@
     </head>
 
     <body>
+
+        <meta name="csrf-token" content="{{ csrf_token() }}">
         <!-- Sidebar -->
         @include('partials.admin-header')
         @include('partials.admin-sidebar')
@@ -172,32 +174,19 @@
                                                 onclick="openEditModal({{ $user->id }}, '{{ $user->name }}', '{{ $user->email }}')">
                                             Edit
                                         </button>
-                                        <!-- Ban/Unban -->
-                                        @if($user->status !== 'Banned')
-                                            <form action="{{ route('admin.users.ban', ['id' => $user->id]) }}" method="POST" onsubmit="return confirm('Ban this user?')">
-                                                @csrf
-                                                @method('PATCH')
-                                                <button type="submit" title="Ban" class="text-red-600 hover:opacity-75">
-                                                    Ban
-                                                </button>
-                                            </form>
-                                        @else
-                                            <form action="{{ route('admin.users.unban', ['id' => $user->id]) }}" method="POST" onsubmit="return confirm('Unban this user?')">
-                                            @csrf
-                                                @method('PATCH')
-                                                <button type="submit" title="Unban" class="text-green-600 hover:opacity-75">
-                                                    Unban
-                                            </button>
-                                        </form>
-                                        @endif
 
-                                        <!-- Activate (from Suspended/Reported) -->
-                                        @if(in_array($user->status, ['Suspended','Reported']))
-                                            <form action="{{ route('admin.users.activate', ['id' => $user->id]) }}" method="POST">
-                                                @csrf
-                                                @method('PATCH')
-                                                <button type="submit" title="Activate" class="text-green-600 hover:opacity-75">Activate</button>
-                                            </form>
+                                        <!-- Ban/Unban -->
+                                        @if($user->status === 'Banned')
+                                            <button onclick="openUnbanModal('{{ $user->id }}', '{{ $user->name }}', '{{ $user->email }}')">
+                                                Unban
+                                            </button>
+                                        @else
+                                            <button type="button"
+                                                    onclick="openBanModal('{{ $user->id }}', '{{ $user->name }}', '{{ $user->email }}')"
+                                                    title="Ban User"
+                                                    class="text-red-600 hover:opacity-75">
+                                                Ban
+                                            </button>
                                         @endif
 
                                         <!-- Role dropdown -->
@@ -232,49 +221,9 @@
                 </table>
             </div>
 
-            <!-- Edit Modal -->
-            <div id="editModal"
-                 class="fixed inset-0 z-50 hidden items-center justify-center bg-black bg-opacity-40">
-                <div class="relative w-full max-w-md rounded-lg bg-white p-6 shadow-lg">
-                    <h2 class="mb-4 text-xl font-bold">Edit User</h2>
-                    <form id="editUserForm"
-                          method="POST">
-                        @csrf
-                        @method('PATCH')
-                        <input type="hidden"
-                               name="user_id"
-                               id="editUserId">
-
-                        <div class="mb-4">
-                            <label for="editUserName"
-                                   class="block text-sm font-medium text-gray-700">Name</label>
-                            <input type="text"
-                                   id="editUserName"
-                                   name="name"
-                                   class="mt-1 block w-full rounded border border-gray-300 p-2"
-                                   required>
-                        </div>
-
-                        <div class="mb-4">
-                            <label for="editUserEmail"
-                                   class="block text-sm font-medium text-gray-700">Email</label>
-                            <input type="email"
-                                   id="editUserEmail"
-                                   name="email"
-                                   class="mt-1 block w-full rounded border border-gray-300 p-2"
-                                   required>
-                        </div>
-
-                        <div class="flex justify-end gap-2">
-                            <button type="button"
-                                    onclick="closeEditModal()"
-                                    class="rounded bg-gray-300 px-4 py-2 hover:bg-gray-400">Cancel</button>
-                            <button type="submit"
-                                    class="rounded bg-orange-500 px-4 py-2 text-white hover:bg-orange-600">Update</button>
-                        </div>
-                    </form>
-                </div>
-            </div>
+            @include('admin-panel.modals.edit-modal');
+            @include('admin-panel.modals.ban-modal')
+            @include('admin-panel.modals.unban-modal')
 
             <!-- Pagination -->
             <div class="ml-4 mt-4 px-8">
@@ -292,25 +241,5 @@
                 header.classList.toggle('ml-0');
             });
         </script>
-
-        <script>
-            function openEditModal(id, name, email) {
-                document.getElementById('editUserId').value = id;
-                document.getElementById('editUserName').value = name;
-                document.getElementById('editUserEmail').value = email;
-
-                const form = document.getElementById('editUserForm');
-                form.action = `/admin/users/${id}/admin-update`; // PATCH route for admin updating name/email
-
-                document.getElementById('editModal').classList.remove('hidden');
-                document.getElementById('editModal').classList.add('flex');
-            }
-
-            function closeEditModal() {
-                document.getElementById('editModal').classList.remove('flex');
-                document.getElementById('editModal').classList.add('hidden');
-            }
-        </script>
     </body>
-
 </html>

@@ -2,20 +2,21 @@
 
 use Illuminate\Support\Facades\Route;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
 use App\Models\Article;
 use App\Models\Tag;
 use App\Http\Controllers\AdminDashboardController;
 use App\Http\Controllers\ArticleController;
 use App\Http\Controllers\CommentController;
-use App\Http\Controllers\CommentManageController;
-use App\Http\Controllers\HomeSearchController;
 use App\Http\Controllers\RecentSearchController;
 use App\Http\Controllers\ResetPasswordController;
 use App\Http\Controllers\SearchFilterController;
 use App\Http\Controllers\SettingsController;
 use App\Http\Controllers\UserAuthController;
 use App\Http\Controllers\UserManagementController;
+use App\Http\Controllers\ContactController;
+use App\Http\Controllers\HomeSearchController;
+use App\Http\Controllers\CommentReportController;
+
 
 // Root redirect
 Route::get('/', fn () => redirect('/home'));
@@ -48,6 +49,10 @@ Route::get('/home/{tag_slug}', function ($tag_slug) {
 
     Route::post('/articles', [ArticleController::class, 'store'])->name('articles.store');
 Route::get('/articles/{id}', [ArticleController::class, 'show'])->name('articles.show');
+    Route::get('/home-search', [HomeSearchController::class, 'search']);
+        Route::post('/contact', [ContactController::class, 'send'])->name('contact.send');
+
+
 
 // =========================================================================
 // AUTHENTICATION ROUTES
@@ -60,6 +65,7 @@ Route::middleware('guest')->group(function () {
     Route::get('/set-display-name', [UserAuthController::class, 'showDisplayName']);
     Route::post('/set-display-name', [UserAuthController::class, 'storeDisplayName']);
     Route::post('/clear-signup-data', [UserAuthController::class, 'clearSignupData'])->name('clear-signup-data');
+
 
     // Password Reset Flow (hardcoded for demo)
     Route::get('/forgot-password', fn () => view('partials.forgot_pass'))->name('password.email');
@@ -92,10 +98,9 @@ Route::middleware('auth')->group(function () {
     Route::get('/recent-searches', [RecentSearchController::class, 'index'])->name('recent-searches.index');
     Route::post('/recent-searches', [RecentSearchController::class, 'store'])->name('recent-searches.store');
     Route::delete('/recent-searches', [RecentSearchController::class, 'clear']);
-    Route::get('/home-search', [HomeSearchController::class, 'search']);
 
     // Comment Management
-    Route::get('/articles/{slug}', [CommentManageController::class, 'show'])->name('comment.manage.show');
+    Route::get('/articles/{slug}', [CommentController::class, 'show'])->name('comment.manage.show');
 
     // Comment routes
     Route::post('/articles/{article}/comments', [CommentController::class, 'store'])->name('comments.store');
@@ -106,6 +111,9 @@ Route::middleware('auth')->group(function () {
     Route::post('/comments/{comment}/dislike', [CommentController::class, 'dislike'])->name('comments.dislike');
 
     Route::get('/comment-manage-searchbar', [SearchFilterController::class, 'index'])->name('search');
+
+    Route::post('/comments/{comment}/report', [CommentReportController::class, 'store'])->name('comments.report');
+    Route::get('/comment-reports/reasons', [CommentReportController::class, 'getReasons'])->name('comment-reports.reasons');
 
     /**
      * WRITER & ADMIN SHARED DASHBOARD (writer middleware)
@@ -162,14 +170,17 @@ Route::middleware('auth')->group(function () {
         Route::patch('/articles/{article}/publish', [ArticleController::class, 'publish'])->name('articles.publish');
         Route::delete('/articles/{article}/delete', [ArticleController::class, 'destroy'])->name('articles.delete');
 
-        Route::get('/comments', [CommentManageController::class, 'index'])->name('comments');
+        Route::get('/comments', [CommentController::class, 'index'])->name('comments');
+
+        Route::get('/comment-reports', [CommentReportController::class, 'index'])->name('admin.comment-reports.index');
+        Route::patch('/comment-reports/{report}', [CommentReportController::class, 'update'])->name('admin.comment-reports.update');
+
+        Route::post('admin/users/{id}/ban', [UserManagementController::class, 'ban'])->name('users.ban');
 
         Route::get('/users', [UserManagementController::class, 'index'])->name('index');
         Route::prefix('users')->name('users.')->group(function () {
             Route::patch('{id}/admin-update', [UserManagementController::class, 'adminUpdate'])->name('admin-update');
             Route::post('{id}/report', [UserManagementController::class, 'report'])->name('report');
-            Route::patch('{id}/suspend', [UserManagementController::class, 'suspend'])->name('suspend');
-            Route::patch('{id}/activate', [UserManagementController::class, 'activate'])->name('activate');
             Route::patch('{id}/ban', [UserManagementController::class, 'ban'])->name('ban');
             Route::patch('{id}/unban', [UserManagementController::class, 'unban'])->name('unban');
             Route::patch('{id}/role', [UserManagementController::class, 'setRole'])->name('set-role');

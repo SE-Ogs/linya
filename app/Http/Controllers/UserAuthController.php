@@ -9,12 +9,12 @@ class UserAuthController extends Controller
 {
     public function showLogin()
     {
-        return view('layout.login-and-signup', ['show' => 'login']);
+        return view('signin-and-signup.login-and-signup', ['show' => 'login']);
     }
 
     public function showSignup()
     {
-        return view('layout.login-and-signup', ['show' => 'signup']);
+        return view('signin-and-signup.login-and-signup', ['show' => 'signup']);
     }
 
     public function signup(Request $request)
@@ -53,7 +53,7 @@ class UserAuthController extends Controller
         }
 
         return response()
-            ->view('layout.set_displayname_page')
+            ->view('signin-and-signup.set-displayname-page')
             ->header('Cache-Control', 'no-store, no-cache, must-revalidate, max-age=0')
             ->header('Pragma', 'no-cache')
             ->header('Expires', 'Sat, 01 Jan 2000 00:00:00 GMT');
@@ -114,10 +114,11 @@ class UserAuthController extends Controller
         if (Auth::attempt(['username' => $credentials['username'], 'password' => $credentials['password']])) {
             $request->session()->regenerate();
             // Block banned users after successful auth check
-            if (auth()->user()->status === 'Banned') {
-                Auth::logout();
-                return back()->withErrors(['username' => 'Your account is banned. Contact support.'])->withInput();
-            }
+           if (auth()->user()->status === 'Banned') {
+    Auth::logout();
+    return back()->with('Banned', true)->withInput();
+}
+
 
             return redirect()->intended('/home');
         }
@@ -133,7 +134,7 @@ class UserAuthController extends Controller
         Auth::logout();
         $request->session()->invalidate();
         $request->session()->regenerateToken();
-        return redirect('/home');
+        return redirect('/home')->with('success', 'Logout successful');
     }
 
     public function preview(Request $request)

@@ -34,7 +34,7 @@
                 <div class="flex gap-2 mt-2 justify-end">
                     <button type="button"
                             class="bg-gray-300 text-gray-700 px-3 py-1 rounded text-sm hover:bg-gray-400 transition reply-cancel-btn">
-                       
+
                             Cancel
                     </button>
                     <button type="submit"
@@ -111,7 +111,7 @@
     {{-- Replies --}}
     <div class="replies-container mt-4 space-y-2">
         @foreach($comment->replies as $reply)
-            @include('partials.comment_item', [
+            @include('partials.comment-item', [
                 'comment' => $reply,
                 'article' => $article,
                 'level' => (isset($level) ? $level + 1 : 1)

@@ -23,8 +23,8 @@ class WriterMiddleware
         if (!in_array($user->role, ['writer', 'admin'])) {
             abort(403, 'Access denied. Writer privileges required.');
         }
-        if ($user->status !== 'Active') {
-            abort(403, 'Your account is not active.');
+        if ($user->status == 'Banned') {
+            abort(403, 'Your account is banned.');
         }
 
         return $next($request);
