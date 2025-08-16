@@ -49,6 +49,12 @@ class Comment extends Model
         return $this->hasMany(CommentLike::class);
     }
 
+    public function dislikes()
+{
+    return $this->hasMany(CommentLike::class)->where('is_like', false);
+}
+
+
     /**
      * Get all reports for this comment.
      */
@@ -105,8 +111,10 @@ class Comment extends Model
 
     public function dislikeCount()
     {
-        return $this->likes()->where('is_like', false)->count();
+    return $this->dislikes()->count();
     }
+
+
 
     // Get user's reaction to this comment
     public function getUserReactionAttribute()

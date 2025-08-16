@@ -605,6 +605,20 @@ document.addEventListener("DOMContentLoaded", () => {
         // Track if profanity was previously detected
         let profanityWasPresent = false;
 
+        // if (textarea) {
+        //     const adjustHeight = () => {
+        //         textarea.style.height = "auto"; // reset
+        //         textarea.style.height = textarea.scrollHeight + "px"; // expand
+        //     };
+
+        //     textarea.addEventListener("input", () => {
+        //         adjustHeight();
+        //     });
+
+        //     // Initialize on page load
+        //     adjustHeight();
+        // }
+
         textarea.addEventListener("input", () => {
             const originalValue = textarea.value;
             let newValue = filterProfanity(originalValue);
