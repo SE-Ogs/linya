@@ -38,14 +38,14 @@
                     <form wire:submit.prevent="addComment"
                           class="flex flex-grow flex-wrap gap-2">
 
-                        <textarea wire:model.defer="newComment"
+                        <textarea wire:model.defer="replyContent"
                                   class="comment-box flex-grow resize-none overflow-hidden border-none px-3 py-2 text-sm leading-snug outline-none transition-all duration-300 focus:shadow-none focus:outline-none"
                                   rows="1"
                                   required
                                   placeholder="Write a comment..."
                                   oninput="this.style.height = 'auto'; this.style.height = this.scrollHeight + 'px';"></textarea>
 
-                        @error('newcomment')
+                        @error('replyContent')
                             <span class="text-sm text-red-500">{{ $message }}</span>
                         @enderror
 
