@@ -16,4 +16,3 @@ class UserBan extends Model
         return $this->belongsTo(User::class, 'banned_by');
     }
 }
-

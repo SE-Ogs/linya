@@ -24,6 +24,8 @@
     </head>
 
     <body>
+
+        <meta name="csrf-token" content="{{ csrf_token() }}">
         <!-- Sidebar -->
         @include('partials.admin-header')
         @include('partials.admin-sidebar')
@@ -172,38 +174,19 @@
                                                 onclick="openEditModal({{ $user->id }}, '{{ $user->name }}', '{{ $user->email }}')">
                                             Edit
                                         </button>
-                                        <!-- Ban/Unban -->
 
-                                        @if($user->status !== 'Banned')
-                                            <!-- Ban button triggers modal -->
+                                        <!-- Ban/Unban -->
+                                        @if($user->status === 'Banned')
+                                            <button onclick="openUnbanModal('{{ $user->id }}', '{{ $user->name }}', '{{ $user->email }}')">
+                                                Unban
+                                            </button>
+                                        @else
                                             <button type="button"
                                                     onclick="openBanModal('{{ $user->id }}', '{{ $user->name }}', '{{ $user->email }}')"
-                                                    title="Ban"
+                                                    title="Ban User"
                                                     class="text-red-600 hover:opacity-75">
                                                 Ban
                                             </button>
-                                        @else
-                                            <!-- Unban form -->
-                                            <form action="{{ route('admin.users.unban', ['id' => $user->id]) }}"
-                                                  method="POST"
-                                                  onsubmit="return confirm('Unban this user?')">
-                                                @csrf
-                                                @method('PATCH')
-                                                <button type="submit"
-                                                        title="Unban"
-                                                        class="text-green-600 hover:opacity-75">
-                                                    Unban
-                                                </button>
-                                            </form>
-                                        @endif
-
-                                        <!-- Activate (from Suspended/Reported) -->
-                                        @if(in_array($user->status, ['Suspended','Reported']))
-                                            <form action="{{ route('admin.users.activate', ['id' => $user->id]) }}" method="POST">
-                                                @csrf
-                                                @method('PATCH')
-                                                <button type="submit" title="Activate" class="text-green-600 hover:opacity-75">Activate</button>
-                                            </form>
                                         @endif
 
                                         <!-- Role dropdown -->
@@ -238,102 +221,9 @@
                 </table>
             </div>
 
-            <!-- Edit Modal -->
-            <div id="editModal"
-                 class="fixed inset-0 z-50 hidden items-center justify-center bg-black bg-opacity-40">
-                <div class="relative w-full max-w-md rounded-lg bg-white p-6 shadow-lg">
-                    <h2 class="mb-4 text-xl font-bold">Edit User</h2>
-                    <form id="editUserForm"
-                          method="POST">
-                        @csrf
-                        @method('PATCH')
-                        <input type="hidden"
-                               name="user_id"
-                               id="editUserId">
-
-                        <div class="mb-4">
-                            <label for="editUserName"
-                                   class="block text-sm font-medium text-gray-700">Name</label>
-                            <input type="text"
-                                   id="editUserName"
-                                   name="name"
-                                   class="mt-1 block w-full rounded border border-gray-300 p-2"
-                                   required>
-                        </div>
-
-                        <div class="mb-4">
-                            <label for="editUserEmail"
-                                   class="block text-sm font-medium text-gray-700">Email</label>
-                            <input type="email"
-                                   id="editUserEmail"
-                                   name="email"
-                                   class="mt-1 block w-full rounded border border-gray-300 p-2"
-                                   required>
-                        </div>
-
-                        <div class="flex justify-end gap-2">
-                            <button type="button"
-                                    onclick="closeEditModal()"
-                                    class="rounded bg-gray-300 px-4 py-2 hover:bg-gray-400">Cancel</button>
-                            <button type="submit"
-                                    class="rounded bg-orange-500 px-4 py-2 text-white hover:bg-orange-600">Update</button>
-                        </div>
-                    </form>
-                </div>
-            </div>
-
-            <div id="banModal"
-                 class="fixed inset-0 z-50 hidden flex items-center justify-center backdrop-blur-sm bg-black/30">
-                <div class="relative w-full max-w-md rounded-lg bg-white p-6 shadow-lg">
-                    <h2 class="mb-4 text-xl font-bold">Ban User</h2>
-                    <form id="banUserForm" method="POST">
-                        @csrf
-                        @method('PATCH')
-
-                        <!-- User ID -->
-                        <input type="hidden" name="user_id" id="banUserId">
-
-                        <!-- Name -->
-                        <div class="mb-4">
-                            <label for="banUserName" class="block text-sm font-medium text-gray-700">Name</label>
-                            <input type="text"
-                                   id="banUserName"
-                                   class="mt-1 block w-full rounded border border-gray-300 p-2 bg-gray-100"
-                                   readonly>
-                        </div>
-
-                        <!-- Email -->
-                        <div class="mb-4">
-                            <label for="banUserEmail" class="block text-sm font-medium text-gray-700">Email</label>
-                            <input type="email"
-                                   id="banUserEmail"
-                                   class="mt-1 block w-full rounded border border-gray-300 p-2 bg-gray-100"
-                                   readonly>
-                        </div>
-
-                        <!-- Ban Reason -->
-                        <div class="mb-4">
-                            <label for="banReason" class="block text-sm font-medium text-gray-700">Ban Reason</label>
-                            <textarea id="banReason"
-                                      name="reason"
-                                      rows="4"
-                                      class="mt-1 block w-full rounded border border-gray-300 p-2"
-                                      placeholder="Enter the reason for banning this user..."
-                                      required></textarea>
-                        </div>
-
-                        <!-- Buttons -->
-                        <div class="flex justify-end gap-2">
-                            <button type="button"
-                                    onclick="closeBanModal()"
-                                    class="rounded bg-gray-300 px-4 py-2 hover:bg-gray-400">Cancel</button>
-                            <button type="submit"
-                                    class="rounded bg-red-500 px-4 py-2 text-white hover:bg-red-600">Ban</button>
-                        </div>
-                    </form>
-                </div>
-            </div>
-
+            @include('admin-panel.modals.edit-modal');
+            @include('admin-panel.modals.ban-modal')
+            @include('admin-panel.modals.unban-modal')
 
             <!-- Pagination -->
             <div class="ml-4 mt-4 px-8">
@@ -350,38 +240,6 @@
                 sidebar.classList.toggle('translate-x-[-100%]');
                 header.classList.toggle('ml-0');
             });
-
-            function openEditModal(id, name, email) {
-                document.getElementById('editUserId').value = id;
-                document.getElementById('editUserName').value = name;
-                document.getElementById('editUserEmail').value = email;
-
-                const form = document.getElementById('editUserForm');
-                form.action = `/admin/users/${id}/admin-update`;
-
-                document.getElementById('editModal').classList.remove('hidden');
-                document.getElementById('editModal').classList.add('flex');
-            }
-
-            function closeEditModal() {
-                document.getElementById('editModal').classList.remove('flex');
-                document.getElementById('editModal').classList.add('hidden');
-            }
-
-
-            function openBanModal(userId, name, email) {
-                document.getElementById('banUserId').value = userId;
-                document.getElementById('banUserName').value = name;
-                document.getElementById('banUserEmail').value = email;
-
-                document.getElementById('banUserForm').action = `/admin/users/${userId}/ban`;
-
-                document.getElementById('banModal').classList.remove('hidden');
-            }
-
-            function closeBanModal() {
-                document.getElementById('banModal').classList.add('hidden');
-            }
         </script>
     </body>
 </html>
