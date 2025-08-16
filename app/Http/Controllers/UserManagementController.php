@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\User;
 use App\Models\UserBan;
+use App\Models\UserUnban;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Auth;
@@ -130,13 +131,45 @@ class UserManagementController extends Controller
         return redirect()->back()->with('success', 'User has been banned successfully.');
     }
 
-    public function unban($id)
+    public function unban(Request $request, $id)
     {
-        $user = User::findOrFail($id);
-        $user->status = 'Active';
-        $user->save();
+        try {
+            DB::beginTransaction();
 
-        return back()->with('message', "User {$user->id} has been unbanned.");
+            $user = User::findOrFail($id);
+
+            if ($user->status !== 'Banned') {
+                throw new \Exception('User is not currently banned');
+            }
+
+            $user->status = 'Active';
+            $user->save();
+
+            if ($ban = $user->bans()->latest()->first()) {
+                $ban->update(['unbanned_at' => now()]);
+
+                UserUnban::create([
+                    'user_id' => $user->id,
+                    'user_ban_id' => $ban->id,
+                    'reason' => $request->reason,
+                    'unbanned_by' => auth()->id(),
+                ]);
+            }
+
+            DB::commit();
+
+            return response()->json([
+                'success' => true,
+                'message' => 'User unbanned successfully',
+                'redirect' => url()->previous()
+            ]);
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return response()->json([
+                'success' => false,
+                'message' => 'Unban failed: ' . $e->getMessage()
+            ], 500);
+        }
     }
 
     public function setRole(Request $request, $id)

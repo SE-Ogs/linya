@@ -181,8 +181,6 @@ Route::middleware('auth')->group(function () {
         Route::prefix('users')->name('users.')->group(function () {
             Route::patch('{id}/admin-update', [UserManagementController::class, 'adminUpdate'])->name('admin-update');
             Route::post('{id}/report', [UserManagementController::class, 'report'])->name('report');
-            Route::patch('{id}/suspend', [UserManagementController::class, 'suspend'])->name('suspend');
-            Route::patch('{id}/activate', [UserManagementController::class, 'activate'])->name('activate');
             Route::patch('{id}/ban', [UserManagementController::class, 'ban'])->name('ban');
             Route::patch('{id}/unban', [UserManagementController::class, 'unban'])->name('unban');
             Route::patch('{id}/role', [UserManagementController::class, 'setRole'])->name('set-role');
