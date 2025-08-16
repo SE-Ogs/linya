@@ -26,7 +26,8 @@
         <div class="w-full py-6 text-center">
             <p>
                 You are not logged in. Please
-                <a href="{{ route('login') }}" class="rainbow-text inline-block text-base font-medium underline transition-all duration-300 hover:scale-105 hover:opacity-90">
+                <a href="{{ route('login') }}"
+                   class="rainbow-text inline-block text-base font-medium underline transition-all duration-300 hover:scale-105 hover:opacity-90">
                     log in
                 </a>
                 to comment.
@@ -312,12 +313,14 @@
                 }
             }
 
- // Report comment (DI KO KNOWS SA BACKENNDDD)
+            // Report comment (DI KO KNOWS SA BACKENNDDD)
             const reportBtn = e.target.closest('.report-comment-btn');
             if (reportBtn) {
                 const commentId = reportBtn.getAttribute('data-comment-id');
-                document.getElementById('reportCommentId').value = commentId; // Set the comment ID in the hidden input
-                document.getElementById('reportCommentModal').classList.remove('hidden'); // Show the modal
+                document.getElementById('reportCommentId').value =
+                commentId; // Set the comment ID in the hidden input
+                document.getElementById('reportCommentModal').classList.remove(
+                'hidden'); // Show the modal
             }
         });
 
@@ -339,7 +342,8 @@
 
                 // Remove active class styles from all filter buttons
                 document.querySelectorAll('.comment-filters a').forEach(a => {
-                    a.classList.remove('bg-blue-800', 'text-white', 'border-blue-800', 'shadow-sm');
+                    a.classList.remove('bg-blue-800', 'text-white', 'border-blue-800',
+                        'shadow-sm');
                     a.classList.add('bg-gray-100', 'text-gray-800', 'border-gray-300');
                 });
 

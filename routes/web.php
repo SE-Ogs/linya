@@ -100,7 +100,7 @@ Route::middleware('auth')->group(function () {
     Route::delete('/recent-searches', [RecentSearchController::class, 'clear']);
 
     // Comment Management
-    Route::get('/articles/{slug}', [CommentController::class, 'show'])->name('comment.manage.show');
+    Route::get('/articles/{slug}', [CommentController::class, 'show'])->name(name: 'comment.manage.show');
 
     // Comment routes
     Route::post('/articles/{article}/comments', [CommentController::class, 'store'])->name('comments.store');

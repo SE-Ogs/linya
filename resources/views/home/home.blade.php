@@ -2,6 +2,7 @@
 <html lang=en>
 
     <head>
+
         <meta charset="UTF-8">
         <meta name="viewport"
               content="width=device-width, initial-scale=1.0">
@@ -9,6 +10,7 @@
               content="{{ csrf_token() }}">
 
         <title>Linya</title>
+        @livewireStyles
 
         @vite(['resources/css/app.css', 'resources/js/app.js'])
     </head>
@@ -87,6 +89,9 @@
 
         @include('partials.contact-us')
         @include('partials.are-you-sure-modal')
+        @livewireScripts
+        @stack('scripts')
+
     </body>
 
 </html>

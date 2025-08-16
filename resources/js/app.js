@@ -485,27 +485,141 @@ document.addEventListener("DOMContentLoaded", () => {
 });
 
 document.addEventListener("DOMContentLoaded", () => {
-    // Use the id if present, otherwise fallback to name selector
-    let textarea = document.getElementById("comment-box");
-    if (!textarea) {
-        textarea = document.querySelector('textarea[name="comment_text"]');
+    initCommentBoxes();
+
+    // For Livewire v3
+    if (window.Livewire) {
+        // Hook into Livewire's component lifecycle
+        Livewire.hook("morph.updated", ({ el }) => {
+            initCommentBoxes(el);
+        });
+
+        Livewire.hook("morph.added", ({ el }) => {
+            initCommentBoxes(el);
+        });
+
+        // For Livewire v2 compatibility
+        Livewire.hook("message.processed", (message, component) => {
+            setTimeout(() => initCommentBoxes(component.el), 10);
+        });
     }
-    const counter = document.getElementById("char-count");
 
-    if (textarea && counter) {
-        const updateCounter = () => {
+    // Listen for when reply forms are toggled (DOM changes)
+    const observer = new MutationObserver((mutations) => {
+        mutations.forEach((mutation) => {
+            if (mutation.type === "childList") {
+                mutation.addedNodes.forEach((node) => {
+                    if (node.nodeType === 1 && node.querySelector) {
+                        const textareas = node.querySelectorAll(
+                            "textarea.comment-box",
+                        );
+                        if (textareas.length > 0) {
+                            initCommentBoxes(node);
+                        }
+                    }
+                });
+            }
+        });
+    });
+
+    observer.observe(document.body, {
+        childList: true,
+        subtree: true,
+    });
+});
+
+// --- Main initializer ---
+function initCommentBoxes(context = document) {
+    console.log("initCommentBoxes called");
+    const textareas = context.querySelectorAll("textarea.comment-box");
+    console.log("Found textareas:", textareas.length);
+
+    textareas.forEach((textarea, index) => {
+        console.log(`Processing textarea ${index}`);
+        if (textarea.dataset.initialized) {
+            console.log(`Textarea ${index} already initialized`);
+            return;
+        }
+        textarea.dataset.initialized = "true";
+
+        const form = textarea.closest("form");
+        const counter = form?.querySelector(".char-count");
+
+        if (!counter) {
+            console.log(`No counter found for textarea ${index}`);
+            return;
+        }
+
+        console.log(`Initializing textarea ${index}`);
+
+        // Initialize counter
+        counter.textContent = `${textarea.value.length}/500`;
+
+        let profanityWasPresent = false;
+        let isProcessingProfanity = false;
+
+        textarea.addEventListener("input", () => {
+            console.log("Input event triggered");
+
+            // Prevent recursive calls when we're updating the value due to profanity
+            if (isProcessingProfanity) {
+                console.log(
+                    "Skipping input event - currently processing profanity",
+                );
+                return;
+            }
+
+            const originalValue = textarea.value;
+
+            // Check if this is a clean input (no profanity detected in the original input)
+            const filterResult = filterProfanityForCheck(originalValue);
+            const newValue = filterResult.text;
+            const profanityDetected = filterResult.hasProfanity;
+
+            console.log("Original:", originalValue);
+            console.log("Filtered:", newValue);
+            console.log("Profanity detected:", profanityDetected);
+
+            if (profanityDetected) {
+                isProcessingProfanity = true;
+
+                // Only update the textarea value if it actually changed
+                if (textarea.value !== newValue) {
+                    textarea.value = newValue;
+                    textarea.setSelectionRange(
+                        newValue.length,
+                        newValue.length,
+                    );
+                }
+
+                if (!profanityWasPresent) {
+                    console.log("Showing spooky message");
+                    spookyAutoType(form, false); // false = type out message
+                }
+                profanityWasPresent = true;
+
+                // Trigger Livewire to update the model
+                textarea.dispatchEvent(new Event("input", { bubbles: true }));
+
+                isProcessingProfanity = false;
+            } else {
+                // Only clear the warning if we had profanity before AND the current input is actually clean
+                // AND it's not just a replacement emoji
+                const replacementValues = Object.values(profanityMap);
+                const isReplacementEmoji = replacementValues.some(
+                    (replacement) =>
+                        originalValue.trim() === replacement.trim(),
+                );
+
+                if (profanityWasPresent && !isReplacementEmoji) {
+                    console.log("Clearing spooky message");
+                    spookyAutoType(form, true); // true = reverse/clear message
+                    profanityWasPresent = false;
+                }
+            }
+
             counter.textContent = `${textarea.value.length}/500`;
-        };
-
-        textarea.addEventListener("input", updateCounter);
-
-        // Submit form on Enter (without Shift)
-        // textarea.addEventListener("keydown", function (e) {
-        //     if (e.key === "Enter" && !e.shiftKey) {
-        //         e.preventDefault();
-        //         this.closest("form").submit(); // Submit the form on Enter
-        //     }
-        // });
+        });
 
         // Keyboard shortcut formatting: Ctrl+B, Ctrl+I, Ctrl+U
         textarea.addEventListener("keydown", function (e) {
@@ -517,158 +631,225 @@ document.addEventListener("DOMContentLoaded", () => {
                 if (e.key === "b") {
                     e.preventDefault();
                     this.setRangeText(`**${selectedText}**`, start, end, "end");
+                    this.dispatchEvent(new Event("input", { bubbles: true }));
                 } else if (e.key === "i") {
                     e.preventDefault();
                     this.setRangeText(`*${selectedText}*`, start, end, "end");
+                    this.dispatchEvent(new Event("input", { bubbles: true }));
                 } else if (e.key === "u") {
                     e.preventDefault();
-                    this.setRangeText(
-                        `<u>${selectedText}</u>`,
-                        start,
-                        end,
-                        "end",
-                    );
+                    this.setRangeText(`<u>${selectedText}</u>`, start, end);
+                    this.dispatchEvent(new Event("input", { bubbles: true }));
                 }
             }
         });
+    });
+}
 
-        // Set initial value
-        updateCounter();
+// --- Profanity filter ---
+const profanityMap = {
+    badword: "🐸",
+    ugly: "🌸",
+    stupid: "🍭",
+    hate: "💖",
+    fuck: "ದ್ದಿ(˵ •̀ ᴗ - ˵ ) ✧",
+    shit: "˙ . ꒷ 🍰 . 𖦹˙—",
+    asshole: "ᕙ(  •̀ ᗜ •́  )ᕗ",
+    ass: "(⸝⸝๑﹏๑⸝⸝)",
+    kys: "🎀🪞🩰🦢🕯️",
+    faggot: "🫧",
+    retarded: "▶︎ •၊၊||၊|။|||||||• 0:10",
+    "kill your self": "🌸˚˖⋆",
+    bitch: "˙ . ꒷ 🍰 . 𖦹˙—",
+    dick: "Ϟ(๑⚈ ․̫ ⚈๑)⋆",
+    betch: "꧁ᬊᬁᴀɴɢᴇʟᬊ᭄꧂",
+    nigga: "˙✧˖🌅📸 ༘ ⋆｡˚",
+    nigger: "˙⋆｡ﾟ☁︎｡⋆｡ ﾟ☾ ﾟ｡⋆",
+    nazi: "𓆉𓆝 𓆟 𓆞 𓆝 𓆟𓇼",
+    wtf: "* ੈ ♡ ⸝⸝🪐 ༘ ⋆",
+    atay: "⁺˚⋆｡°✩₊✩°｡⋆˚⁺",
+    bobo: "≽^•⩊•^≼",
+    tanga: "₊ ⊹🪻 ✿˚. ᵎᵎ 🫐 ༘ ⋆｡˚",
+    tangina: " *‧.₊˚*੭*ˊᵕˋ੭.*",
+    putangina: "˙⋆.˚🦋༘⋆",
+    sybau: "𖡼𖤣𖥧𖡼𓋼𖤣𖥧𓋼𓍊",
+    syet: "⋆｡‧˚ʚ🍓ɞ˚‧｡⋆",
+    puta: "₍^. .^₎⟆",
+    sex: "˚.🎀༘⋆",
+    kill: "༘⋆₊ ⊹★🔭๋࣭ ⭑⋆｡˚",
+    "tang ina": "⊹ ࣪ ﹏𓊝﹏𓂁﹏⊹ ࣪ ˖",
+    kayata: "˗ˏˋ(ˊ•͈ω•͈ˋ)ˎˊ˗",
+    kayasa: "✩₊˚.⋆☾𓃦☽⋆⁺₊✧",
+    piss: "🪼⋆｡𖦹°🫧⋆.ೃ࿔*:･",
+    "pak you": "꧁⎝ 𓆩༺✧༻𓆪 ⎠꧂",
+    pakyu: "꧁⎝ 𓆩༺✧༻𓆪 ⎠꧂",
+    retard: "ᯓ★",
+};
+
+function filterProfanityForCheck(text) {
+    console.log("Filtering text for check:", text);
+
+    // Don't check text that consists only of our replacement emojis/symbols
+    const replacementValues = Object.values(profanityMap);
+    const isOnlyReplacements = replacementValues.some(
+        (replacement) => text.trim() === replacement.trim(),
+    );
+
+    if (isOnlyReplacements) {
+        console.log("Text is only replacement emoji, skipping check");
+        return { text: text, hasProfanity: false, detectedWords: [] };
     }
 
-    // Profanity filter for comment textarea
-    if (textarea) {
-        const profanityMap = {
-            badword: "🐸",
-            ugly: "🌸",
-            stupid: "🍭",
-            hate: "💖",
-            fuck: "ദ്ദി(˵ •̀ ᴗ - ˵ ) ✧",
-            shit: "˙ . ꒷ 🍰 . 𖦹˙—",
-            asshole: "ᕙ(  •̀ ᗜ •́  )ᕗ",
-            ass: "(⸝⸝๑﹏๑⸝⸝)",
-            kys: "🎀🪞🩰🦢🕯️",
-            faggot: "🫧",
-            retarded: "▶︎ •၊၊||၊|။|||||||• 0:10",
-            "kill your self": "🌸˚˖⋆",
-            bitch: "˙ . ꒷ 🍰 . 𖦹˙—",
-            dick: "Ϟ(๑⚈ ․̫ ⚈๑)⋆",
-            betch: "꧁ᬊᬁᴀɴɢᴇʟᬊ᭄꧂",
-            nigga: "˙✧˖🌅📸 ༘ ⋆｡˚", //spyke ga type
-            nigger: "˙⋆｡ﾟ☁︎｡⋆｡ ﾟ☾ ﾟ｡⋆",
-            nazi: "𓆉𓆝 𓆟 𓆞 𓆝 𓆟𓇼",
-            wtf: "* ੈ ♡ ⸝⸝🪐 ༘ ⋆",
-            atay: "⁺˚⋆｡°✩₊✩°｡⋆˚⁺",
-            bobo: "≽^•⩊•^≼",
-            tanga: "₊ ⊹🪻 ✿˚. ᵎᵎ 🫐 ༘ ⋆｡˚",
-            tangina: " *‧.₊˚*੭*ˊᵕˋ੭.*",
-            putangina: "˙⋆.˚🦋༘⋆",
-            sybau: "𖡼𖤣𖥧𖡼𓋼𖤣𖥧𓋼𓍊",
-            syet: "⋆｡‧˚ʚ🍓ɞ˚‧｡⋆",
-            puta: "₍^. .^₎⟆",
-            sex: "˚.🎀༘⋆",
-            kill: "༘⋆₊ ⊹★🔭๋࣭ ⭑⋆｡˚",
-            "tang ina": "⊹ ࣪ ﹏𓊝﹏𓂁﹏⊹ ࣪ ˖",
-            kayata: "˗ˏˋ(ˊ•͈ω•͈ˋ)ˎˊ˗",
-            kayasa: "✩₊˚.⋆☾𓃦☽⋆⁺₊✧",
-            piss: "🪼⋆｡𖦹°🫧⋆.ೃ࿔*:･",
-            "pak you": "꧁⎝ 𓆩༺✧༻𓆪 ⎠꧂",
-            pakyu: "꧁⎝ 𓆩༺✧༻𓆪 ⎠꧂",
-            retard: "ᯓ★",
-        };
+    let result = text;
+    let hasProfanity = false;
+    const detectedWords = [];
 
-        function filterProfanity(text) {
-            // Normalization for spaced-out or symbol-separated profanity
-            const normalized = text.toLowerCase().replace(/[^a-zA-Z0-9]/g, "");
-            Object.keys(profanityMap).forEach((badWord) => {
-                const compactBadWord = badWord
-                    .replace(/\s+/g, "")
-                    .toLowerCase();
-                if (normalized.includes(compactBadWord)) {
-                    // e.g. "b a d w o r d" or "b-a-d-w-o-r-d" or "b_a_d_w_o_r_d"
-                    const regex = new RegExp(
-                        badWord.split("").join("[^a-zA-Z0-9]*"),
-                        "gi",
-                    );
-                    text = text.replace(regex, profanityMap[badWord]);
-                }
-            });
-            // Standard word-boundary replacement for direct matches
-            let result = text;
-            for (const word in profanityMap) {
-                const regex = new RegExp(`\\b${word}\\b`, "gi");
-                result = result.replace(regex, profanityMap[word]);
-            }
-            return result;
+    // Sort words by length (longest first) to handle overlapping words correctly
+    const sortedWords = Object.keys(profanityMap).sort(
+        (a, b) => b.length - a.length,
+    );
+
+    // First pass: Check for exact word boundary matches
+    for (const word of sortedWords) {
+        // Escape special regex characters in the word
+        const escapedWord = word.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+        const regex = new RegExp("\\b" + escapedWord + "\\b", "gi");
+
+        if (regex.test(result)) {
+            console.log("Exact match found:", word);
+            result = result.replace(regex, profanityMap[word]);
+            hasProfanity = true;
+            detectedWords.push(word);
         }
+    }
 
-        // Track if profanity was previously detected
-        let profanityWasPresent = false;
+    // Second pass: Check for obfuscated/partial matches
+    const normalized = text.toLowerCase().replace(/[^a-zA-Z0-9]/g, "");
+    console.log("Normalized text:", normalized);
 
-        textarea.addEventListener("input", () => {
-            const originalValue = textarea.value;
-            let newValue = filterProfanity(originalValue);
-            let profanityDetected = newValue !== originalValue;
-            if (profanityDetected) {
-                textarea.value = newValue;
-                spookyAutoType();
-                textarea.setSelectionRange(newValue.length, newValue.length);
-                profanityWasPresent = true;
-            } else if (profanityWasPresent && !profanityDetected) {
-                // User erased the bad word, reverse the spooky message
-                spookyAutoType(true);
-                profanityWasPresent = false;
-            }
-            if (document.getElementById("char-count")) {
-                document.getElementById("char-count").textContent =
-                    `${newValue.length}/500`;
-            }
-        });
+    for (const word of sortedWords) {
+        const normalizedWord = word.replace(/\s+/g, "").toLowerCase();
 
-        // Spooky typing effect function with reverse animation
-        function spookyAutoType(reverse = false) {
-            let warning = document.querySelector(".spooky-warning");
-            const message =
-                "Not very punk rock of you to use that language, is it?";
+        if (
+            normalized.includes(normalizedWord) &&
+            !detectedWords.includes(word)
+        ) {
+            console.log(
+                "Obfuscated match found:",
+                word,
+                "in normalized text:",
+                normalized,
+            );
 
-            // Create if it doesn't exist
-            if (!warning) {
-                warning = document.createElement("span");
-                warning.className =
-                    "text-xs text-red-500 spooky-warning ml-2 block mt-1";
-                document
-                    .getElementById("below-textarea")
-                    .insertBefore(
-                        warning,
-                        document.getElementById("char-count"),
-                    );
-            }
-
-            let index = reverse ? message.length : 0;
-
-            // Clear any existing interval
-            if (warning.spookyInterval) {
-                clearInterval(warning.spookyInterval);
-            }
-
-            // If reverse, start with full message
-            if (reverse) {
-                warning.textContent = message;
-            } else {
-                warning.textContent = "";
-            }
-
-            warning.spookyInterval = setInterval(() => {
-                if (!reverse && index < message.length) {
-                    warning.textContent += message[index++];
-                } else if (reverse && index >= 0) {
-                    warning.textContent = message.substring(0, index--);
+            // Create a flexible regex for obfuscated words using simple string concatenation
+            let flexiblePattern = "";
+            for (let i = 0; i < word.length; i++) {
+                const char = word[i];
+                if (char === " ") {
+                    flexiblePattern += "[^a-zA-Z0-9]*";
                 } else {
-                    clearInterval(warning.spookyInterval);
+                    const escapedChar = char.replace(
+                        /[.*+?^${}()|[\]\\]/g,
+                        "\\$&",
+                    );
+                    flexiblePattern += escapedChar + "[^a-zA-Z0-9]*?";
                 }
-            }, 60);
+            }
+
+            // Remove the last '[^a-zA-Z0-9]*?' to avoid trailing issues
+            const cleanPattern = flexiblePattern.replace(
+                /\[\^a-zA-Z0-9\]\*\?$/,
+                "",
+            );
+            const obfuscatedRegex = new RegExp(cleanPattern, "gi");
+
+            if (obfuscatedRegex.test(result)) {
+                result = result.replace(obfuscatedRegex, profanityMap[word]);
+                hasProfanity = true;
+                detectedWords.push(word + " (obfuscated)");
+            }
         }
     }
-});
+
+    console.log("Final result:", result);
+    console.log("Has profanity:", hasProfanity);
+    console.log("Detected words:", detectedWords);
+
+    return {
+        text: result,
+        hasProfanity: hasProfanity,
+        detectedWords: detectedWords,
+    };
+}
+
+function filterProfanity(text) {
+    return filterProfanityForCheck(text);
+}
+
+// --- Spooky typing effect ---
+function spookyAutoType(form, reverse = false) {
+    console.log("spookyAutoType called, reverse:", reverse);
+
+    // Look for existing warning element in the template
+    let warning = form.querySelector(".spooky-warning");
+    const message = "Not very punk rock of you to use that language, is it?";
+
+    console.log("Found warning element:", warning);
+
+    if (!warning) {
+        console.log(
+            "Warning element not found! This should not happen with your template.",
+        );
+        return;
+    }
+
+    // Clear any existing interval
+    if (warning.spookyInterval) {
+        clearInterval(warning.spookyInterval);
+        delete warning.spookyInterval;
+    }
+
+    if (reverse) {
+        // Reverse animation: remove text character by character
+        let currentText = warning.textContent;
+        let index = currentText.length;
+
+        console.log("Starting reverse animation, current text length:", index);
+
+        if (index === 0) {
+            console.log("No text to reverse");
+            return;
+        }
+
+        warning.spookyInterval = setInterval(() => {
+            if (index > 0) {
+                warning.textContent = currentText.substring(0, index - 1);
+                index--;
+            } else {
+                clearInterval(warning.spookyInterval);
+                delete warning.spookyInterval;
+                warning.textContent = "";
+                console.log("Reverse animation complete");
+            }
+        }, 30);
+    } else {
+        // Forward animation: add text character by character
+        let index = 0;
+        warning.textContent = ""; // Start with empty text
+
+        console.log("Starting forward animation");
+
+        warning.spookyInterval = setInterval(() => {
+            if (index < message.length) {
+                warning.textContent += message[index];
+                index++;
+            } else {
+                clearInterval(warning.spookyInterval);
+                delete warning.spookyInterval;
+                console.log("Forward animation complete");
+            }
+        }, 60);
+    }
+}
 
 import "./comments.js";
