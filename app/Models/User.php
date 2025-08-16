@@ -50,7 +50,8 @@ class User extends Authenticatable
         ];
     }
 
-    public function recentSearches(){
+    public function recentSearches()
+    {
         return $this->hasMany(RecentSearch::class);
     }
 
@@ -84,5 +85,15 @@ class User extends Authenticatable
     public function getIsAdminAttribute(): bool
     {
         return $this->role === 'admin';
+    }
+
+    public function bans()
+    {
+        return $this->hasMany(UserBan::class);
+    }
+
+    public function latestBan()
+    {
+        return $this->hasOne(UserBan::class)->latestOfMany();
     }
 }

@@ -175,6 +175,8 @@ Route::middleware('auth')->group(function () {
         Route::get('/comment-reports', [CommentReportController::class, 'index'])->name('admin.comment-reports.index');
         Route::patch('/comment-reports/{report}', [CommentReportController::class, 'update'])->name('admin.comment-reports.update');
 
+        Route::post('admin/users/{id}/ban', [UserManagementController::class, 'ban'])->name('users.ban');
+
         Route::get('/users', [UserManagementController::class, 'index'])->name('index');
         Route::prefix('users')->name('users.')->group(function () {
             Route::patch('{id}/admin-update', [UserManagementController::class, 'adminUpdate'])->name('admin-update');
