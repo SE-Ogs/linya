@@ -7,238 +7,189 @@
 
 <!DOCTYPE html>
 <html lang="en">
-
     <head>
         <meta charset="UTF-8">
-        <meta name="viewport"
-              content="width=device-width, initial-scale=1.0">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title>User Management</title>
 
         @vite('resources/css/app.css')
         @vite('resources/js/app.js')
-        <link rel="stylesheet"
-              href="https://cdn.jsdelivr.net/gh/yeole-rohan/ray-editor@main/ray-editor.css">
-        <script defer
-                src="//unpkg.com/alpinejs"></script>
-        <!-- This apprently help the Filter Button have that pop-up effect to the tag selection -->
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/yeole-rohan/ray-editor@main/ray-editor.css">
+        <script defer src="//unpkg.com/alpinejs"></script>
+        <!-- Font Awesome for better icons -->
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+        <style>
+            .user-card-hover {
+                transition: all 0.3s ease;
+            }
+            .user-card-hover:hover {
+                transform: translateY(-2px);
+                box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+            }
+            .status-badge {
+                display: inline-flex;
+                align-items: center;
+                padding: 4px 12px;
+                border-radius: 20px;
+                font-size: 12px;
+                font-weight: 600;
+                text-transform: uppercase;
+                letter-spacing: 0.5px;
+            }
+            .action-btn {
+                transition: all 0.2s ease;
+                border-radius: 8px;
+                font-weight: 500;
+            }
+            .action-btn:hover {
+                transform: translateY(-1px);
+                box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            }
+            .record-indicator {
+                position: relative;
+                cursor: pointer;
+            }
+            .record-indicator:hover::after {
+                content: attr(data-tooltip);
+                position: absolute;
+                bottom: 100%;
+                left: 50%;
+                transform: translateX(-50%);
+                background: #1f2937;
+                color: white;
+                padding: 4px 8px;
+                border-radius: 4px;
+                font-size: 12px;
+                white-space: nowrap;
+                z-index: 10;
+            }
+            .tab-gradient {
+                background: linear-gradient(135deg, #f97316 0%, #ea580c 100%);
+            }
+            .search-glow:focus-within {
+                box-shadow: 0 0 0 3px rgba(249, 115, 22, 0.1);
+            }
+            .modal-backdrop {
+                background: rgba(0, 0, 0, 0.7);
+                backdrop-filter: blur(4px);
+            }
+        </style>
     </head>
-
-    <body>
-
+    <body class="bg-gray-50">
         <meta name="csrf-token" content="{{ csrf_token() }}">
+
         <!-- Sidebar -->
         @include('partials.admin-header')
         @include('partials.admin-sidebar')
 
-        <!-- Search Bar -->
-        <div class="max-w-17xl relative ml-64 mt-6 flex items-center justify-between px-8">
-            <form action="{{ route('admin.index') }}"
-                  method="GET"
-                  class="mr-20 w-full max-w-4xl">
-                <input type="hidden"
-                       name="type"
-                       value="{{ $type }}">
-                <div class="flex items-center rounded-full bg-gray-100 px-6 py-3 shadow">
-                    <svg class="mr-3 h-5 w-5 text-gray-400"
-                         fill="none"
-                         stroke="currentColor"
-                         viewBox="0 0 24 24">
-                        <path stroke-linecap="round"
-                              stroke-linejoin="round"
-                              stroke-width="2"
-                              d="M21 21l-4.35-4.35M11 18a7 7 0 1 1 0-14 7 7 0 0 1 0 14z" />
-                    </svg>
-                    <input name="query"
-                           type="text"
-                           placeholder="Search User..."
-                           value="{{ request('query') }}"
-                           class="w-full appearance-none border-none bg-transparent leading-tight text-gray-700 placeholder-gray-400 focus:outline-none">
+        <!-- Main Content -->
+        <div class="ml-64 min-h-screen">
+            <!-- Header Section with Search -->
+            <div class="bg-white shadow-sm border-b px-8 py-6">
+                <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
+                    <div>
+                        <h1 class="text-2xl font-bold text-gray-900">User Management</h1>
+                        <p class="text-gray-600 mt-1">Manage users, writers, and administrators</p>
+                    </div>
+
+                    <!-- Enhanced Search Bar -->
+                    <form action="{{ route('admin.index') }}" method="GET" class="w-full lg:max-w-md">
+                        <input type="hidden" name="type" value="{{ $type }}">
+                        <div class="relative search-glow transition-all duration-200">
+                            <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                                <i class="fas fa-search text-gray-400"></i>
+                            </div>
+                            <input name="query" type="text" placeholder="Search users by name or email..."
+                                   value="{{ request('query') }}"
+                                   class="w-full pl-12 pr-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-orange-500 focus:border-transparent transition-all duration-200">
+                            @if(request('query'))
+                                <button type="button" onclick="document.querySelector('input[name=query]').value=''; this.form.submit();"
+                                        class="absolute inset-y-0 right-0 pr-4 flex items-center">
+                                    <i class="fas fa-times text-gray-400 hover:text-gray-600"></i>
+                                </button>
+                            @endif
+                        </div>
+                    </form>
                 </div>
-            </form>
-        </div>
-
-        <!-- Tabs + Per Page Dropdown in one row -->
-        <div class="ml-64 mt-10 px-8">
-            <div class="mb-4 flex flex-wrap items-center justify-between gap-y-4">
-
-                <!-- Toggle to Switch Between Users and Admins -->
-                <div class="flex w-full space-x-2 md:w-auto">
-                    <a href="{{ route('admin.index', ['type' => 'users', 'per_page' => request('per_page', 10)]) }}"
-                       class="{{ $type === 'users'
-                           ? 'bg-gradient-to-r from-red-400 to-orange-300 text-white scale-105'
-                           : 'bg-white text-gray-700 shadow-sm hover:bg-orange-50' }} rounded-t-lg px-6 py-2 font-medium shadow transition-all duration-150">
-                        Users
-                    </a>
-
-                    <a href="{{ route('admin.index', ['type' => 'writers', 'per_page' => request('per_page', 10)]) }}"
-                       class="{{ $type === 'writers'
-                           ? 'bg-gradient-to-r from-red-400 to-orange-300 text-white scale-105'
-                           : 'bg-white text-gray-700 shadow-sm hover:bg-orange-50' }} rounded-t-lg px-6 py-2 font-medium shadow transition-all duration-150">
-                        Writers
-                    </a>
-
-                    <a href="{{ route('admin.index', ['type' => 'admins', 'per_page' => request('per_page', 10)]) }}"
-                       class="{{ $type === 'admins'
-                           ? 'bg-gradient-to-r from-red-400 to-orange-300 text-white scale-105'
-                           : 'bg-white text-gray-700 shadow-sm hover:bg-orange-50' }} rounded-t-lg px-6 py-2 font-medium shadow transition-all duration-150">
-                        Admins
-                    </a>
-                </div>
-
-                <!-- Per Page + Status Filter -->
-                <form method="GET"
-                      class="flex w-full items-center justify-end gap-3 md:w-auto md:justify-start">
-                    @foreach (request()->except('per_page') as $key => $value)
-                        @if (is_array($value))
-                            @foreach ($value as $v)
-                                <input type="hidden"
-                                       name="{{ $key }}[]"
-                                       value="{{ $v }}">
-                            @endforeach
-                        @else
-                            <input type="hidden"
-                                   name="{{ $key }}"
-                                   value="{{ $value }}">
-                        @endif
-                    @endforeach
-
-                    <label for="per_page"
-                           class="mr-2 text-sm font-medium text-gray-700">Show per page:</label>
-                    <select name="per_page"
-                            id="per_page"
-                            onchange="this.form.submit()"
-                            class="rounded border border-gray-300 px-2 py-1 text-sm">
-                        @foreach ([5, 10, 15, 20] as $count)
-                            <option value="{{ $count }}"
-                                    {{ request('per_page', 5) == $count ? 'selected' : '' }}>{{ $count }}
-                            </option>
-                        @endforeach
-                    </select>
-                    <label for="status"
-                           class="ml-4 mr-2 text-sm font-medium text-gray-700">Status:</label>
-                    @php $statuses = ['All','Active','Banned']; @endphp
-                    <select name="status" id="status" onchange="this.form.submit()" class="rounded border border-gray-300 px-2 py-1 text-sm">
-                        @foreach ($statuses as $s)
-                            <option value="{{ $s }}" {{ request('status') === $s ? 'selected' : '' }}>{{ $s }}</option>
-                        @endforeach
-                    </select>
-                </form>
             </div>
 
-            <!-- User's Table -->
-            <div class="overflow-x-auto rounded-lg bg-white shadow-md">
-                <table class="w-full border-collapse text-sm">
-                    <thead class="bg-gradient-to-r from-red-100 to-orange-100">
-                        <tr class="text-center text-gray-700">
-                            <th class="p-4"><input type="checkbox" /></th>
-                            <th class="p-4">Picture</th>
-                            <th class="p-4">Name</th>
-                            <th class="p-4">Email Address</th>
-                             <th class="p-4">Role</th>
-                            <th class="p-4">Status</th>
-                            <th class="p-4">Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @foreach ($users as $user)
-                            <tr class="{{ $loop->even ? 'bg-gray-50' : 'bg-white' }} text-center hover:bg-orange-50">
-                                <td class="p-4 align-middle"><input type="checkbox" /></td>
-                                <td class="p-4 align-middle">
-                                    <img src="{{ $user->avatar }}"
-                                         alt="Avatar"
-                                         class="mx-auto h-10 w-10 rounded-full object-cover">
-                                </td>
-                                <td class="p-4 align-middle font-medium text-orange-600">{{ $user->name }}</td>
-                                <td class="p-4 align-middle text-gray-600">{{ $user->email }}</td>
-                                <td class="p-4 align-middle text-gray-600">{{ ucfirst($user->role) }}</td>
-                                <td class="p-4 align-middle">
-                                    <span
-                                          class="{{ $user->status === 'Active'
-                                              ? 'text-green-600'
-                                              : ($user->status === 'Suspended'
-                                                  ? 'text-orange-600'
-                                                  : ($user->status === 'Banned'
-                                                      ? 'text-red-600'
-                                                      : 'text-gray-500')) }} text-sm font-semibold">
-                                        {{ $user->status }}
-                                    </span>
-                                </td>
+            <!-- Controls and Table Section -->
+            <div class="px-8 py-6">
+                @include('admin-panel.partials.users-table-navigation')
+                @include('admin-panel.partials.users-table')
 
-                                <!-- Actions -->
-                                <td class="p-4 align-middle">
-                                    <div class="flex justify-center gap-2">
-                                        <!-- Edit -->
-                                        <button type="button"
-                                                title="Edit Info"
-                                                class="px-3 py-1 rounded bg-blue-600 text-white text-xs hover:bg-blue-700"
-                                                onclick="openEditModal({{ $user->id }}, '{{ $user->name }}', '{{ $user->email }}')">
-                                            Edit
-                                        </button>
-
-                                        <!-- Ban/Unban -->
-                                        @if($user->status === 'Banned')
-                                            <button onclick="openUnbanModal('{{ $user->id }}', '{{ $user->name }}', '{{ $user->email }}')">
-                                                Unban
-                                            </button>
-                                        @else
-                                            <button type="button"
-                                                    onclick="openBanModal('{{ $user->id }}', '{{ $user->name }}', '{{ $user->email }}')"
-                                                    title="Ban User"
-                                                    class="text-red-600 hover:opacity-75">
-                                                Ban
-                                            </button>
-                                        @endif
-
-                                        <!-- Role dropdown -->
-                                        <form action="{{ route('admin.users.set-role', ['id' => $user->id]) }}" method="POST">
-                                            @csrf
-                                            @method('PATCH')
-                                            <select name="role" class="text-xs border rounded px-1 py-0.5" onchange="this.form.submit()">
-                                                <option value="user" {{ $user->role === 'user' ? 'selected' : '' }}>User</option>
-                                                <option value="writer" {{ $user->role === 'writer' ? 'selected' : '' }}>Writer</option>
-                                                <option value="admin" {{ $user->role === 'admin' ? 'selected' : '' }}>Admin</option>
-                                            </select>
-                                        </form>
-
-                                        <!-- Delete -->
-                                        <form action="{{ route('admin.users.destroy', ['id' => $user->id]) }}"
-                                              method="POST"
-                                              onsubmit="return confirm('Delete this user?')">
-                                            @csrf
-                                            @method('DELETE')
-                                            <button type="submit"
-                                                    title="Delete">
-                                                <img src="{{ asset('images/icon-delete.png') }}"
-                                                     alt="Delete"
-                                                     class="h-5 w-5 hover:opacity-75">
-                                            </button>
-                                        </form>
-                                    </div>
-                                </td>
-                            </tr>
-                        @endforeach
-                    </tbody>
-                </table>
-            </div>
-
-            @include('admin-panel.modals.edit-modal');
-            @include('admin-panel.modals.ban-modal')
-            @include('admin-panel.modals.unban-modal')
-
-            <!-- Pagination -->
-            <div class="ml-4 mt-4 px-8">
-                <div class="flex justify-center">
-                    {{ $users->appends(request()->query())->links('pagination::comment-manage-article-tailwind') }}
-                </div>
+                <!-- Enhanced Pagination -->
+                @if($users->hasPages())
+                    <div class="mt-6 flex items-center justify-between">
+                        <div class="text-sm text-gray-700">
+                            Showing {{ $users->firstItem() }} to {{ $users->lastItem() }} of {{ $users->total() }} results
+                        </div>
+                        <div class="flex items-center space-x-2">
+                            {{ $users->appends(request()->query())->links('pagination::comment-manage-article-tailwind') }}
+                        </div>
+                    </div>
+                @endif
             </div>
         </div>
+
+        <!-- Include Existing Modals -->
+        @include('admin-panel.modals.edit-modal')
+        @include('admin-panel.modals.ban-modal')
+        @include('admin-panel.modals.unban-modal')
+        @include('admin-panel.modals.reports-modal')
+        @include('admin-panel.modals.ban-history-modal')
 
         <script>
+            // Existing sidebar toggle
             document.getElementById('toggleAdminSidebar').addEventListener('click', function() {
                 const sidebar = document.getElementById('admin_sidebar');
                 const header = document.getElementById('admin_header');
                 sidebar.classList.toggle('translate-x-[-100%]');
                 header.classList.toggle('ml-0');
+            });
+
+            // Close modals when clicking outside
+            document.addEventListener('keydown', function(e) {
+                if (e.key === 'Escape') {
+                    closeReportsModal();
+                    closeBanHistoryModal();
+                }
+            });
+
+            // Enhanced search functionality
+            const searchInput = document.querySelector('input[name="query"]');
+            let searchTimeout;
+
+            if (searchInput) {
+                searchInput.addEventListener('input', function() {
+                    clearTimeout(searchTimeout);
+                    searchTimeout = setTimeout(() => {
+                        if (this.value.length >= 2 || this.value.length === 0) {
+                            this.form.submit();
+                        }
+                    }, 500);
+                });
+            }
+
+            // Bulk selection functionality
+            const selectAllCheckbox = document.querySelector('thead input[type="checkbox"]');
+            const rowCheckboxes = document.querySelectorAll('tbody input[type="checkbox"]');
+
+            if (selectAllCheckbox) {
+                selectAllCheckbox.addEventListener('change', function() {
+                    rowCheckboxes.forEach(checkbox => {
+                        checkbox.checked = this.checked;
+                    });
+                });
+            }
+
+            // Update select all based on individual selections
+            rowCheckboxes.forEach(checkbox => {
+                checkbox.addEventListener('change', function() {
+                    const checkedCount = document.querySelectorAll('tbody input[type="checkbox"]:checked').length;
+                    selectAllCheckbox.indeterminate = checkedCount > 0 && checkedCount < rowCheckboxes.length;
+                    selectAllCheckbox.checked = checkedCount === rowCheckboxes.length;
+                });
             });
         </script>
     </body>
