@@ -19,7 +19,7 @@ use App\Http\Controllers\CommentReportController;
 
 
 // Root redirect
-Route::get('/', fn () => redirect('/home'));
+Route::get('/', fn() => redirect('/home'));
 
 // ============================================================================
 // GUEST ROUTES (Dashboard - No Authentication Required)
@@ -40,17 +40,17 @@ Route::get('/home/{tag_slug}', function ($tag_slug) {
 
     $articles = Article::with('tags')
         ->where('status', 'Published')
-        ->whereHas('tags', fn ($query) => $query->where('tags.id', $tag->id))
+        ->whereHas('tags', fn($query) => $query->where('tags.id', $tag->id))
         ->orderByDesc('views')
         ->get();
 
     return view('home.home', compact('articles', 'tag'));
 })->name('home.tag');
 
-    Route::post('/articles', [ArticleController::class, 'store'])->name('articles.store');
+Route::post('/articles', [ArticleController::class, 'store'])->name('articles.store');
 Route::get('/articles/{id}', [ArticleController::class, 'show'])->name('articles.show');
-    Route::get('/home-search', [HomeSearchController::class, 'search']);
-        Route::post('/contact', [ContactController::class, 'send'])->name('contact.send');
+Route::get('/home-search', [HomeSearchController::class, 'search']);
+Route::post('/contact', [ContactController::class, 'send'])->name('contact.send');
 
 
 
@@ -68,13 +68,13 @@ Route::middleware('guest')->group(function () {
 
 
     // Password Reset Flow (hardcoded for demo)
-    Route::get('/forgot-password', fn () => view('partials.forgot_pass'))->name('password.email');
+    Route::get('/forgot-password', fn() => view('partials.forgot_pass'))->name('password.email');
     Route::post('/forgot-password', function () {
         session(['email' => 'test@example.com']);
         return redirect('/code-verify')->with('success', 'Demo: session email set.');
     });
 
-    Route::get('/code-verify', fn () => view('partials.code_verify'))->name('password.code');
+    Route::get('/code-verify', fn() => view('partials.code_verify'))->name('password.code');
     Route::post('/code-verify', function () {
         // Skip real code check — simulate verified code
         if (!session()->has('email')) {
@@ -85,7 +85,7 @@ Route::middleware('guest')->group(function () {
 
     Route::get('/reset-password', [ResetPasswordController::class, 'showResetForm'])->name('password.request');
     Route::post('/reset-password', [ResetPasswordController::class, 'updatePassword'])->name('password.update');
-    Route::get('/resetsuccess', fn () => view('partials.reset_success'))->name('resetsuccess');
+    Route::get('/resetsuccess', fn() => view('partials.reset_success'))->name('resetsuccess');
 });
 
 // ============================================================================
@@ -120,7 +120,8 @@ Route::middleware('auth')->group(function () {
      */
 
     // Shared routes function
-    function writerAndAdminSharedRoutes() {
+    function writerAndAdminSharedRoutes()
+    {
         Route::get('/articles', function (Request $request) {
             $query = Article::with('tags');
 
@@ -129,14 +130,15 @@ Route::middleware('auth')->group(function () {
             }
             if ($request->filled('search')) {
                 $search = $request->search;
-                $query->where(fn ($q) =>
+                $query->where(
+                    fn($q) =>
                     $q->where('title', 'like', "%{$search}%")
-                      ->orWhere('summary', 'like', "%{$search}%")
+                        ->orWhere('summary', 'like', "%{$search}%")
                 );
             }
             if ($request->filled('tags')) {
                 $tagIds = $request->tags;
-                $query->whereHas('tags', fn ($q) => $q->whereIn('tags.id', $tagIds));
+                $query->whereHas('tags', fn($q) => $q->whereIn('tags.id', $tagIds));
             }
 
             $articles = $query->get();
@@ -185,6 +187,8 @@ Route::middleware('auth')->group(function () {
             Route::patch('{id}/unban', [UserManagementController::class, 'unban'])->name('unban');
             Route::patch('{id}/role', [UserManagementController::class, 'setRole'])->name('set-role');
             Route::delete('{id}', [UserManagementController::class, 'destroy'])->name('destroy');
+            Route::get('{id}/reports', [UserManagementController::class, 'getUserReports'])->name('reports');
+            Route::get('{id}/ban-history', [UserManagementController::class, 'getBanHistory'])->name('ban-history');
         });
     });
 });

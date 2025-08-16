@@ -96,4 +96,14 @@ class User extends Authenticatable
     {
         return $this->hasOne(UserBan::class)->latestOfMany();
     }
+
+    public function commentReports()
+    {
+        return $this->hasMany(CommentReport::class, 'user_id');
+    }
+
+    public function userBans()
+    {
+        return $this->hasMany(UserBan::class, 'user_id');
+    }
 }
