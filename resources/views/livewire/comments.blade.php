@@ -15,8 +15,7 @@
                       class="flex flex-grow flex-wrap gap-2">
 
                     <textarea wire:model.defer="newComment"
-                              id="comment-box"
-                              class="flex-grow resize-none overflow-hidden border-none px-3 py-2 text-sm leading-snug outline-none transition-all duration-300 focus:shadow-none focus:outline-none"
+                              class="comment-box flex-grow resize-none overflow-hidden border-none px-3 py-2 text-sm leading-snug outline-none transition-all duration-300 focus:shadow-none focus:outline-none"
                               rows="1"
                               required
                               placeholder="Write a comment..."
@@ -34,8 +33,7 @@
                     <div id="below-textarea"
                          class="flex w-full items-center justify-between text-right">
                         <span class="spooky-warning ml-2 mt-1 block text-xs text-red-500"></span>
-                        <small id="char-count"
-                               class="text-gray-500">0/500</small>
+                        <small class="char-count text-gray-500">0/500</small>
                     </div>
                 </form>
             </div>

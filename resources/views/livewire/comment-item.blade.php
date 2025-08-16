@@ -27,14 +27,40 @@
         </button>
 
         @if ($showReplyForm ?? false)
-            <div class="mt-2">
-                <textarea wire:model="replyContent"
-                          class="w-full rounded border p-2"
-                          placeholder="Write a reply..."></textarea>
-                <button wire:click="postReply"
-                        class="mt-1 rounded bg-blue-600 px-3 py-1 text-white">
-                    Post Reply
-                </button>
+            <div class="add-comment-area-wrapper">
+                <div class="comment-user-info">
+                    <img src="https://ui-avatars.com/api/?name={{ urlencode(Auth::user()->name) }}"
+                         alt="Your Avatar"
+                         class="user-avatar">
+                </div>
+                <div
+                     class="add-comment-input-box flex w-full items-center rounded-[10px] border border-black bg-white px-3 py-2">
+                    <form wire:submit.prevent="addComment"
+                          class="flex flex-grow flex-wrap gap-2">
+
+                        <textarea wire:model.defer="newComment"
+                                  class="comment-box flex-grow resize-none overflow-hidden border-none px-3 py-2 text-sm leading-snug outline-none transition-all duration-300 focus:shadow-none focus:outline-none"
+                                  rows="1"
+                                  required
+                                  placeholder="Write a comment..."
+                                  oninput="this.style.height = 'auto'; this.style.height = this.scrollHeight + 'px';"></textarea>
+
+                        @error('newcomment')
+                            <span class="text-sm text-red-500">{{ $message }}</span>
+                        @enderror
+
+                        <button type="submit"
+                                class="ml-2 text-xl text-orange-500 hover:text-orange-600">
+                            &#10148;
+                        </button>
+
+                        <div id="below-textarea"
+                             class="flex w-full items-center justify-between text-right">
+                            <span class="spooky-warning ml-2 mt-1 block text-xs text-red-500"></span>
+                            <small class="char-count text-gray-500">0/500</small>
+                        </div>
+                    </form>
+                </div>
             </div>
         @endif
     @endif
@@ -50,4 +76,5 @@
             @endforeach
         </div>
     @endif
+
 </div>
