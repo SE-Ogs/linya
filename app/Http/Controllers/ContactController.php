@@ -19,20 +19,21 @@ class ContactController extends Controller
             $user = auth()->user();
 
             $payload = [
-                'name' => $user->name,
+                'name' => $user->name, // or $user->first_name . ' ' . $user->last_name
                 'email' => $user->email,
                 'message' => $validated['message'],
             ];
         } else {
             // Guest
             $validated = $request->validate([
-                'name' => 'required|string|max:100',
+                'first_name' => 'required|string|max:50',
+                'last_name' => 'required|string|max:50',
                 'email' => 'required|email|max:255',
                 'message' => 'required|string|max:2000',
             ]);
 
             $payload = [
-                'name' => $validated['name'],
+                'name' => $validated['first_name'] . ' ' . $validated['last_name'],
                 'email' => $validated['email'],
                 'message' => $validated['message'],
             ];
@@ -42,6 +43,6 @@ class ContactController extends Controller
             ->send((new ContactFormMail($payload))
             ->replyTo($payload['email'], $payload['name']));
 
-        return back()->with('success', 'Your message has been sent!');
+        return back()->with('contact_success', 'Your message has been sent!');
     }
 }

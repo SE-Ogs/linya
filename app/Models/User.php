@@ -92,9 +92,37 @@ class User extends Authenticatable
         return $this->hasMany(UserBan::class);
     }
 
+    public function currentBan()
+    {
+        return $this->hasOne(UserBan::class)->latest('banned_at');
+    }
+
     public function latestBan()
     {
         return $this->hasOne(UserBan::class)->latestOfMany();
+    }
+
+    /**
+     * Check if user is currently banned
+     */
+    public function isBanned()
+    {
+        if ($this->status !== 'Banned') {
+            return false;
+        }
+
+        $currentBan = $this->currentBan;
+
+        if (!$currentBan) {
+            return false;
+        }
+
+        // If ban has an expiry date and it's passed, user shouldn't be banned
+        if ($currentBan->unbanned_at && $currentBan->unbanned_at < now()) {
+            return false;
+        }
+
+        return true;
     }
 
     public function commentReports()

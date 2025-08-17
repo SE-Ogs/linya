@@ -104,30 +104,38 @@ class UserAuthController extends Controller
 
 
 
-    public function login(Request $request)
-    {
-        $credentials = $request->validate([
-            'username' => ['required', 'string'],
-            'password' => ['required'],
-        ]);
+   public function login(Request $request)
+{
+    $credentials = $request->validate([
+        'username' => ['required', 'string'],
+        'password' => ['required'],
+    ]);
 
-        if (Auth::attempt(['username' => $credentials['username'], 'password' => $credentials['password']])) {
-            $request->session()->regenerate();
-            // Block banned users after successful auth check
-           if (auth()->user()->status === 'Banned') {
-    Auth::logout();
-    return back()->with('Banned', true)->withInput();
-}
+    if (Auth::attempt(['username' => $credentials['username'], 'password' => $credentials['password']])) {
+        $request->session()->regenerate();
 
+        // Block banned users after successful auth check
+        if (auth()->user()->isBanned()) {
+            // Get the current ban details with the user who banned them
+            $banDetails = auth()->user()->currentBan()->with('bannedBy')->first();
 
-            return redirect()->intended('/home');
+            Auth::logout();
+
+            // Pass ban details to the session
+            return back()
+                ->with('Banned', true)
+                ->with('ban_details', $banDetails)
+                ->withInput();
         }
 
-        return back()->withErrors([
-            'username' => 'Incorrect credentials. Don\'t hesitate to click forgot password! :)',
-
-        ])->withInput();
+        // If user is not banned, proceed with normal login
+        return redirect()->intended('home');
     }
+
+    return back()->withErrors([
+        'username' => 'The provided credentials do not match our records.',
+    ])->withInput();
+}
 
     public function logout(Request $request)
     {

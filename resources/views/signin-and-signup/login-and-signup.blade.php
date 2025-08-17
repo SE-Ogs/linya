@@ -26,6 +26,7 @@
         </div>
 
         @include('partials.banned-account-modal')
+        @include('partials.contact-us')
 
         <script>
             document.addEventListener('DOMContentLoaded', function() {
