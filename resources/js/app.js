@@ -852,4 +852,119 @@ function spookyAutoType(form, reverse = false) {
     }
 }
 
+document.addEventListener("DOMContentLoaded", function () {
+    const reportModal = document.getElementById("reportCommentModal");
+    const reportForm = document.getElementById("reportCommentForm");
+    const reportError = document.getElementById("reportError");
+    const reportAdditionalInfo = document.getElementById(
+        "reportAdditionalInfo",
+    );
+    const reportCharCount = document.getElementById("reportCharCount");
+    const csrfToken = document
+        .querySelector('meta[name="csrf-token"]')
+        ?.getAttribute("content");
+
+    // Character count for additional info
+    reportAdditionalInfo?.addEventListener("input", function () {
+        const length = this.value.length;
+        reportCharCount.textContent = length;
+    });
+
+    // Close modal handlers
+    document
+        .getElementById("cancelReportBtn")
+        ?.addEventListener("click", function () {
+            closeReportModal();
+        });
+
+    // Close modal when clicking outside
+    reportModal?.addEventListener("click", function (e) {
+        if (e.target === reportModal) {
+            closeReportModal();
+        }
+    });
+
+    window.openReportModal = function (commentId) {
+        const modal = document.getElementById("reportCommentModal");
+        const input = document.getElementById("reportCommentId");
+
+        if (modal && input) {
+            input.value = commentId;
+            modal.classList.remove("hidden");
+        }
+    };
+
+    function closeReportModal() {
+        reportModal.classList.add("hidden");
+        reportForm.reset();
+        reportError.classList.add("hidden");
+        reportCharCount.textContent = "0";
+    }
+
+    function showReportError(message) {
+        reportError.textContent = message;
+        reportError.classList.remove("hidden");
+    }
+
+    // Handle report form submission
+    reportForm?.addEventListener("submit", async function (e) {
+        e.preventDefault();
+
+        const commentId = document.getElementById("reportCommentId").value;
+        const reason = document.getElementById("reportReason").value;
+        const additionalInfo = document.getElementById(
+            "reportAdditionalInfo",
+        ).value;
+        const submitBtn = document.getElementById("confirmReportCommentBtn");
+
+        if (!reason) {
+            showReportError("Please select a reason for reporting.");
+            return;
+        }
+
+        // Disable submit button and show loading state
+        const originalText = submitBtn.textContent;
+        submitBtn.disabled = true;
+        submitBtn.textContent = "Submitting...";
+
+        try {
+            const response = await fetch(`/comments/${commentId}/report`, {
+                method: "POST",
+                headers: {
+                    "X-CSRF-TOKEN": csrfToken,
+                    Accept: "application/json",
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                    comment_id: commentId,
+                    reason: reason,
+                    additional_info: additionalInfo || null,
+                }),
+            });
+
+            const data = await response.json();
+
+            if (data.success) {
+                closeReportModal();
+                // Show success message using the existing function
+                if (typeof showMessage === "function") {
+                    showMessage(data.message);
+                } else {
+                    alert(data.message);
+                }
+            } else {
+                showReportError(data.message || "Failed to submit report.");
+            }
+        } catch (error) {
+            console.error("Error submitting report:", error);
+            showReportError(
+                "An error occurred while submitting your report. Please try again.",
+            );
+        } finally {
+            submitBtn.disabled = false;
+            submitBtn.textContent = originalText;
+        }
+    });
+});
+
 import "./comments.js";

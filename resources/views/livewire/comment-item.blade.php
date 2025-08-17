@@ -22,9 +22,12 @@
     {{-- Reply --}}
     @if (auth()->check() && $depth < $maxDepth)
         <button wire:click="$toggle('showReplyForm')"
-                class="mt-2 text-sm text-blue-600">
+                class="mt-2 cursor-pointer text-sm text-blue-600 hover:text-blue-800 active:text-blue-900">
             Reply
         </button>
+
+        <button class="ml-2 mt-2 text-sm text-red-600 hover:text-red-800 active:text-red-900"
+                onclick="openReportModal({{ $comment->id }})">Report</button>
 
         @if ($showReplyForm ?? false)
             <div class="add-comment-area-wrapper">
