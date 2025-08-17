@@ -1,4 +1,4 @@
-@extends('layout.forgot_password')
+@extends('signin-and-signup.forgot-password')
 
 @section('title', 'Forgot Password')
 

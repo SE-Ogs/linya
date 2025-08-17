@@ -59,8 +59,16 @@ Route::post('/contact', [ContactController::class, 'send'])->name('contact.send'
 // AUTHENTICATION ROUTES
 // ============================================================================
 Route::middleware('guest')->group(function () {
+    Route::get('/login', [UserAuthController::class, 'showLogin'])->name('login');
+    Route::get('/signup', [UserAuthController::class, 'showSignup'])->name('signup');
+    Route::post('/login', [UserAuthController::class, 'login']);
+    Route::post('/signup', [UserAuthController::class, 'signup']);
+    Route::get('/set-display-name', [UserAuthController::class, 'showDisplayName']);
+    Route::post('/set-display-name', [UserAuthController::class, 'storeDisplayName']);
+    Route::post('/clear-signup-data', [UserAuthController::class, 'clearSignupData'])->name('clear-signup-data');
+
     // --- Forgot password: show form to enter email ---
-    Route::get('/forgot-password', fn() => view('partials.forgot_pass'))->name('password.email');
+    Route::get('/forgot-password', fn() => view('partials.forgot-pass'))->name('password.email');
 
     // --- Forgot password: handle email, generate+send code via SMTP ---
     Route::post('/forgot-password', function (Request $request) {
