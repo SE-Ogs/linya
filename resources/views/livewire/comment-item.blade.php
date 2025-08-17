@@ -35,7 +35,7 @@
                 </div>
                 <div
                      class="add-comment-input-box flex w-full items-center rounded-[10px] border border-black bg-white px-3 py-2">
-                    <form wire:submit.prevent="addComment"
+                    <form wire:submit.prevent="addReply"
                           class="flex flex-grow flex-wrap gap-2">
 
                         <textarea wire:model.defer="replyContent"

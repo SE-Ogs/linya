@@ -105,26 +105,9 @@ class CommentItem extends Component
         $this->comment = $this->comment->fresh();
     }
 
-    public function postReply()
-    {
-        $this->validate([
-            'replyContent' => 'required|string|max:500',
-        ]);
 
-        Comment::create([
-            'user_id' => Auth::id(),
-            'content' => $this->replyContent,
-            'parent_id' => $this->comment->id,
-                    'article_id'=> $this->comment->article_id, // ✅ inherit from parent
-// link reply to parent
-        ]);
 
-        $this->replyContent = '';
-        $this->showReplyForm = false;
 
-        // Refresh the parent comment with new replies
-        $this->comment = $this->comment->fresh();
-    }
 
     protected function refreshCounts()
     {
