@@ -24,17 +24,42 @@
 
     <!-- Main Content -->
     <div class="flex flex-col items-center pt-32">
-        <div class="text-4xl font-extrabold mb-4 text-black text-center">Woopsies...</div>
-        <p class="text-lg text-center text-black mb-8 max-w-md">
-            Provide us the email of the account you want the password to be reset.
+        <div class="text-4xl font-extrabold mb-4 text-black text-center">Forgot your password?</div>
+        <p class="text-lg text-center text-black mb-6 max-w-md">
+            Enter the email tied to your account and we’ll send a verification code.
+            <span class="text-black/70 block mt-1">Check your <span class="text-orange-400">spam</span> folder too.</span>
         </p>
-        <form method="POST" action="#" class="w-full flex flex-col items-center gap-6">
+
+        @if (session('success'))
+            <div class="mb-4 text-green-600 font-medium">
+                {{ session('success') }}
+            </div>
+        @endif
+
+        @if ($errors->any())
+            <div class="mb-4 text-red-600 font-medium">
+                @foreach ($errors->all() as $error)
+                    <div>{{ $error }}</div>
+                @endforeach
+            </div>
+        @endif
+
+        <form method="POST" action="{{ url('/forgot-password') }}" class="w-full flex flex-col items-center gap-6">
             @csrf
-            <input type="email" name="email" placeholder="Email"
-                class="w-full max-w-md rounded-2xl bg-[#E6E5E1] px-6 py-4 text-base placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-orange-400 font-normal" required>
-            <button type="submit"
+            <input
+                type="email"
+                name="email"
+                value="{{ old('email') }}"
+                placeholder="you@example.com"
+                class="w-full max-w-md rounded-2xl bg-[#E6E5E1] px-6 py-4 text-base placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-orange-400 font-normal"
+                required
+                autocomplete="email"
+            >
+
+            <button
+                type="submit"
                 class="w-40 bg-orange-400 text-white font-bold text-lg rounded-2xl py-3 transition active:scale-98 active:bg-orange-500 hover:scale-101">
-                Submit
+                Send Code
             </button>
         </form>
     </div>
