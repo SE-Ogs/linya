@@ -25,15 +25,23 @@
     <!-- Main Content -->
     <div class="flex flex-col items-center pt-32">
         <div class="text-4xl font-extrabold mb-4 text-black text-center">Almost there!</div>
-        <p class="text-lg text-center text-black mb-8 max-w-md">
-            Check your inbox, we’ve sent you a confirmation code! Make sure to check your <span class="text-orange-400">spam</span> folder.
+
+        @if (session('success'))
+            <div class="mb-2 text-green-600 font-medium">{{ session('success') }}</div>
+        @endif
+
+        <p class="text-lg text-center text-black mb-3 max-w-md">
+            We sent a confirmation code to
+            <span class="font-semibold">{{ session('email') }}</span>. Make sure to check your
+            <span class="text-orange-400">spam</span> folder.
         </p>
 
         <form method="POST" action="{{ url('/code-verify') }}" class="w-full flex flex-col items-center gap-4">
             @csrf
 
             <input type="text" name="code" placeholder="XXXX-XXXX"
-                class="w-full max-w-md rounded-2xl bg-[#E6E5E1] px-6 py-4 text-base placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-orange-400 font-normal text-center" required>
+                class="w-full max-w-md rounded-2xl bg-[#E6E5E1] px-6 py-4 text-base placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-orange-400 font-normal text-center"
+                required>
 
             @if ($errors->has('code'))
                 <span class="text-red-500 text-base font-medium">{{ $errors->first('code') }}</span>
@@ -42,6 +50,14 @@
             <button type="submit"
                 class="w-40 bg-orange-400 text-white font-bold text-lg rounded-2xl py-3 transition active:scale-98 active:bg-orange-500 hover:scale-101">
                 Verify
+            </button>
+        </form>
+
+        <!-- Optional: Resend -->
+        <form method="POST" action="{{ url('/code-resend') }}" class="mt-4">
+            @csrf
+            <button type="submit" class="underline text-sm text-black/70 hover:text-black">
+                Resend code
             </button>
         </form>
     </div>

@@ -2,8 +2,11 @@
 
 use Illuminate\Support\Facades\Route;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Mail;
+
 use App\Models\Article;
 use App\Models\Tag;
+
 use App\Http\Controllers\AdminDashboardController;
 use App\Http\Controllers\ArticleController;
 use App\Http\Controllers\CommentController;
@@ -17,6 +20,7 @@ use App\Http\Controllers\ContactController;
 use App\Http\Controllers\HomeSearchController;
 use App\Http\Controllers\CommentReportController;
 
+use App\Mail\VerificationCodeMail;
 
 // Root redirect
 Route::get('/', fn() => redirect('/home'));
@@ -35,12 +39,11 @@ Route::get('/home', function () {
 
 Route::get('/home/{tag_slug}', function ($tag_slug) {
     $tag = Tag::where('slug', $tag_slug)->first();
-
     if (!$tag) abort(404);
 
     $articles = Article::with('tags')
         ->where('status', 'Published')
-        ->whereHas('tags', fn($query) => $query->where('tags.id', $tag->id))
+        ->whereHas('tags', fn($q) => $q->where('tags.id', $tag->id))
         ->orderByDesc('views')
         ->get();
 
@@ -52,44 +55,105 @@ Route::get('/articles/{id}', [ArticleController::class, 'show'])->name('articles
 Route::get('/home-search', [HomeSearchController::class, 'search']);
 Route::post('/contact', [ContactController::class, 'send'])->name('contact.send');
 
-
-
-// =========================================================================
+// ============================================================================
 // AUTHENTICATION ROUTES
-// =========================================================================
+// ============================================================================
 Route::middleware('guest')->group(function () {
-    Route::get('/login', [UserAuthController::class, 'showLogin'])->name('login');
-    Route::get('/signup', [UserAuthController::class, 'showSignup'])->name('signup');
-    Route::post('/login', [UserAuthController::class, 'login']);
-    Route::post('/signup', [UserAuthController::class, 'signup']);
-    Route::get('/set-display-name', [UserAuthController::class, 'showDisplayName']);
-    Route::post('/set-display-name', [UserAuthController::class, 'storeDisplayName']);
-    Route::post('/clear-signup-data', [UserAuthController::class, 'clearSignupData'])->name('clear-signup-data');
-
-
-    // Password Reset Flow (hardcoded for demo)
+    // --- Forgot password: show form to enter email ---
     Route::get('/forgot-password', fn() => view('partials.forgot_pass'))->name('password.email');
-    Route::post('/forgot-password', function () {
-        session(['email' => 'test@example.com']);
-        return redirect('/code-verify')->with('success', 'Demo: session email set.');
-    });
 
-    Route::get('/code-verify', fn() => view('partials.code_verify'))->name('password.code');
-    Route::post('/code-verify', function () {
-        // Skip real code check — simulate verified code
-        if (!session()->has('email')) {
-            session(['email' => 'test@example.com']);
+    // --- Forgot password: handle email, generate+send code via SMTP ---
+    Route::post('/forgot-password', function (Request $request) {
+        $request->validate([
+            'email' => 'required|email',
+        ]);
+
+        $email = $request->input('email');
+
+        // Generate code like "ABCD-1234"
+        $code = strtoupper(substr(bin2hex(random_bytes(4)), 0, 4)) . '-' . random_int(1000, 9999);
+
+        // Persist in session (10-minute expiry)
+        session([
+            'email' => $email,
+            'verification_code' => $code,
+            'verification_expires_at' => now()->addMinutes(10),
+        ]);
+
+        try {
+            Mail::to($email)->send(new \App\Mail\VerificationCodeMail($code));
+        } catch (\Throwable $e) {
+            report($e);
+            return back()->withErrors([
+                'email' => 'We could not send the email. Check mail settings and try again.',
+            ]);
         }
-        return redirect('/reset-password')->with('success', 'Demo: code accepted.');
-    });
 
+        return redirect('/code-verify')->with('success', 'We sent a verification code to your email.');
+    })->name('password.email.send');
+
+    // --- Code verify: show form (your Blade below) ---
+    Route::get('/code-verify', fn() => view('partials.code_verify'))->name('password.code');
+
+    // --- Code verify: handle submitted code ---
+    Route::post('/code-verify', function (Request $request) {
+        $request->validate(['code' => 'required|string']);
+
+        $sessionEmail = session('email');
+        $sessionCode = session('verification_code');
+        $expiresAt   = session('verification_expires_at');
+
+        if (!$sessionEmail || !$sessionCode || !$expiresAt) {
+            return redirect('/forgot-password')->withErrors(['code' => 'Session expired. Please request a new code.']);
+        }
+
+        if (now()->greaterThan($expiresAt)) {
+            session()->forget(['verification_code', 'verification_expires_at']);
+            return redirect('/forgot-password')->withErrors(['code' => 'Code expired. Please request a new one.']);
+        }
+
+        if (strtoupper(trim($request->code)) !== strtoupper($sessionCode)) {
+            return back()->withErrors(['code' => 'Invalid code. Please try again.']);
+        }
+
+        // success -> go to reset form
+        return redirect('/reset-password')->with('success', 'Code accepted.');
+    })->name('password.code.verify');
+
+    // --- Optional: Resend code ---
+    Route::post('/code-resend', function () {
+        $email = session('email');
+        if (!$email) {
+            return redirect('/forgot-password')->withErrors(['email' => 'No email in session. Please start again.']);
+        }
+
+        $code = strtoupper(substr(bin2hex(random_bytes(4)), 0, 4)) . '-' . random_int(1000, 9999);
+
+        session([
+            'verification_code' => $code,
+            'verification_expires_at' => now()->addMinutes(10),
+        ]);
+
+        try {
+            Mail::to($email)->send(new \App\Mail\VerificationCodeMail($code));
+        } catch (\Throwable $e) {
+            report($e);
+            return back()->withErrors([
+                'code' => 'Could not resend email. Try again later.',
+            ]);
+        }
+
+        return back()->with('success', 'A new code has been sent.');
+    })->name('password.code.resend');
+
+    // Reset password views + submit (your controller)
     Route::get('/reset-password', [ResetPasswordController::class, 'showResetForm'])->name('password.request');
     Route::post('/reset-password', [ResetPasswordController::class, 'updatePassword'])->name('password.update');
     Route::get('/resetsuccess', fn() => view('partials.reset_success'))->name('resetsuccess');
 });
 
 // ============================================================================
-// AUTHENTICATED ROUTES
+// AUTHENTICATED ROUTES (unchanged)
 // ============================================================================
 Route::middleware('auth')->group(function () {
     Route::post('/logout', [UserAuthController::class, 'logout'])->name('logout');
@@ -99,10 +163,8 @@ Route::middleware('auth')->group(function () {
     Route::post('/recent-searches', [RecentSearchController::class, 'store'])->name('recent-searches.store');
     Route::delete('/recent-searches', [RecentSearchController::class, 'clear']);
 
-    // Comment Management
-    Route::get('/articles/{slug}', [CommentController::class, 'show'])->name(name: 'comment.manage.show');
+    Route::get('/articles/{slug}', [CommentController::class, 'show'])->name('comment.manage.show');
 
-    // Comment routes
     Route::post('/articles/{article}/comments', [CommentController::class, 'store'])->name('comments.store');
     Route::delete('/comments/{comment}', [CommentController::class, 'destroy'])->name('comments.destroy');
     Route::post('/articles/{article}/comments/ajax', [CommentController::class, 'storeAjax'])->name('comments.store.ajax');
@@ -115,13 +177,8 @@ Route::middleware('auth')->group(function () {
     Route::post('/comments/{comment}/report', [CommentReportController::class, 'store'])->name('comments.report');
     Route::get('/comment-reports/reasons', [CommentReportController::class, 'getReasons'])->name('comment-reports.reasons');
 
-    /**
-     * WRITER & ADMIN SHARED DASHBOARD (writer middleware)
-     */
-
-    // Shared routes function
-    function writerAndAdminSharedRoutes()
-    {
+    // Writer/Admin shared…
+    function writerAndAdminSharedRoutes() {
         Route::get('/articles', function (Request $request) {
             $query = Article::with('tags');
 
@@ -130,11 +187,8 @@ Route::middleware('auth')->group(function () {
             }
             if ($request->filled('search')) {
                 $search = $request->search;
-                $query->where(
-                    fn($q) =>
-                    $q->where('title', 'like', "%{$search}%")
-                        ->orWhere('summary', 'like', "%{$search}%")
-                );
+                $query->where(fn($q) => $q->where('title', 'like', "%{$search}%")
+                    ->orWhere('summary', 'like', "%{$search}%"));
             }
             if ($request->filled('tags')) {
                 $tagIds = $request->tags;
@@ -155,16 +209,13 @@ Route::middleware('auth')->group(function () {
         Route::post('/articles/back-to-editor', [ArticleController::class, 'backToEditor'])->name('articles.back-to-editor');
     }
 
-    // Writer routes
     Route::middleware('writer')->prefix('writer')->name('writer.')->group(function () {
         writerAndAdminSharedRoutes();
     });
 
-    // Admin routes (shared writer routes + admin-only)
     Route::middleware('admin')->prefix('admin')->name('admin.')->group(function () {
         writerAndAdminSharedRoutes();
 
-        // Admin-only routes here
         Route::get('/edit-article/{id}', [ArticleController::class, 'edit'])->name('articles.edit');
         Route::put('/edit-article/{id}', [ArticleController::class, 'update'])->name('articles.update');
         Route::patch('/articles/{article}/approve', [ArticleController::class, 'approve'])->name('articles.approve');
