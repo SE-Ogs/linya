@@ -1,4 +1,4 @@
-@extends('layout.code_verification')
+@extends('auth_split_centered.blade.php')
 
 @section('title', 'Code Verification')
 
