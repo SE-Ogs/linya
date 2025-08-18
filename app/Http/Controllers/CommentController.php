@@ -11,34 +11,27 @@ use Illuminate\Support\Facades\DB;
 class CommentController extends Controller
 {
 
-    public function index(Request $request)
-    {
-        $perPage = (int) $request->input('per_page', 5);
-        $perPage = max(1, min($perPage, 100));
-        $search = $request->input('query');
+public function index(Request $request)
+{
+    $perPage = (int) $request->input('per_page', 5);
+    $perPage = max(1, min($perPage, 100));
+    $search = $request->input('query');
 
-        $query = DB::table('articles')
-            ->select('articles.*')
-            ->when($search, function ($q) use ($search) {
-                $q->where('title', 'ILIKE', "%{$search}%")
-                    ->orWhere('article', 'ILIKE', "%{$search}%");
-            })
-            ->orderBy('created_at', 'desc');
+    $query = Article::whereHas('comments.reports', function ($q) {
+        // you can add ->where('status', 'pending') here if you want only pending ones
+    })
+    ->when($search, function ($q) use ($search) {
+        $q->where('title', 'ILIKE', "%{$search}%")
+          ->orWhere('article', 'ILIKE', "%{$search}%");
+    })
+    ->orderBy('created_at', 'desc');
 
-        $articles = $query->paginate($perPage)->withQueryString();
+    $articles = $query->paginate($perPage)->withQueryString();
 
-        $articles->transform(function ($article) {
-            $article->comments_count = 0;
+    return view('admin-panel.comment-manage-article', compact('articles'));
+}
 
-            if (!property_exists($article, 'excerpt')) {
-                $article->excerpt = \Illuminate\Support\Str::limit(strip_tags($article->article ?? ''), 100);
-            }
 
-            return $article;
-        });
-
-        return view('admin-panel.comment-manage-article', compact('articles'));
-    }
 
     public function store(Request $request, Article $article)
     {

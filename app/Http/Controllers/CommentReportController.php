@@ -8,6 +8,7 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Validation\ValidationException;
+use Illuminate\Support\Facades\Log;
 
 class CommentReportController extends Controller
 {
@@ -132,4 +133,17 @@ class CommentReportController extends Controller
             'report' => $report->fresh(['comment.user', 'user', 'reviewer']),
         ]);
     }
+
+    public function byArticle(\App\Models\Article $article)
+{
+    // Load all reports for comments belonging to this article
+    $reports = $article->comments()
+        ->with(['reports.user', 'reports.comment.user', 'reports.reviewer'])
+        ->get()
+        ->pluck('reports')
+        ->flatten();
+
+    return view('admin-panel.comment-reports-by-article', compact('article', 'reports'));
+}
+
 }
