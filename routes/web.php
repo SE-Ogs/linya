@@ -55,6 +55,9 @@ Route::post('/articles', [ArticleController::class, 'store'])->name('articles.st
 Route::get('/articles/{id}', [ArticleController::class, 'show'])->name('articles.show');
 Route::get('/home-search', [HomeSearchController::class, 'search']);
 Route::post('/contact', [ContactController::class, 'send'])->name('contact.send');
+Route::get('/coming-soon', function () {
+    return view('home.coming-soon');
+})->name('coming-soon');
 
 // ============================================================================
 // AUTHENTICATION ROUTES
