@@ -85,6 +85,7 @@
 
                 <!-- Hidden inputs for image metadata -->
                 <div id="imageMetadataInputs"></div>
+                <div id="imageDataContainer"></div>
 
                 <!-- Upload area -->
                 <div class="upload-area border-2 border-dashed border-gray-300 bg-gray-50 rounded-lg p-8 text-center cursor-pointer hover:border-gray-400 hover:bg-gray-100 transition-all duration-200" onclick="triggerFileInput()">
@@ -548,44 +549,33 @@
             if (quill) {
                 const content = quill.root.innerHTML;
                 document.getElementById('article').value = content;
-                console.log('Quill editor content synced:', content.length, 'characters');
-            } else {
-                console.error('Quill editor not available for content sync');
+                console.log('Quill editor content synced');
             }
 
-            // Prepare image files for submission - create a new FormData approach
-            if (uploadedImages.length > 0) {
-                console.log('Preparing images for submission:', uploadedImages.length);
-
-                // Clear the original file input
-                const imageInput = document.getElementById('imageInput');
-
-                // Create a new DataTransfer object to hold our files
-                const dt = new DataTransfer();
-
-                // Add each file to the DataTransfer object IN ORDER
-                uploadedImages
-                    .sort((a, b) => a.order - b.order) // Ensure correct order
-                    .forEach((imageData, index) => {
-                        console.log(`Adding file ${index + 1} to form:`, imageData.name, 'Order:', imageData.order, 'Featured:', imageData.isFeatured);
-                        dt.items.add(imageData.file);
-                    });
-
-                // Assign the files to the input
-                imageInput.files = dt.files;
-
-                // Create hidden inputs for image metadata
-                createImageMetadataInputs();
-
-                console.log('Final file input files count:', imageInput.files.length);
-
-                // Log each file for debugging
-                Array.from(imageInput.files).forEach((file, index) => {
-                    console.log(`Form file ${index + 1}:`, file.name, file.size, file.type);
-                });
-            } else {
-                console.log('No images to prepare for submission');
+            // Create/update hidden input for base64 images
+            let imageDataInput = document.getElementById('imageDataInput');
+            if (!imageDataInput) {
+                imageDataInput = document.createElement('input');
+                imageDataInput.type = 'hidden';
+                imageDataInput.name = 'imageData';
+                imageDataInput.id = 'imageDataInput';
+                document.getElementById('addArticleForm').appendChild(imageDataInput);
             }
+
+            // Prepare image data array with base64 strings
+            const imageDataArray = uploadedImages
+                .sort((a, b) => a.order - b.order)
+                .map(img => ({
+                    dataUrl: img.dataUrl,
+                    name: img.name
+                }));
+
+            imageDataInput.value = JSON.stringify(imageDataArray);
+            console.log('Base64 image data prepared:', imageDataArray.length, 'images');
+
+            // Clear file input (not needed anymore)
+            const imageInput = document.getElementById('imageInput');
+            imageInput.value = '';
         }
 
         function createImageMetadataInputs() {
