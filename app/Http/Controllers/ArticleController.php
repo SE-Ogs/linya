@@ -123,7 +123,7 @@ class ArticleController extends Controller
         return redirect()->route('admin.articles')->with('success', 'Article deleted!');
     }
 
-    public function preview(\Illuminate\Http\Request $request)
+    public function preview(Request $request)
     {
         $articleData = $request->all();
         $tags = Tag::find($articleData['tags'] ?? []);
@@ -248,40 +248,25 @@ class ArticleController extends Controller
 
     protected function processArticleImages(Article $article, Request $request): void
     {
-        $images = [];
-
-        // Debug: Log the request data
-        \Log::info('Processing article images for article ID: ' . $article->id);
-        \Log::info('Request has imageData: ' . ($request->has('imageData') ? 'yes' : 'no'));
-
-        // Handle imageData (base64 images from frontend)
-        if ($request->has('imageData') && $request->imageData) {
-            \Log::info('ImageData content: ' . $request->imageData);
+        if ($request->filled('imageData')) {
             $imageData = json_decode($request->imageData, true);
-            \Log::info('Decoded imageData: ', $imageData ?? []);
 
-            if (is_array($imageData)) {
-                foreach ($imageData as $index => $imageInfo) {
-                    if (isset($imageInfo['dataUrl'])) {
-                        \Log::info('Processing image ' . $index . ': ' . ($imageInfo['name'] ?? 'unnamed'));
-                        $path = $this->storeBase64Image($imageInfo['dataUrl'], $imageInfo['name'] ?? "image_{$index}.jpg");
-                        $images[] = [
-                            'image_path' => $path,
-                            'order' => $index,
-                            'is_featured' => $index === 0, // First image is featured
-                        ];
-                        \Log::info('Stored image at path: ' . $path);
-                    }
+            \Log::info('Decoded images:', ['count' => count($imageData)]);
+
+            foreach ($imageData as $index => $imageInfo) {
+                // Handle both possible structures
+                $dataUrl = $imageInfo['dataUrl'] ?? ($imageInfo['data_url'] ?? null);
+                $name = $imageInfo['name'] ?? "image_$index.jpg";
+
+                if ($dataUrl) {
+                    $path = $this->storeBase64Image($dataUrl, $name);
+                    $article->images()->create([
+                        'image_path' => $path,
+                        'order' => $index,
+                        'is_featured' => $index === 0
+                    ]);
                 }
             }
-        }
-
-        \Log::info('Total images to create: ' . count($images));
-
-        // Create article images
-        foreach ($images as $imageData) {
-            $articleImage = $article->images()->create($imageData);
-            \Log::info('Created article image with ID: ' . $articleImage->id);
         }
     }
 
