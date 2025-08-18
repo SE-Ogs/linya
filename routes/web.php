@@ -298,7 +298,11 @@ Route::middleware('auth')->group(function () {
         Route::get('/comments', [CommentController::class, 'index'])->name('comments');
 
         Route::get('/comment-reports', [CommentReportController::class, 'index'])->name('admin.comment-reports.index');
-        Route::patch('/comment-reports/{report}', [CommentReportController::class, 'update'])->name('admin.comment-reports.update');
+        Route::patch('/comment-reports/{report}', [CommentReportController::class, 'update'])->name('comment-reports.update');
+        Route::get('/articles/{article}/comment-reports', [CommentReportController::class, 'byArticle'])
+    ->name('comment-reports-by-article');
+
+
 
         Route::post('admin/users/{id}/ban', [UserManagementController::class, 'ban'])->name('users.ban');
 
