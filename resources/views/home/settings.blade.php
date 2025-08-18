@@ -8,6 +8,7 @@
         @vite('resources/css/app.css')
     </head>
     <body class="overflow-x-hidden bg-[#EDEEFC]">
+        <meta name="csrf-token" content="{{ csrf_token() }}">
         <div class="flex">
             <!-- Sidebar placeholder -->
             <aside class="fixed left-0 top-0 z-50">
@@ -200,19 +201,56 @@
         </div>
         <script>
             document.getElementById('profile-picture-input').addEventListener('change', function(e) {
-                // Preview the image before upload
                 if (e.target.files.length > 0) {
                     const file = e.target.files[0];
                     const preview = document.getElementById('profile-picture-preview');
                     const reader = new FileReader();
+
                     reader.onload = function(e) {
                         preview.src = e.target.result;
-                    }
+
+                        const formData = new FormData();
+                        formData.append('avatar', file);
+                        formData.append('form_type', 'avatar');
+                        formData.append('_token', document.querySelector('meta[name="csrf-token"]').content);
+
+                        fetch("{{ route('settings.update') }}", {
+                            method: 'POST',
+                            body: formData
+                        })
+                        .then(response => response.json())
+                        .then(data => {
+                            if (data.success) {
+                                showNotification('Profile picture updated!', 'success');
+                            } else {
+                                showNotification(data.message || 'Error updating profile', 'error');
+                            }
+                        })
+                        .catch(error => {
+                            console.error('Error:', error);
+                            showNotification('An error occurred. Please try again.', 'error');
+                        });
+                    };
+
                     reader.readAsDataURL(file);
-                    // Auto-submit the form
-                    document.getElementById('profile-picture-form').submit();
                 }
             });
+
+            function showNotification(message, type) {
+                const existing = document.getElementById('upload-notification');
+                if (existing) existing.remove();
+
+                const notification = document.createElement('div');
+                notification.id = 'upload-notification';
+                notification.className = `fixed top-4 right-4 p-4 rounded-md shadow-lg text-white ${
+                    type === 'success' ? 'bg-green-500' : 'bg-red-500'
+                }`;
+                notification.textContent = message;
+
+                document.body.appendChild(notification);
+
+                setTimeout(() => notification.remove(), 3000);
+            }
         </script>
     </body>
 </html>

@@ -304,14 +304,24 @@ class UserManagementController extends Controller
     private function handleAvatarUpload(Request $request)
     {
         $request->validate([
-            'avatar' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048',
+            'avatar' => 'required|image|mimes:jpeg,png,jpg,gif,webp|max:2048',
         ]);
 
-        $path = $request->file('avatar')->store('profile_pictures', 'public');
+        try {
+            $path = $request->file('avatar')->store('profile_pictures', 'public');
+            auth()->user()->update(['avatar' => $path]);
 
-        auth()->user()->update(['avatar' => $path]);
-
-        return back()->with('success', 'Profile picture updated!');
+            return response()->json([
+                'success' => true,
+                'message' => 'Profile picture updated!',
+                'avatar_url' => asset("storage/$path")
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Error: ' . $e->getMessage()
+            ], 500);
+        }
     }
 
     private function handleProfileNameUpdate(Request $request)
