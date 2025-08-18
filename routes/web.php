@@ -3,6 +3,7 @@
 use Illuminate\Support\Facades\Route;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\DB;
 
 use App\Models\Article;
 use App\Models\Tag;
@@ -72,36 +73,44 @@ Route::middleware('guest')->group(function () {
 
     // --- Forgot password: handle email, generate+send code via SMTP ---
     Route::post('/forgot-password', function (Request $request) {
-        $request->validate([
-            'email' => 'required|email',
-        ]);
+    $request->validate([
+        'email' => 'required|email',
+    ]);
 
-        $email = $request->input('email');
+    $email = $request->input('email');
+    $code = strtoupper(substr(bin2hex(random_bytes(4)), 0, 4)) . '-' . random_int(1000, 9999);
 
-        // Generate code like "ABCD-1234"
-        $code = strtoupper(substr(bin2hex(random_bytes(4)), 0, 4)) . '-' . random_int(1000, 9999);
-
-        // Persist in session (10-minute expiry)
-        session([
+    // Store in DATABASE instead of just session
+    DB::table('password_resets')->updateOrInsert(
+        ['email' => $email],
+        [
             'email' => $email,
-            'verification_code' => $code,
-            'verification_expires_at' => now()->addMinutes(10),
+            'token' => $code,
+            'created_at' => now(),
+        ]
+    );
+
+    // Keep session for the code verification step
+    session([
+        'email' => $email,
+        'verification_code' => $code,
+        'verification_expires_at' => now()->addMinutes(10),
+    ]);
+
+    try {
+        Mail::to($email)->send(new VerificationCodeMail($code));
+    } catch (\Throwable $e) {
+        report($e);
+        return back()->withErrors([
+            'email' => 'We could not send the email. Check mail settings and try again.',
         ]);
+    }
 
-        try {
-            Mail::to($email)->send(new \App\Mail\VerificationCodeMail($code));
-        } catch (\Throwable $e) {
-            report($e);
-            return back()->withErrors([
-                'email' => 'We could not send the email. Check mail settings and try again.',
-            ]);
-        }
-
-        return redirect('/code-verify')->with('success', 'We sent a verification code to your email.');
-    })->name('password.email.send');
+    return redirect('/code-verify')->with('success', 'We sent a verification code to your email.');
+})->name('password.email.send');
 
     // --- Code verify: show form (your Blade below) ---
-    Route::get('/code-verify', fn() => view('partials.code_verify'))->name('password.code');
+    Route::get('/code-verify', fn() => view('partials.code-verify'))->name('password.code');
 
     // --- Code verify: handle submitted code ---
     Route::post('/code-verify', function (Request $request) {
@@ -143,7 +152,7 @@ Route::middleware('guest')->group(function () {
         ]);
 
         try {
-            Mail::to($email)->send(new \App\Mail\VerificationCodeMail($code));
+            Mail::to($email)->send(new VerificationCodeMail($code));
         } catch (\Throwable $e) {
             report($e);
             return back()->withErrors([
@@ -157,7 +166,7 @@ Route::middleware('guest')->group(function () {
     // Reset password views + submit (your controller)
     Route::get('/reset-password', [ResetPasswordController::class, 'showResetForm'])->name('password.request');
     Route::post('/reset-password', [ResetPasswordController::class, 'updatePassword'])->name('password.update');
-    Route::get('/resetsuccess', fn() => view('partials.reset_success'))->name('resetsuccess');
+    Route::get('/resetsuccess', fn() => view('partials.reset-success'))->name('resetsuccess');
 });
 
 // ============================================================================
