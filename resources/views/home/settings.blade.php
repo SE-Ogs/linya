@@ -1,14 +1,19 @@
 <!DOCTYPE html>
 <html>
+
     <head>
         <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <meta name="csrf-token" content="{{ csrf_token() }}">
+        <meta name="viewport"
+              content="width=device-width, initial-scale=1.0">
+        <meta name="csrf-token"
+              content="{{ csrf_token() }}">
         <title>Linya - Account Settings</title>
-        @vite('resources/css/app.css')
+        @vite(['resources/css/app.css', 'resources/js/app.js'])
     </head>
+
     <body class="overflow-x-hidden bg-[#EDEEFC]">
-        <meta name="csrf-token" content="{{ csrf_token() }}">
+        <meta name="csrf-token"
+              content="{{ csrf_token() }}">
         <div class="flex">
             <!-- Sidebar placeholder -->
             <aside class="fixed left-0 top-0 z-50">
@@ -29,34 +34,42 @@
                                      id="profile-picture-preview">
                             </div>
                             <!-- Avatar Upload Form -->
-                            <form id="profile-picture-form" action="{{ route('settings.update') }}" method="POST" enctype="multipart/form-data">
+                            <form id="profile-picture-form"
+                                  action="{{ route('settings.update') }}"
+                                  method="POST"
+                                  enctype="multipart/form-data">
                                 @csrf
-                                <input type="hidden" name="form_type" value="avatar">
+                                <input type="hidden"
+                                       name="form_type"
+                                       value="avatar">
                                 <input type="file"
-                                    id="profile-picture-input"
-                                    name="avatar"
-                                    accept="image/*"
-                                    class="hidden">
+                                       id="profile-picture-input"
+                                       name="avatar"
+                                       accept="image/*"
+                                       class="hidden">
                             </form>
                             <!-- Styled button that triggers the file input -->
                             <button type="button"
-                                onclick="document.getElementById('profile-picture-input').click()"
-                                class="rounded-lg bg-orange-500 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-orange-600">
+                                    onclick="document.getElementById('profile-picture-input').click()"
+                                    class="rounded-lg bg-orange-500 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-orange-600">
                                 Upload New Picture
                             </button>
                         </div>
                         <!-- Profile Form -->
                         <div class="flex-1">
-                            <form method="POST" action="{{ route('settings.update') }}">
+                            <form method="POST"
+                                  action="{{ route('settings.update') }}">
                                 @csrf
-                                <input type="hidden" name="form_type" value="profile_name">
+                                <input type="hidden"
+                                       name="form_type"
+                                       value="profile_name">
                                 <div class="mb-6 gap-6">
                                     <div>
                                         <label class="mb-2 block text-sm font-medium text-gray-700">Display Name</label>
                                         <input type="text"
-                                            name="name"
-                                            value="{{ auth()->user()->name }}"
-                                            class="w-full rounded-lg border border-gray-300 bg-gray-50 px-4 py-3 transition-colors focus:border-indigo-500 focus:outline-none">
+                                               name="name"
+                                               value="{{ auth()->user()->name }}"
+                                               class="w-full rounded-lg border border-gray-300 bg-gray-50 px-4 py-3 transition-colors focus:border-indigo-500 focus:outline-none">
                                     </div>
                                 </div>
                                 <div class="grid grid-cols-2 gap-6">
@@ -68,7 +81,7 @@
                                     </div>
                                     <div class="flex items-end justify-end">
                                         <button type="submit"
-                                            class="h-12 w-24 rounded-lg bg-indigo-600 px-4 font-medium text-white transition-colors hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                                                class="h-12 w-24 rounded-lg bg-indigo-600 px-4 font-medium text-white transition-colors hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500">
                                             Save
                                         </button>
                                     </div>
@@ -81,9 +94,12 @@
                     <!-- Change Password Section -->
                     <div class="mb-8">
                         <h3 class="mb-6 text-xl font-semibold">Change Password</h3>
-                        <form method="POST" action="{{ route('settings.update') }}">
+                        <form method="POST"
+                              action="{{ route('settings.update') }}">
                             @csrf
-                            <input type="hidden" name="form_type" value="password">
+                            <input type="hidden"
+                                   name="form_type"
+                                   value="password">
                             <div class="mb-6 max-w-md">
                                 <label class="mb-2 block text-sm font-medium text-gray-700">Current Password</label>
                                 <input type="password"
@@ -100,7 +116,8 @@
                                            placeholder="">
                                 </div>
                                 <div>
-                                    <label class="mb-2 block text-sm font-medium text-gray-700">Confirm New Password</label>
+                                    <label class="mb-2 block text-sm font-medium text-gray-700">Confirm New
+                                        Password</label>
                                     <input type="password"
                                            name="password_confirmation"
                                            class="w-full rounded-lg border border-gray-300 bg-gray-50 px-4 py-3 transition-colors focus:border-indigo-500 focus:outline-none"
@@ -121,9 +138,12 @@
                     <!-- Change Email -->
                     <div class="mb-8">
                         <h3 class="mb-6 text-xl font-semibold">Change Email</h3>
-                        <form method="POST" action="{{ route('settings.update') }}">
+                        <form method="POST"
+                              action="{{ route('settings.update') }}">
                             @csrf
-                            <input type="hidden" name="form_type" value="email">
+                            <input type="hidden"
+                                   name="form_type"
+                                   value="email">
                             <div class="mb-6 max-w-md">
                                 <label class="mb-2 block text-sm font-medium text-gray-700">Current Password</label>
                                 <input type="password"
@@ -140,7 +160,8 @@
                                            placeholder="">
                                 </div>
                                 <div>
-                                    <label class="mb-2 block text-sm font-medium text-gray-700">Confirm New Email</label>
+                                    <label class="mb-2 block text-sm font-medium text-gray-700">Confirm New
+                                        Email</label>
                                     <input type="email"
                                            name="email_confirmation"
                                            class="w-full rounded-lg border border-gray-300 bg-gray-50 px-4 py-3 transition-colors focus:border-indigo-500 focus:outline-none"
@@ -198,6 +219,8 @@
                     </div>
                 </div>
             </div>
+            @include('partials.contact-us')
+            @include('partials.are-you-sure-modal');
         </div>
         <script>
             document.getElementById('profile-picture-input').addEventListener('change', function(e) {
@@ -215,21 +238,21 @@
                         formData.append('_token', document.querySelector('meta[name="csrf-token"]').content);
 
                         fetch("{{ route('settings.update') }}", {
-                            method: 'POST',
-                            body: formData
-                        })
-                        .then(response => response.json())
-                        .then(data => {
-                            if (data.success) {
-                                showNotification('Profile picture updated!', 'success');
-                            } else {
-                                showNotification(data.message || 'Error updating profile', 'error');
-                            }
-                        })
-                        .catch(error => {
-                            console.error('Error:', error);
-                            showNotification('An error occurred. Please try again.', 'error');
-                        });
+                                method: 'POST',
+                                body: formData
+                            })
+                            .then(response => response.json())
+                            .then(data => {
+                                if (data.success) {
+                                    showNotification('Profile picture updated!', 'success');
+                                } else {
+                                    showNotification(data.message || 'Error updating profile', 'error');
+                                }
+                            })
+                            .catch(error => {
+                                console.error('Error:', error);
+                                showNotification('An error occurred. Please try again.', 'error');
+                            });
                     };
 
                     reader.readAsDataURL(file);
@@ -252,5 +275,7 @@
                 setTimeout(() => notification.remove(), 3000);
             }
         </script>
+
     </body>
+
 </html>
