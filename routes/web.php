@@ -195,7 +195,38 @@ Route::middleware('auth')->group(function () {
     Route::get('/comment-reports/reasons', [CommentReportController::class, 'getReasons'])->name('comment-reports.reasons');
 
     // Writer/Admin shared…
-    function writerAndAdminSharedRoutes() {
+    // function writerAndAdminSharedRoutes() {
+    //     Route::get('/articles', function (Request $request) {
+    //         $query = Article::with('tags');
+    //
+    //         if ($request->filled('status') && $request->status !== 'All') {
+    //             $query->where('status', $request->status);
+    //         }
+    //         if ($request->filled('search')) {
+    //             $search = $request->search;
+    //             $query->where(fn($q) => $q->where('title', 'like', "%{$search}%")
+    //                 ->orWhere('summary', 'like', "%{$search}%"));
+    //         }
+    //         if ($request->filled('tags')) {
+    //             $tagIds = $request->tags;
+    //             $query->whereHas('tags', fn($q) => $q->whereIn('tags.id', $tagIds));
+    //         }
+    //
+    //         $articles = $query->get();
+    //         $tags = Tag::all();
+    //
+    //         return view('admin-panel.article-management', compact('articles', 'tags'));
+    //     })->name('articles');
+    //
+    //     Route::get('/dashboard', [AdminDashboardController::class, 'index'])->name('dashboard');
+    //
+    //     Route::get('/add-article', [ArticleController::class, 'create'])->name('articles.create');
+    //     Route::post('/articles', [ArticleController::class, 'store'])->name('articles.store');
+    //     Route::post('/articles/preview', [ArticleController::class, 'preview'])->name('articles.preview');
+    //     Route::post('/articles/back-to-editor', [ArticleController::class, 'backToEditor'])->name('articles.back-to-editor');
+    // }
+
+    Route::middleware('writer')->prefix('writer')->name('writer.')->group(function () {
         Route::get('/articles', function (Request $request) {
             $query = Article::with('tags');
 
@@ -224,14 +255,38 @@ Route::middleware('auth')->group(function () {
         Route::post('/articles', [ArticleController::class, 'store'])->name('articles.store');
         Route::post('/articles/preview', [ArticleController::class, 'preview'])->name('articles.preview');
         Route::post('/articles/back-to-editor', [ArticleController::class, 'backToEditor'])->name('articles.back-to-editor');
-    }
-
-    Route::middleware('writer')->prefix('writer')->name('writer.')->group(function () {
-        writerAndAdminSharedRoutes();
     });
 
     Route::middleware('admin')->prefix('admin')->name('admin.')->group(function () {
-        writerAndAdminSharedRoutes();
+        Route::get('/articles', function (Request $request) {
+            $query = Article::with('tags');
+
+            if ($request->filled('status') && $request->status !== 'All') {
+                $query->where('status', $request->status);
+            }
+            if ($request->filled('search')) {
+                $search = $request->search;
+                $query->where(fn($q) => $q->where('title', 'like', "%{$search}%")
+                    ->orWhere('summary', 'like', "%{$search}%"));
+            }
+            if ($request->filled('tags')) {
+                $tagIds = $request->tags;
+                $query->whereHas('tags', fn($q) => $q->whereIn('tags.id', $tagIds));
+            }
+
+            $articles = $query->get();
+            $tags = Tag::all();
+
+            return view('admin-panel.article-management', compact('articles', 'tags'));
+        })->name('articles');
+
+        Route::get('/dashboard', [AdminDashboardController::class, 'index'])->name('dashboard');
+
+        Route::get('/add-article', [ArticleController::class, 'create'])->name('articles.create');
+        Route::post('/articles', [ArticleController::class, 'store'])->name('articles.store');
+        Route::post('/articles/preview', [ArticleController::class, 'preview'])->name('articles.preview');
+        Route::post('/articles/back-to-editor', [ArticleController::class, 'backToEditor'])->name('articles.back-to-editor');
+
 
         Route::get('/edit-article/{id}', [ArticleController::class, 'edit'])->name('articles.edit');
         Route::put('/edit-article/{id}', [ArticleController::class, 'update'])->name('articles.update');
