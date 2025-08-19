@@ -14,11 +14,11 @@
         <div>
             <h3 class="mb-2 text-center font-semibold md:text-left">Sections</h3>
             <ul class="space-y-1 text-center text-sm text-gray-300 md:text-left">
-                <li><a href="#">Animation</a></li>
-                <li><a href="#">Software Engineering</a></li>
-                <li><a href="#">Multimedia Arts & Design</a></li>
-                <li><a href="#">Game Development</a></li>
-                <li><a href="#">Real Estate Management</a></li>
+                <li><a href="/home/animation">Animation</a></li>
+                <li><a href="/home/software-engineering">Software Engineering</a></li>
+                <li><a href="/home/multimedia-arts-and-design">Multimedia Arts & Design</a></li>
+                <li><a href="/home/game-development">Game Development</a></li>
+                <li><a href="/home/real-estate-management">Real Estate Management</a></li>
             </ul>
         </div>
 
@@ -27,16 +27,15 @@
             <div>
                 <h3 class="mb-2 text-center font-semibold md:text-left">Resources</h3>
                 <ul class="space-y-1 text-center text-sm text-gray-300 md:text-left">
-                    <li><a href="#">Contact</a></li>
-                    <li><a href="#">About</a></li>
-                    <li><a href="#">Archive</a></li>
+                    <li><a href="/coming-soon">About</a></li>
+                    <li><a href="/coming-soon">Archive</a></li>
                 </ul>
             </div>
             <div>
                 <h3 class="mb-2 text-center font-semibold md:text-left">Connect</h3>
                 <ul class="space-y-1 text-center text-sm text-gray-300 md:text-left">
-                    <li><a href="#">Facebook</a></li>
-                    <li><a href="#">Instagram</a></li>
+                    <li><a href="https://www.facebook.com/profile.php?id=61567060056108" target="_blank">Facebook</a></li>
+                    <li><a href="https://www.instagram.com/linyapublication?utm_source=ig_web_button_share_sheet&igsh=ZDNlZDc0MzIxNw==" target="_blank">Instagram</a></li>
                 </ul>
             </div>
         </div>
