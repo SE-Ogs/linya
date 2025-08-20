@@ -51,14 +51,7 @@ return [
     */
 
     'channels' => [
-        'cloudwatch' => [
-            'driver' => 'monolog',
-            'handler' => Monolog\Handler\CloudWatchLogsHandler::class,
-            'with' => [
-                'logGroup' => '/aws/ec2/laravel',
-                'logStream' => 'application',
-                'region' => env('AWS_DEFAULT_REGION', 'us-east-1'),
-            ],
-        ],
+        'driver' => 'custom',
+        'via' => \App\Logging\CloudWatchLoggerFactory::class,
     ],
 ];

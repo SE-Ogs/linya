@@ -5,7 +5,6 @@
 .env.production
 .env.develop
 .env.staging
-supervisor.conf
 .phpactor.json
 .phpunit.result.cache
 /.fleet
