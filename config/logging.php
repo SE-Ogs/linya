@@ -51,7 +51,10 @@ return [
     */
 
     'channels' => [
-        'driver' => 'custom',
-        'via' => \App\Logging\CloudWatchLoggerFactory::class,
+        'cloudwatch' => [
+            'driver' => 'custom',
+            'via'    => \App\Logging\CloudWatchLoggerFactory::class,
+            'level'  => env('LOG_LEVEL', 'info'),
+        ],
     ],
 ];
