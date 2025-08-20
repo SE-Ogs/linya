@@ -50,11 +50,33 @@ return [
     |
     */
 
+
     'channels' => [
+
+        'stack' => [
+            'driver' => 'stack',
+            'channels' => ['single', 'cloudwatch'],
+            'ignore_exceptions' => false,
+        ],
+
+        'single' => [
+            'driver' => 'single',
+            'path' => storage_path('logs/laravel.log'),
+            'level' => env('LOG_LEVEL', 'debug'),
+        ],
+
         'cloudwatch' => [
             'driver' => 'custom',
             'via'    => \App\Logging\CloudWatchLoggerFactory::class,
             'level'  => env('LOG_LEVEL', 'info'),
+            // Optional overrides (you can omit; factory reads env defaults)
+            'region'    => env('AWS_DEFAULT_REGION', 'ap-southeast-2'),
+            'group'     => env('CLOUDWATCH_LOG_GROUP', 'laravel-app'),
+            'stream'    => env('CLOUDWATCH_LOG_STREAM', php_uname('n')),
+            'retention' => env('CLOUDWATCH_LOG_RETENTION_DAYS', 14),
+            'batch_size' => 10000,
+            'tags'      => ['env' => env('APP_ENV', 'production')],
         ],
     ],
+
 ];
