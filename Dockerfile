@@ -31,18 +31,48 @@ COPY . /var/www/html
 # Set the working directory
 WORKDIR /var/www/html
 
-# Create necessary directories and set permissions
-RUN mkdir -p storage/framework/{sessions,views,cache} bootstrap/cache \
- && chmod -R 775 storage bootstrap/cache \
- && chown -R www-data:www-data storage bootstrap/cache
+# Create all necessary Laravel directories first
+RUN mkdir -p storage/app/public \
+    storage/framework/cache/data \
+    storage/framework/sessions \
+    storage/framework/views \
+    storage/logs \
+    bootstrap/cache \
+    && chmod -R 775 storage \
+    && chmod -R 775 bootstrap/cache
 
-# Install dependencies without running scripts
+# Set ownership to www-data
+RUN chown -R www-data:www-data /var/www/html
+
+# Install dependencies without running post-install scripts
 RUN composer install --no-interaction --optimize-autoloader --no-dev --no-scripts
+
+# Create a startup script
+RUN echo '#!/bin/bash\n\
+# Ensure directories exist and have correct permissions\n\
+mkdir -p /var/www/html/storage/framework/{cache/data,sessions,views} /var/www/html/bootstrap/cache\n\
+chmod -R 775 /var/www/html/storage /var/www/html/bootstrap/cache\n\
+chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache\n\
+\n\
+# Only run artisan commands if .env exists\n\
+if [ -f /var/www/html/.env ]; then\n\
+    echo "Running Laravel setup commands..."\n\
+    php artisan package:discover --ansi\n\
+    php artisan config:clear\n\
+    php artisan view:clear\n\
+    php artisan route:clear\n\
+    echo "Laravel setup completed."\n\
+else\n\
+    echo "No .env file found, skipping Laravel setup commands."\n\
+fi\n\
+\n\
+# Start Apache\n\
+echo "Starting Apache..."\n\
+apache2-foreground' > /usr/local/bin/start.sh \
+    && chmod +x /usr/local/bin/start.sh
 
 # Expose port 80
 EXPOSE 80
 
-# Start Apache and run Laravel setup commands
-CMD php artisan package:discover --ansi && \
-    php artisan config:cache && \
-    apache2-foreground
+# Use the startup script
+CMD ["/usr/local/bin/start.sh"]
