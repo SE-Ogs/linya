@@ -1,14 +1,17 @@
+
 FROM php:8.2-apache
 
-# Install dependencies
+# Install system dependencies
 RUN apt-get update && \
     apt-get install -y \
     libzip-dev \
     zip \
     libpq-dev \
     curl \
-    unzip && \
-    rm -rf /var/lib/apt/lists/*
+    unzip \
+    git \
+    vim \
+    && rm -rf /var/lib/apt/lists/*
 
 # Enable mod_rewrite
 RUN a2enmod rewrite
@@ -21,17 +24,22 @@ ENV APACHE_DOCUMENT_ROOT=/var/www/html/public
 RUN sed -ri -e 's!/var/www/html!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/sites-available/*.conf \
  && sed -ri -e 's!/var/www/!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/apache2.conf /etc/apache2/conf-available/*.conf
 
-# Install Composer
+# Install Composer globally
 RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer \
  && chmod +x /usr/local/bin/composer
 
-# Copy the application code
-COPY . /var/www/html
+# Copy only composer files first (better caching)
+COPY composer.json composer.lock /var/www/html/
 
-# Set the working directory
 WORKDIR /var/www/html
 
-# Create all necessary Laravel directories first
+# Install dependencies without dev and without scripts
+RUN composer install --no-interaction --optimize-autoloader --no-dev --no-scripts
+
+# Now copy the rest of the app (but exclude .env via .dockerignore)
+COPY . /var/www/html
+
+# Create all necessary Laravel directories with correct permissions
 RUN mkdir -p storage/app/public \
     storage/framework/cache/data \
     storage/framework/sessions \
@@ -39,15 +47,10 @@ RUN mkdir -p storage/app/public \
     storage/logs \
     bootstrap/cache \
     && chmod -R 775 storage \
-    && chmod -R 775 bootstrap/cache
+    && chmod -R 775 bootstrap/cache \
+    && chown -R www-data:www-data /var/www/html
 
-# Set ownership to www-data
-RUN chown -R www-data:www-data /var/www/html
-
-# Install dependencies without running post-install scripts
-RUN composer install --no-interaction --optimize-autoloader --no-dev --no-scripts
-
-# Create a startup script
+# Startup script
 RUN echo '#!/bin/bash\n\
 # Ensure directories exist and have correct permissions\n\
 mkdir -p /var/www/html/storage/framework/{cache/data,sessions,views} /var/www/html/bootstrap/cache\n\
@@ -74,5 +77,6 @@ apache2-foreground' > /usr/local/bin/start.sh \
 # Expose port 80
 EXPOSE 80
 
-# Use the startup script
+# Run startup script
 CMD ["/usr/local/bin/start.sh"]
+
