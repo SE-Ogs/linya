@@ -220,7 +220,7 @@
                 </div>
             </div>
             @include('partials.contact-us')
-            @include('partials.are-you-sure-modal');
+            @include('partials.are-you-sure-modal')
         </div>
         <script>
             document.getElementById('profile-picture-input').addEventListener('change', function(e) {
