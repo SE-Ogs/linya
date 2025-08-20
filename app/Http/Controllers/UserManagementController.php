@@ -309,12 +309,18 @@ class UserManagementController extends Controller
 
         try {
             $path = $request->file('avatar')->store('profile_pictures', 'public');
-            auth()->user()->update(['avatar' => $path]);
+
+            // Store full URL for S3, path for local
+            $storagePath = (config('filesystems.default') === 's3')
+                ? Storage::url($path)
+                : $path;
+
+            auth()->user()->update(['avatar' => $storagePath]);
 
             return response()->json([
                 'success' => true,
                 'message' => 'Profile picture updated!',
-                'avatar_url' => asset("storage/$path")
+                'avatar_url' => Storage::url($path) // Always use URL for response
             ]);
         } catch (\Exception $e) {
             return response()->json([

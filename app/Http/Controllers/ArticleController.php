@@ -279,20 +279,26 @@ class ArticleController extends Controller
         // Generate a unique filename
         $extension = pathinfo($filename, PATHINFO_EXTENSION) ?: 'jpg';
         $uniqueFilename = uniqid() . '.' . $extension;
+        $storagePath = 'article_images/' . $uniqueFilename;
 
-        // Store the file
-        Storage::disk('public')->put('article_images/' . $uniqueFilename, $imageData);
+        // Store the file - uses default filesystem disk (configurable)
+        Storage::put($storagePath, $imageData, 'public');
 
-        return 'article_images/' . $uniqueFilename;
+        // Return full URL for S3, path for local (adjust based on your needs)
+        if (config('filesystems.default') === 's3') {
+            return Storage::url($storagePath);
+        }
+
+        return $storagePath;
     }
 
-    //maybe for more than one image
     protected function storeAdditionalImages(Article $article, array $images): void
     {
         foreach ($images as $index => $image) {
-            $path = $this->storeBase64Image($image['dataUrl'], $image['name'] ?? "image_{$index}.jpg");
+            $pathOrUrl = $this->storeBase64Image($image['dataUrl'], $image['name'] ?? "image_{$index}.jpg");
+
             $article->images()->create([
-                'image_path' => $path,
+                'image_path' => $pathOrUrl, // This now contains either path or full URL
                 'order' => $index,
                 'is_featured' => $index === 0,
             ]);
@@ -301,7 +307,16 @@ class ArticleController extends Controller
 
     protected function deleteImage(ArticleImage $image): void
     {
-        Storage::disk('public')->delete($image->image_path);
+        // Extract path from URL if needed
+        $path = $image->image_path;
+
+        if (config('filesystems.default') === 's3') {
+            // For S3, extract the path from the URL
+            $urlParts = parse_url($image->image_path);
+            $path = ltrim($urlParts['path'], '/');
+        }
+
+        Storage::delete($path);
         $image->delete();
     }
 }
