@@ -134,7 +134,7 @@ class ArticleController extends Controller
             $images = json_decode($request->input('imageData'), true) ?? [];
         }
 
-        return view('article-management.preview_article', [
+        return view('article-management.preview-article', [
             'title' => $articleData['title'] ?? '',
             'summary' => $articleData['summary'] ?? '',
             'article' => $articleData['article'] ?? '',
@@ -194,6 +194,7 @@ class ArticleController extends Controller
         // Handle web form request
         $validatedData = $request->validate([
             'title' => 'required|string|max:255',
+            'author' => 'required|string|max:255',
             'summary' => 'required|string|max:255',
             'article' => 'required|string',
             'tags' => 'array', // Optional: Ensure tags are an array

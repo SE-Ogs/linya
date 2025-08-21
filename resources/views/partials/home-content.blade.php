@@ -103,7 +103,7 @@
                                                     cy="7"
                                                     r="4" />
                                         </svg>
-                                        <span>{{ $main->author->name ?? 'Unknown Author' }}</span>
+                                        <span>{{ $main->author ?? 'Unknown Author' }}</span>
                                     </div>
                                     <div class="flex items-center gap-2">
                                         <svg class="h-4 w-4"
@@ -172,7 +172,7 @@
                                         {!! Str::limit(strip_tags($sub->summary), 150) !!}
                                     </p>
                                     <div class="flex items-center justify-between text-sm text-gray-500">
-                                        <p>{{ $sub->author->name ?? 'Unknown Author' }}</p>
+                                        <p>{{ $sub->author ?? 'Unknown Author' }}</p>
                                         <p>{{ $sub->created_at->format('F d, Y') }}</p>
                                     </div>
                                 </div>
