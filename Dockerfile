@@ -30,6 +30,7 @@ RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local
 
 # Copy only composer files first (better caching)
 COPY composer.json composer.lock /var/www/html/
+COPY .env .env
 
 WORKDIR /var/www/html
 
