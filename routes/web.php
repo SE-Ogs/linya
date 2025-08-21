@@ -22,61 +22,61 @@ use App\Http\Controllers\HomeSearchController;
 use App\Http\Controllers\CommentReportController;
 
 use App\Mail\VerificationCodeMail;
+use Aws\S3\S3Client;
 
-Route::get('/test-s3-detailed', function () {
+Route::get('/debug-config', function () {
+    return response()->json([
+        'env' => [
+            'AWS_ACCESS_KEY_ID' => env('AWS_ACCESS_KEY_ID') ? 'SET' : 'NOT_SET',
+            'AWS_SECRET_ACCESS_KEY' => env('AWS_SECRET_ACCESS_KEY') ? 'SET' : 'NOT_SET',
+            'AWS_DEFAULT_REGION' => env('AWS_DEFAULT_REGION'),
+            'AWS_BUCKET' => env('AWS_BUCKET'),
+            'FILESYSTEM_DISK' => env('FILESYSTEM_DISK'),
+        ],
+        'config' => [
+            'default_disk' => config('filesystems.default'),
+            's3_config'    => config('filesystems.disks.s3'),
+        ],
+    ]);
+});
+
+Route::get('/test-direct-s3', function () {
     try {
-        $testContent = 'Test file content - ' . now();
-        $testPath = 'test/test-' . uniqid() . '.txt';
+        $s3Config = config('filesystems.disks.s3');
 
-        \Log::info('Starting detailed S3 test', [
-            'disk' => config('filesystems.default'),
-            'bucket' => config('filesystems.disks.s3.bucket'),
-            'region' => config('filesystems.disks.s3.region'),
-            'key' => config('filesystems.disks.s3.key') ? 'SET' : 'NOT_SET',
-            'secret' => config('filesystems.disks.s3.secret') ? 'SET' : 'NOT_SET'
+        $s3Client = new S3Client([
+            'version'     => 'latest',
+            'region'      => $s3Config['region'],
+            'credentials' => [
+                'key'    => $s3Config['key'],
+                'secret' => $s3Config['secret'],
+            ],
         ]);
 
-        // Try to get S3 client directly
-        $s3 = Storage::disk('s3');
-        $adapter = $s3->getAdapter();
+        $testKey = 'test/direct-test-' . uniqid() . '.txt';
 
-        // Test write with more detailed error handling
-        $result = $s3->put($testPath, $testContent, 'public');
-
-        return response()->json([
-            'success' => true,
-            'write_result' => $result,
-            'file_exists' => $s3->exists($testPath),
-            'url' => $s3->url($testPath)
-        ]);
-    } catch (\Aws\S3\Exception\S3Exception $e) {
-        \Log::error('AWS S3 Exception', [
-            'error_code' => $e->getAwsErrorCode(),
-            'error_message' => $e->getAwsErrorMessage(),
-            'status_code' => $e->getStatusCode(),
-            'request_id' => $e->getAwsRequestId()
+        $result = $s3Client->putObject([
+            'Bucket' => $s3Config['bucket'],
+            'Key'    => $testKey,
+            'Body'   => 'Direct S3 test content - ' . now(),
+            'ACL'    => 'public-read',
         ]);
 
         return response()->json([
-            'success' => false,
-            'error_type' => 'S3Exception',
-            'error_code' => $e->getAwsErrorCode(),
-            'error_message' => $e->getAwsErrorMessage(),
-            'status_code' => $e->getStatusCode()
-        ], 500);
+            'success'    => true,
+            'object_url' => $result->get('ObjectURL'),
+            'etag'       => $result->get('ETag'),
+            'key'        => $testKey,
+        ]);
     } catch (\Exception $e) {
-        \Log::error('General Exception', [
-            'error' => $e->getMessage(),
-            'trace' => $e->getTraceAsString()
-        ]);
-
         return response()->json([
             'success' => false,
-            'error_type' => 'Exception',
-            'error' => $e->getMessage()
+            'error'   => $e->getMessage(),
+            'trace'   => $e->getTraceAsString(),
         ], 500);
     }
 });
+
 // Root redirect
 Route::get('/', fn() => redirect('/home'));
 
