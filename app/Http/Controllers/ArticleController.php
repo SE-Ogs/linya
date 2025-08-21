@@ -134,7 +134,7 @@ class ArticleController extends Controller
             $images = json_decode($request->input('imageData'), true) ?? [];
         }
 
-        return view('article-management.preview_article', [
+        return view('article-management.preview-article', [
             'title' => $articleData['title'] ?? '',
             'summary' => $articleData['summary'] ?? '',
             'article' => $articleData['article'] ?? '',
