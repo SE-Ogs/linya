@@ -23,6 +23,60 @@ use App\Http\Controllers\CommentReportController;
 
 use App\Mail\VerificationCodeMail;
 
+// Add this route temporarily in web.php or api.php
+Route::get('/test-s3', function () {
+    try {
+        $testContent = 'Test file content - ' . now();
+        $testPath = 'test/test-' . uniqid() . '.txt';
+
+        \Log::info('Testing S3 connection', [
+            'disk' => config('filesystems.default'),
+            'bucket' => config('filesystems.disks.s3.bucket'),
+            'region' => config('filesystems.disks.s3.region')
+        ]);
+
+        // Test write
+        $result = Storage::put($testPath, $testContent, 'public');
+        \Log::info('S3 write test', ['result' => $result]);
+
+        // Test read
+        $readContent = Storage::get($testPath);
+        \Log::info('S3 read test', ['content' => $readContent]);
+
+        // Test exists
+        $exists = Storage::exists($testPath);
+        \Log::info('S3 exists test', ['exists' => $exists]);
+
+        // Test URL generation
+        $url = Storage::url($testPath);
+        \Log::info('S3 URL test', ['url' => $url]);
+
+        return response()->json([
+            'success' => true,
+            'write_result' => $result,
+            'file_exists' => $exists,
+            'url' => $url,
+            'config' => [
+                'default_disk' => config('filesystems.default'),
+                'bucket' => config('filesystems.disks.s3.bucket'),
+                'region' => config('filesystems.disks.s3.region')
+            ]
+        ]);
+
+    } catch (\Exception $e) {
+        \Log::error('S3 test failed', ['error' => $e->getMessage()]);
+        return response()->json([
+            'success' => false,
+            'error' => $e->getMessage(),
+            'config' => [
+                'default_disk' => config('filesystems.default'),
+                'bucket' => config('filesystems.disks.s3.bucket'),
+                'region' => config('filesystems.disks.s3.region')
+            ]
+        ], 500);
+    }
+});
+
 // Root redirect
 Route::get('/', fn() => redirect('/home'));
 

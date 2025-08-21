@@ -272,20 +272,39 @@ class ArticleController extends Controller
 
     protected function storeBase64Image(string $dataUrl, string $filename): string
     {
+        \Log::info('Starting image upload process', ['filename' => $filename]);
+
         // Extract the base64 data from the data URL
         $base64Data = substr($dataUrl, strpos($dataUrl, ',') + 1);
         $imageData = base64_decode($base64Data);
+
+        \Log::info('Image data decoded', ['size' => strlen($imageData)]);
 
         // Generate a unique filename
         $extension = pathinfo($filename, PATHINFO_EXTENSION) ?: 'jpg';
         $uniqueFilename = uniqid() . '.' . $extension;
         $storagePath = 'article_images/' . $uniqueFilename;
 
-        // Store the file with public visibility
-        Storage::put($storagePath, $imageData, 'public');
+        \Log::info('Attempting to store file', [
+            'path' => $storagePath,
+            'disk' => config('filesystems.default'),
+            'bucket' => config('filesystems.disks.s3.bucket')
+        ]);
 
-        // Always return the path, not the URL - store path in database
-        return $storagePath;
+        try {
+            // Store the file with public visibility
+            $result = Storage::put($storagePath, $imageData, 'public');
+            \Log::info('Storage result', ['success' => $result, 'path' => $storagePath]);
+
+            // Verify file exists
+            $exists = Storage::exists($storagePath);
+            \Log::info('File exists check', ['exists' => $exists]);
+
+            return $storagePath;
+        } catch (\Exception $e) {
+            \Log::error('Storage failed', ['error' => $e->getMessage()]);
+            throw $e;
+        }
     }
 
     protected function storeAdditionalImages(Article $article, array $images): void
