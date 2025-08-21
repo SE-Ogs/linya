@@ -1,31 +1,64 @@
-# Node modules
+# Node modules and build artifacts
 node_modules
+npm-debug.log
+.npm
+dist/
+build/
 
-# Composer vendor directory
-vendor
+# Composer dev dependencies (but allow vendor in production)
+# vendor  # Remove this line - we need vendor for production
 
-# Laravel storage (except public uploads if needed)
-storage/app/public
-storage/framework
-storage/logs
+# Laravel storage and cache (regenerated at runtime)
+storage/app/*
+!storage/app/.gitkeep
+!storage/app/public
+storage/framework/cache/*
+!storage/framework/cache/.gitkeep
+storage/framework/sessions/*
+!storage/framework/sessions/.gitkeep
+storage/framework/views/*
+!storage/framework/views/.gitkeep
+storage/logs/*
+!storage/logs/.gitkeep
 
-# Git
+# Bootstrap cache (regenerated)
+bootstrap/cache/*
+!bootstrap/cache/.gitkeep
+
+# Git files
 .git
 .gitignore
+.gitattributes
 
-# Environment files
-.env
-.env.*
+# Environment files for development
+.env.local
+.env.development
+.env.test
+# Keep .env and .env.example for production builds
+# .env  # Comment this out to include .env
+# .env.*  # Comment this out
 
 # OS and editor files
 *.swp
 *.swo
 *.DS_Store
 Thumbs.db
+.vscode/
+.idea/
 
-# NPM logs
-npm-debug.log
+# Docker development files
+docker-compose.yml
+docker-compose.override.yml
+Dockerfile.dev
 
-# Docker files
-Dockerfile
-docker-compose.yml 
+# Testing
+phpunit.xml
+.phpunit.result.cache
+tests/
+
+# Documentation
+README.md
+*.md
+
+# Other
+.editorconfig

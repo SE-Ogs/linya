@@ -308,13 +308,15 @@ class UserManagementController extends Controller
         ]);
 
         try {
-            $path = $request->file('avatar')->store('profile_pictures', 'public');
+            // Store without ACL parameter
+            $path = $request->file('avatar')->store('profile_pictures', 's3');
+
             auth()->user()->update(['avatar' => $path]);
 
             return response()->json([
                 'success' => true,
                 'message' => 'Profile picture updated!',
-                'avatar_url' => asset("storage/$path")
+                'avatar_url' => Storage::disk('s3')->url($path)
             ]);
         } catch (\Exception $e) {
             return response()->json([

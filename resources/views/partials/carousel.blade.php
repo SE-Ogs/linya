@@ -11,7 +11,7 @@
             <div class="carousel-track" id="carouselTrack-{{ $article->id }}">
                 @foreach($article->images->sortBy('order') as $image)
                     <div class="carousel-slide">
-                        <img src="{{ asset('storage/' . $image->image_path) }}"
+                        <img src="{{ Storage::url($image->image_path) }}"
                              alt="{{ $image->alt_text ?? $article->title }}"
                              loading="lazy">
                     </div>
@@ -52,7 +52,7 @@
                 @foreach($article->images->sortBy('order') as $index => $image)
                     <div class="thumbnail {{ $index === 0 ? 'active' : '' }}"
                          data-slide="{{ $index }}">
-                        <img src="{{ asset('storage/' . $image->image_path) }}"
+                        <img src="{{ Storage::url($image->image_path) }}"
                              alt="Thumbnail {{ $index + 1 }}">
                     </div>
                 @endforeach
@@ -73,9 +73,7 @@
             </div>
         </div>
     @endif
-</div>
-
-<style>
+</div><style>
     .article-carousel {
         position: relative;
         width: 100%;

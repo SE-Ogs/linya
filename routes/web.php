@@ -76,41 +76,41 @@ Route::middleware('guest')->group(function () {
 
     // --- Forgot password: handle email, generate+send code via SMTP ---
     Route::post('/forgot-password', function (Request $request) {
-    $request->validate([
-        'email' => 'required|email',
-    ]);
-
-    $email = $request->input('email');
-    $code = strtoupper(substr(bin2hex(random_bytes(4)), 0, 4)) . '-' . random_int(1000, 9999);
-
-    // Store in DATABASE instead of just session
-    DB::table('password_resets')->updateOrInsert(
-        ['email' => $email],
-        [
-            'email' => $email,
-            'token' => $code,
-            'created_at' => now(),
-        ]
-    );
-
-    // Keep session for the code verification step
-    session([
-        'email' => $email,
-        'verification_code' => $code,
-        'verification_expires_at' => now()->addMinutes(10),
-    ]);
-
-    try {
-        Mail::to($email)->send(new VerificationCodeMail($code));
-    } catch (\Throwable $e) {
-        report($e);
-        return back()->withErrors([
-            'email' => 'We could not send the email. Check mail settings and try again.',
+        $request->validate([
+            'email' => 'required|email',
         ]);
-    }
 
-    return redirect('/code-verify')->with('success', 'We sent a verification code to your email.');
-})->name('password.email.send');
+        $email = $request->input('email');
+        $code = strtoupper(substr(bin2hex(random_bytes(4)), 0, 4)) . '-' . random_int(1000, 9999);
+
+        // Store in DATABASE instead of just session
+        DB::table('password_resets')->updateOrInsert(
+            ['email' => $email],
+            [
+                'email' => $email,
+                'token' => $code,
+                'created_at' => now(),
+            ]
+        );
+
+        // Keep session for the code verification step
+        session([
+            'email' => $email,
+            'verification_code' => $code,
+            'verification_expires_at' => now()->addMinutes(10),
+        ]);
+
+        try {
+            Mail::to($email)->send(new VerificationCodeMail($code));
+        } catch (\Throwable $e) {
+            report($e);
+            return back()->withErrors([
+                'email' => 'We could not send the email. Check mail settings and try again.',
+            ]);
+        }
+
+        return redirect('/code-verify')->with('success', 'We sent a verification code to your email.');
+    })->name('password.email.send');
 
     // --- Code verify: show form (your Blade below) ---
     Route::get('/code-verify', fn() => view('partials.code-verify'))->name('password.code');
@@ -303,7 +303,7 @@ Route::middleware('auth')->group(function () {
         Route::get('/comment-reports', [CommentReportController::class, 'index'])->name('admin.comment-reports.index');
         Route::patch('/comment-reports/{report}', [CommentReportController::class, 'update'])->name('comment-reports.update');
         Route::get('/articles/{article}/comment-reports', [CommentReportController::class, 'byArticle'])
-    ->name('comment-reports-by-article');
+            ->name('comment-reports-by-article');
 
 
 

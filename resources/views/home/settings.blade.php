@@ -28,8 +28,7 @@
                         <!-- Profile Image -->
                         <div class="flex flex-col items-center">
                             <div class="mb-4 h-32 w-32 overflow-hidden rounded-full bg-gray-300">
-                                <img src="{{ Storage::url(auth()->user()->avatar) }}"
-                                     alt="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 128 128'%3E%3Ccircle cx='64' cy='64' r='64' fill='%23d1d5db'/%3E%3Cpath d='M64 32c-8.8 0-16 7.2-16 16s7.2 16 16 16 16-7.2 16-16-7.2-16-16-16zM64 96c-13.3 0-24-10.7-24-24v-8c0-8.8 7.2-16 16-16h16c8.8 0 16 7.2 16 16v8c0 13.3-10.7 24-24 24z' fill='%23374151'/%3E%3C/svg%3E"
+                                <img src="{{ auth()->user()->avatar ? (filter_var(auth()->user()->avatar, FILTER_VALIDATE_URL) ? auth()->user()->avatar : \Illuminate\Support\Facades\Storage::url(auth()->user()->avatar)) : "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 128 128'%3E%3Ccircle cx='64' cy='64' r='64' fill='%23d1d5db'/%3E%3Cpath d='M64 32c-8.8 0-16 7.2-16 16s7.2 16 16 16 16-7.2 16-16-7.2-16-16-16zM64 96c-13.3 0-24-10.7-24-24v-8c0-8.8 7.2-16 16-16h16c8.8 0 16 7.2 16 16v8c0 13.3-10.7 24-24 24z' fill='%23374151'/%3E%3C/svg%3E" }}"
                                      class="h-full w-full object-cover"
                                      id="profile-picture-preview">
                             </div>
@@ -220,7 +219,7 @@
                 </div>
             </div>
             @include('partials.contact-us')
-            @include('partials.are-you-sure-modal');
+            @include('partials.are-you-sure-modal')
         </div>
         <script>
             document.getElementById('profile-picture-input').addEventListener('change', function(e) {

@@ -134,7 +134,7 @@ class ArticleController extends Controller
             $images = json_decode($request->input('imageData'), true) ?? [];
         }
 
-        return view('article-management.preview_article', [
+        return view('article-management.preview-article', [
             'title' => $articleData['title'] ?? '',
             'summary' => $articleData['summary'] ?? '',
             'article' => $articleData['article'] ?? '',
@@ -279,20 +279,21 @@ class ArticleController extends Controller
         // Generate a unique filename
         $extension = pathinfo($filename, PATHINFO_EXTENSION) ?: 'jpg';
         $uniqueFilename = uniqid() . '.' . $extension;
+        $storagePath = 'article_images/' . $uniqueFilename;
 
-        // Store the file
-        Storage::disk('public')->put('article_images/' . $uniqueFilename, $imageData);
+        // Store without ACL parameter
+        Storage::put($storagePath, $imageData);
 
-        return 'article_images/' . $uniqueFilename;
+        return $storagePath;
     }
 
-    //maybe for more than one image
     protected function storeAdditionalImages(Article $article, array $images): void
     {
         foreach ($images as $index => $image) {
             $path = $this->storeBase64Image($image['dataUrl'], $image['name'] ?? "image_{$index}.jpg");
+
             $article->images()->create([
-                'image_path' => $path,
+                'image_path' => $path, // Store path only, not URL
                 'order' => $index,
                 'is_featured' => $index === 0,
             ]);
@@ -301,7 +302,7 @@ class ArticleController extends Controller
 
     protected function deleteImage(ArticleImage $image): void
     {
-        Storage::disk('public')->delete($image->image_path);
+        Storage::delete($image->image_path);
         $image->delete();
     }
 }
