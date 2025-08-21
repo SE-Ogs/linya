@@ -22,60 +22,6 @@ use App\Http\Controllers\HomeSearchController;
 use App\Http\Controllers\CommentReportController;
 
 use App\Mail\VerificationCodeMail;
-use Aws\S3\S3Client;
-
-Route::get('/debug-config', function () {
-    return response()->json([
-        'env' => [
-            'AWS_ACCESS_KEY_ID' => env('AWS_ACCESS_KEY_ID') ? 'SET' : 'NOT_SET',
-            'AWS_SECRET_ACCESS_KEY' => env('AWS_SECRET_ACCESS_KEY') ? 'SET' : 'NOT_SET',
-            'AWS_DEFAULT_REGION' => env('AWS_DEFAULT_REGION'),
-            'AWS_BUCKET' => env('AWS_BUCKET'),
-            'FILESYSTEM_DISK' => env('FILESYSTEM_DISK'),
-        ],
-        'config' => [
-            'default_disk' => config('filesystems.default'),
-            's3_config'    => config('filesystems.disks.s3'),
-        ],
-    ]);
-});
-
-Route::get('/test-direct-s3', function () {
-    try {
-        $s3Config = config('filesystems.disks.s3');
-
-        $s3Client = new S3Client([
-            'version'     => 'latest',
-            'region'      => $s3Config['region'],
-            'credentials' => [
-                'key'    => $s3Config['key'],
-                'secret' => $s3Config['secret'],
-            ],
-        ]);
-
-        $testKey = 'test/direct-test-' . uniqid() . '.txt';
-
-        $result = $s3Client->putObject([
-            'Bucket' => $s3Config['bucket'],
-            'Key'    => $testKey,
-            'Body'   => 'Direct S3 test content - ' . now(),
-            'ACL'    => 'public-read',
-        ]);
-
-        return response()->json([
-            'success'    => true,
-            'object_url' => $result->get('ObjectURL'),
-            'etag'       => $result->get('ETag'),
-            'key'        => $testKey,
-        ]);
-    } catch (\Exception $e) {
-        return response()->json([
-            'success' => false,
-            'error'   => $e->getMessage(),
-            'trace'   => $e->getTraceAsString(),
-        ], 500);
-    }
-});
 
 // Root redirect
 Route::get('/', fn() => redirect('/home'));

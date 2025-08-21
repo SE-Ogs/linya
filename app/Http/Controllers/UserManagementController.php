@@ -308,19 +308,15 @@ class UserManagementController extends Controller
         ]);
 
         try {
-            $path = $request->file('avatar')->store('profile_pictures');
+            // Store without ACL parameter
+            $path = $request->file('avatar')->store('profile_pictures', 's3');
 
-            // Store full URL for S3, path for local
-            $storagePath = (config('filesystems.default') === 's3')
-                ? Storage::url($path)
-                : $path;
-
-            auth()->user()->update(['avatar' => $storagePath]);
+            auth()->user()->update(['avatar' => $path]);
 
             return response()->json([
                 'success' => true,
                 'message' => 'Profile picture updated!',
-                'avatar_url' => Storage::url($path) // Always use URL for response
+                'avatar_url' => Storage::disk('s3')->url($path)
             ]);
         } catch (\Exception $e) {
             return response()->json([
