@@ -23,6 +23,60 @@ use App\Http\Controllers\CommentReportController;
 
 use App\Mail\VerificationCodeMail;
 
+Route::get('/test-s3-detailed', function () {
+    try {
+        $testContent = 'Test file content - ' . now();
+        $testPath = 'test/test-' . uniqid() . '.txt';
+
+        \Log::info('Starting detailed S3 test', [
+            'disk' => config('filesystems.default'),
+            'bucket' => config('filesystems.disks.s3.bucket'),
+            'region' => config('filesystems.disks.s3.region'),
+            'key' => config('filesystems.disks.s3.key') ? 'SET' : 'NOT_SET',
+            'secret' => config('filesystems.disks.s3.secret') ? 'SET' : 'NOT_SET'
+        ]);
+
+        // Try to get S3 client directly
+        $s3 = Storage::disk('s3');
+        $adapter = $s3->getAdapter();
+
+        // Test write with more detailed error handling
+        $result = $s3->put($testPath, $testContent, 'public');
+
+        return response()->json([
+            'success' => true,
+            'write_result' => $result,
+            'file_exists' => $s3->exists($testPath),
+            'url' => $s3->url($testPath)
+        ]);
+    } catch (\Aws\S3\Exception\S3Exception $e) {
+        \Log::error('AWS S3 Exception', [
+            'error_code' => $e->getAwsErrorCode(),
+            'error_message' => $e->getAwsErrorMessage(),
+            'status_code' => $e->getStatusCode(),
+            'request_id' => $e->getAwsRequestId()
+        ]);
+
+        return response()->json([
+            'success' => false,
+            'error_type' => 'S3Exception',
+            'error_code' => $e->getAwsErrorCode(),
+            'error_message' => $e->getAwsErrorMessage(),
+            'status_code' => $e->getStatusCode()
+        ], 500);
+    } catch (\Exception $e) {
+        \Log::error('General Exception', [
+            'error' => $e->getMessage(),
+            'trace' => $e->getTraceAsString()
+        ]);
+
+        return response()->json([
+            'success' => false,
+            'error_type' => 'Exception',
+            'error' => $e->getMessage()
+        ], 500);
+    }
+});
 // Root redirect
 Route::get('/', fn() => redirect('/home'));
 
