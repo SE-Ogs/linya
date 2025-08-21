@@ -61,7 +61,7 @@
                            class="relative h-96 cursor-pointer overflow-hidden rounded-lg bg-gradient-to-br from-indigo-50 to-pink-50">
                             <div class="gradient-overlay absolute inset-0">
                                 @if ($main->first_image)
-                                    <img src="{{ asset('storage/' . $main->first_image->image_path) }}"
+                                    <img src="{{ Storage::disk('s3')->url($main->first_image->image_path) }}"
                                          alt="{{ $main->title }}"
                                          class="h-full w-full object-cover object-center">
                                 @else
