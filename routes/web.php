@@ -23,60 +23,6 @@ use App\Http\Controllers\CommentReportController;
 
 use App\Mail\VerificationCodeMail;
 
-// Add this route temporarily in web.php or api.php
-Route::get('/test-s3', function () {
-    try {
-        $testContent = 'Test file content - ' . now();
-        $testPath = 'test/test-' . uniqid() . '.txt';
-
-        \Log::info('Testing S3 connection', [
-            'disk' => config('filesystems.default'),
-            'bucket' => config('filesystems.disks.s3.bucket'),
-            'region' => config('filesystems.disks.s3.region')
-        ]);
-
-        // Test write
-        $result = Storage::put($testPath, $testContent, 'public');
-        \Log::info('S3 write test', ['result' => $result]);
-
-        // Test read
-        $readContent = Storage::get($testPath);
-        \Log::info('S3 read test', ['content' => $readContent]);
-
-        // Test exists
-        $exists = Storage::exists($testPath);
-        \Log::info('S3 exists test', ['exists' => $exists]);
-
-        // Test URL generation
-        $url = Storage::url($testPath);
-        \Log::info('S3 URL test', ['url' => $url]);
-
-        return response()->json([
-            'success' => true,
-            'write_result' => $result,
-            'file_exists' => $exists,
-            'url' => $url,
-            'config' => [
-                'default_disk' => config('filesystems.default'),
-                'bucket' => config('filesystems.disks.s3.bucket'),
-                'region' => config('filesystems.disks.s3.region')
-            ]
-        ]);
-
-    } catch (\Exception $e) {
-        \Log::error('S3 test failed', ['error' => $e->getMessage()]);
-        return response()->json([
-            'success' => false,
-            'error' => $e->getMessage(),
-            'config' => [
-                'default_disk' => config('filesystems.default'),
-                'bucket' => config('filesystems.disks.s3.bucket'),
-                'region' => config('filesystems.disks.s3.region')
-            ]
-        ], 500);
-    }
-});
-
 // Root redirect
 Route::get('/', fn() => redirect('/home'));
 
@@ -130,41 +76,41 @@ Route::middleware('guest')->group(function () {
 
     // --- Forgot password: handle email, generate+send code via SMTP ---
     Route::post('/forgot-password', function (Request $request) {
-    $request->validate([
-        'email' => 'required|email',
-    ]);
-
-    $email = $request->input('email');
-    $code = strtoupper(substr(bin2hex(random_bytes(4)), 0, 4)) . '-' . random_int(1000, 9999);
-
-    // Store in DATABASE instead of just session
-    DB::table('password_resets')->updateOrInsert(
-        ['email' => $email],
-        [
-            'email' => $email,
-            'token' => $code,
-            'created_at' => now(),
-        ]
-    );
-
-    // Keep session for the code verification step
-    session([
-        'email' => $email,
-        'verification_code' => $code,
-        'verification_expires_at' => now()->addMinutes(10),
-    ]);
-
-    try {
-        Mail::to($email)->send(new VerificationCodeMail($code));
-    } catch (\Throwable $e) {
-        report($e);
-        return back()->withErrors([
-            'email' => 'We could not send the email. Check mail settings and try again.',
+        $request->validate([
+            'email' => 'required|email',
         ]);
-    }
 
-    return redirect('/code-verify')->with('success', 'We sent a verification code to your email.');
-})->name('password.email.send');
+        $email = $request->input('email');
+        $code = strtoupper(substr(bin2hex(random_bytes(4)), 0, 4)) . '-' . random_int(1000, 9999);
+
+        // Store in DATABASE instead of just session
+        DB::table('password_resets')->updateOrInsert(
+            ['email' => $email],
+            [
+                'email' => $email,
+                'token' => $code,
+                'created_at' => now(),
+            ]
+        );
+
+        // Keep session for the code verification step
+        session([
+            'email' => $email,
+            'verification_code' => $code,
+            'verification_expires_at' => now()->addMinutes(10),
+        ]);
+
+        try {
+            Mail::to($email)->send(new VerificationCodeMail($code));
+        } catch (\Throwable $e) {
+            report($e);
+            return back()->withErrors([
+                'email' => 'We could not send the email. Check mail settings and try again.',
+            ]);
+        }
+
+        return redirect('/code-verify')->with('success', 'We sent a verification code to your email.');
+    })->name('password.email.send');
 
     // --- Code verify: show form (your Blade below) ---
     Route::get('/code-verify', fn() => view('partials.code-verify'))->name('password.code');
@@ -357,7 +303,7 @@ Route::middleware('auth')->group(function () {
         Route::get('/comment-reports', [CommentReportController::class, 'index'])->name('admin.comment-reports.index');
         Route::patch('/comment-reports/{report}', [CommentReportController::class, 'update'])->name('comment-reports.update');
         Route::get('/articles/{article}/comment-reports', [CommentReportController::class, 'byArticle'])
-    ->name('comment-reports-by-article');
+            ->name('comment-reports-by-article');
 
 
 
