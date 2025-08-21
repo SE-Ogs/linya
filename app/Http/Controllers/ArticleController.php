@@ -281,24 +281,20 @@ class ArticleController extends Controller
         $uniqueFilename = uniqid() . '.' . $extension;
         $storagePath = 'article_images/' . $uniqueFilename;
 
-        // Store the file - uses default filesystem disk (configurable)
+        // Store the file with public visibility
         Storage::put($storagePath, $imageData, 'public');
 
-        // Return full URL for S3, path for local (adjust based on your needs)
-        if (config('filesystems.default') === 's3') {
-            return Storage::url($storagePath);
-        }
-
+        // Always return the path, not the URL - store path in database
         return $storagePath;
     }
 
     protected function storeAdditionalImages(Article $article, array $images): void
     {
         foreach ($images as $index => $image) {
-            $pathOrUrl = $this->storeBase64Image($image['dataUrl'], $image['name'] ?? "image_{$index}.jpg");
+            $path = $this->storeBase64Image($image['dataUrl'], $image['name'] ?? "image_{$index}.jpg");
 
             $article->images()->create([
-                'image_path' => $pathOrUrl, // This now contains either path or full URL
+                'image_path' => $path, // Store path only, not URL
                 'order' => $index,
                 'is_featured' => $index === 0,
             ]);
@@ -307,16 +303,7 @@ class ArticleController extends Controller
 
     protected function deleteImage(ArticleImage $image): void
     {
-        // Extract path from URL if needed
-        $path = $image->image_path;
-
-        if (config('filesystems.default') === 's3') {
-            // For S3, extract the path from the URL
-            $urlParts = parse_url($image->image_path);
-            $path = ltrim($urlParts['path'], '/');
-        }
-
-        Storage::delete($path);
+        Storage::delete($image->image_path);
         $image->delete();
     }
 }

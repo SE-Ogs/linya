@@ -308,7 +308,7 @@ class UserManagementController extends Controller
         ]);
 
         try {
-            $path = $request->file('avatar')->store('profile_pictures', 'public');
+            $path = $request->file('avatar')->store('profile_pictures');
 
             // Store full URL for S3, path for local
             $storagePath = (config('filesystems.default') === 's3')
