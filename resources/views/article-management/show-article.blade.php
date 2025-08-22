@@ -62,7 +62,7 @@
                                         cy="7"
                                         r="4" />
                             </svg>
-                            <p>{{ $article->author->name ?? 'Unknown Author' }}</p>
+                            <p>{{ $article->author ?? 'Unknown Author' }}</p>
                         </div>
                         <div class="flex items-center gap-2">
                             <svg class="h-4 w-4"
