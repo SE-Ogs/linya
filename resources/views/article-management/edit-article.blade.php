@@ -55,7 +55,7 @@
                     <input type="text"
                            id="title"
                            name="title"
-                           value="{{ old('title', $article->title) }}"
+                           value="{{ old('title', default: $article->title) }}"
                            required
                            class="w-full rounded-[20px] border border-gray-300 bg-white px-4 py-2 text-gray-900 placeholder-gray-500 shadow-md transition-shadow duration-200 hover:shadow-lg focus:border-orange-500 focus:outline-none focus:ring-2 focus:ring-orange-500"
                            placeholder="Enter title of article...">

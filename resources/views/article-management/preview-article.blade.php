@@ -172,7 +172,7 @@
                                                 cy="7"
                                                 r="4" />
                                     </svg>
-                                    <span>{{ $article->author ?? 'Unknown Author' }}</span>
+                                    <span>{{ $author ?? 'Unknown Author' }}</span>
                                 </div>
                                 <div class="flex items-center gap-2">
                                     <svg class="h-4 w-4"
@@ -242,11 +242,14 @@
                                            name="summary"
                                            value="{{ $summary }}">
                                     <input type="hidden"
+                                           name="author"
+                                           value="{{ $author }}">
+                                    <input type="hidden"
                                            name="article"
                                            value="{{ $article }}">
-                                    <input type="hidden"
-                                           name="imageData"
-                                           value="{{ json_encode($images) }}">
+                                    <textarea name="imageData"
+                                              hidden>@json($images)</textarea>
+
                                     @if (!empty($tags))
                                         @foreach ($tags as $tagId)
                                             <input type="hidden"
@@ -254,10 +257,18 @@
                                                    value="{{ $tagId }}">
                                         @endforeach
                                     @endif
-                                    <button type="submit"
-                                            class="rounded-full border border-orange-500 bg-white px-6 py-2 font-semibold text-orange-600 transition duration-200 hover:bg-orange-50">
-                                        Back to Editor
-                                    </button>
+                                    @if ($fromManagement)
+                                        <a href="{{ route('admin.articles') }}"
+                                           class="rounded-full border border-orange-500 bg-white px-6 py-2 font-semibold text-orange-600 transition duration-200 hover:bg-orange-50">
+                                            Back to Articles
+                                        </a>
+                                    @else
+                                        <button type="submit"
+                                                class="rounded-full border border-orange-500 bg-white px-6 py-2 font-semibold text-orange-600 transition duration-200 hover:bg-orange-50">
+                                            Back to Editor
+                                        </button>
+                                    @endif
+
                                 </form>
                             </div>
                         </div>

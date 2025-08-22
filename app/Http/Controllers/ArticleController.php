@@ -77,44 +77,42 @@ class ArticleController extends Controller
 
 
     public function create(): View
-    {
-        $tags = Tag::all();
+{
+    $tags = Tag::all();
 
-        // Check if we have form data from preview
-        $formData = session('article_form_data');
+    // Get form data from session if available
+    $formData = session('article_form_data', []);
 
-        // Debug: Log the form data to see what's being retrieved
-        if ($formData) {
-            \Log::info('Form data from session:', $formData);
-            // Clear the session data after retrieving it
-            session()->forget('article_form_data');
-        }
+    \Log::info('Form data from session (create):', $formData);
 
-        return view('article-management.add-article', compact('tags', 'formData'));
-    }
+    return view('article-management.add-article', compact('tags', 'formData'));
+}
+
 
     public function store(StoreArticleRequest $request)
-    {
-        $validatedData = $request->validated();
+{
+    $validatedData = $request->validated();
 
-        // Create the article
-        $article = $this->articleService->createArticle($validatedData);
+    // Create the article
+    $article = $this->articleService->createArticle($validatedData);
 
-        // Handle image processing
-        $this->processArticleImages($article, $request);
+    // Handle image processing
+    $this->processArticleImages($article, $request);
 
-        // Check if this is an AJAX request
-        if ($request->expectsJson()) {
-            return response()->json(ArticleDTO::fromModel($article), 201);
-        }
+    // ✅ Clear the form data only after successful save
+    $request->session()->forget('article_form_data');
 
-        // For regular form submissions, redirect to admin articles page
-        if (auth()->user()->isAdmin()) {
-            return redirect()->route('admin.articles')->with('success', 'Article created successfully!');
-        } else {
-            return redirect()->route('writer.articles')->with('success', 'Article created successfully!');
-        }
+    if ($request->expectsJson()) {
+        return response()->json(ArticleDTO::fromModel($article), 201);
     }
+
+    if (auth()->user()->isAdmin()) {
+        return redirect()->route('admin.articles')->with('success', 'Article created successfully!');
+    } else {
+        return redirect()->route('writer.articles')->with('success', 'Article created successfully!');
+    }
+}
+
 
     public function destroy($id)
     {
@@ -122,6 +120,19 @@ class ArticleController extends Controller
 
         return redirect()->route('admin.articles')->with('success', 'Article deleted!');
     }
+
+    public function previewExisting(Article $article)
+{
+    return view('article-management.preview-article', [
+        'title' => $article->title,
+        'summary' => $article->summary,
+        'author' => $article->author,
+        'article' => $article->article,
+        'images' => $article->images ?? [], // assuming you store images as JSON/array
+                'fromManagement' => true
+    ]);
+}
+
 
     public function preview(Request $request)
     {
@@ -136,12 +147,15 @@ class ArticleController extends Controller
 
         return view('article-management.preview-article', [
             'title' => $articleData['title'] ?? '',
+            'author' => $articleData['author'] ?? '',
             'summary' => $articleData['summary'] ?? '',
             'article' => $articleData['article'] ?? '',
             'tags' => $articleData['tags'] ?? '',
             'tagModels' => $tags,
             'images' => $images,
             'formData' => $articleData, // Store all form data for back to editor
+        'fromManagement' => false
+
         ]);
     }
 
@@ -152,6 +166,11 @@ class ArticleController extends Controller
 
         // Debug: Log the incoming form data
         \Log::info('Incoming form data in backToEditor:', $formData);
+          \Log::info('Raw imageData from request:', [
+    'imageData' => $request->input('imageData')
+]);
+
+
 
         // Ensure tags are properly stored as an array
         if (isset($formData['tags']) && !is_array($formData['tags'])) {

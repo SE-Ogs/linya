@@ -37,6 +37,7 @@
                            id="title"
                            name="title"
                            required
+                           value="{{ old('title', $formData['title'] ?? '') }}"
                            class="w-full rounded-[20px] border border-gray-300 bg-white px-4 py-2 text-gray-900 placeholder-gray-500 shadow-md transition-shadow duration-200 hover:shadow-lg focus:border-orange-500 focus:outline-none focus:ring-2 focus:ring-orange-500"
                            placeholder="Enter title of article...">
                 </div>
@@ -49,8 +50,10 @@
                            id="author"
                            name="author"
                            required
+                           value="{{ old('author', $formData['author'] ?? '') }}"
                            class="w-full rounded-[20px] border border-gray-300 bg-white px-4 py-2 text-gray-900 placeholder-gray-500 shadow-md transition-shadow duration-200 hover:shadow-lg focus:border-orange-500 focus:outline-none focus:ring-2 focus:ring-orange-500"
                            placeholder="Enter author of article...">
+
                 </div>
 
                 <!-- Summary Field -->
@@ -61,8 +64,10 @@
                            id="summary"
                            name="summary"
                            required
+                           value="{{ old('summary', $formData['summary'] ?? '') }}"
                            class="w-full rounded-[20px] border border-gray-300 bg-white px-4 py-2 text-gray-900 placeholder-gray-500 shadow-md transition-shadow duration-200 hover:shadow-lg focus:border-orange-500 focus:outline-none focus:ring-2 focus:ring-orange-500"
                            placeholder="Enter summary of article...">
+
                 </div>
 
                 <!-- Tags Section -->
@@ -81,7 +86,8 @@
                                        name="tags[]"
                                        value="{{ $tag->id }}"
                                        id="tag-{{ $tag->id }}"
-                                       class="peer sr-only">
+                                       class="peer sr-only"
+                                       {{ in_array($tag->id, old('tags', $formData['tags'] ?? [])) ? 'checked' : '' }}>
                                 <div
                                      class="tag-display font-lexend inline-flex items-center gap-2 rounded-full border-2 border-gray-200 bg-gray-100 px-4 py-2 text-sm font-medium text-gray-700 shadow-md shadow-black/30 transition-all duration-200 hover:bg-gray-200 hover:shadow-lg hover:shadow-black/40 peer-checked:border-blue-500 peer-checked:bg-blue-500 peer-checked:text-white">
                                     <span class="{{ $dotColor }} h-2 w-2 rounded-full"></span>
@@ -170,7 +176,9 @@
                          class="min-h-[200px] flex-1 rounded-lg border border-gray-300 bg-white"></div>
                     <textarea name="article"
                               id="article"
-                              class="hidden"></textarea>
+                              class="hidden">
+    {{ old('article', $formData['article'] ?? '') }}
+</textarea>
                 </div>
 
                 <!-- Submit Button -->
@@ -211,9 +219,52 @@
                 initializeImageUpload();
                 initializeFormHandling();
                 initializeSidebarToggle();
+
+                const rawContent = document.getElementById('article').value;
+                if (rawContent) {
+                    const cleanedContent = /^<p>.*<\/p>$/.test(rawContent.trim()) ?
+                        rawContent.trim().replace(/^<p>|<\/p>$/g, '') :
+                        rawContent;
+                    quill.clipboard.dangerouslyPasteHTML(cleanedContent);
+                }
+                // Restore uploaded images from hidden input/textarea (coming back from Preview)
+                let imageDataInput = document.querySelector('input[name="imageData"], textarea[name="imageData"]');
+                if (imageDataInput && imageDataInput.value) {
+                    try {
+                        const parsedImages = JSON.parse(imageDataInput.value);
+                        uploadedImages = parsedImages.map((img, index) => ({
+                            dataUrl: img.dataUrl,
+                            name: img.name,
+                            order: index,
+                            isFeatured: index === 0 // restore featured flag if you want
+                        }));
+                        renderImagePreviews();
+                        console.log('Restored', uploadedImages.length, 'images');
+                    } catch (e) {
+                        console.error('Error parsing imageData:', e, imageDataInput.value);
+                    }
+                }
             });
 
+            function renderImagePreviews() {
+                const previewContainer = document.getElementById('imagePreviewContainer');
+                if (!previewContainer) return;
+
+                previewContainer.innerHTML = '';
+
+                uploadedImages.forEach(img => {
+                    displayImagePreview(img); // reuse the same preview builder
+                });
+            }
+
+
+
             function initializeQuillEditor() {
+                if (quill) {
+                    console.log('Quill already initialized, skipping...');
+                    return;
+                }
+
                 quill = new Quill('#editor', {
                     theme: 'snow',
                     modules: {
@@ -269,6 +320,7 @@
 
                 console.log('Quill editor initialized');
             }
+
 
             function initializeImageUpload() {
                 console.log('Initializing image upload...');

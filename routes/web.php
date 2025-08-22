@@ -258,6 +258,8 @@ Route::middleware('auth')->group(function () {
         Route::post('/articles', [ArticleController::class, 'store'])->name('articles.store');
         Route::post('/articles/preview', [ArticleController::class, 'preview'])->name('articles.preview');
         Route::post('/articles/back-to-editor', [ArticleController::class, 'backToEditor'])->name('articles.back-to-editor');
+        Route::post('/articles/{article}/preview', [ArticleController::class, 'previewExisting'])
+    ->name('articles.previewExisting');
     });
 
     Route::middleware('admin')->prefix('admin')->name('admin.')->group(function () {
@@ -288,6 +290,8 @@ Route::middleware('auth')->group(function () {
         Route::get('/add-article', [ArticleController::class, 'create'])->name('articles.create');
         Route::post('/articles', [ArticleController::class, 'store'])->name('articles.store');
         Route::post('/articles/preview', [ArticleController::class, 'preview'])->name('articles.preview');
+        Route::post('/articles/{article}/preview', [ArticleController::class, 'previewExisting'])
+    ->name('articles.previewExisting');
         Route::post('/articles/back-to-editor', [ArticleController::class, 'backToEditor'])->name('articles.back-to-editor');
 
 
