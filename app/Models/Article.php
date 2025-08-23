@@ -13,6 +13,7 @@ class Article extends Model
 
     protected $fillable = [
         'title',
+        'author',
         'summary',
         'status',
         'article',
@@ -56,4 +57,6 @@ class Article extends Model
     {
         return static::where('id', '>', $this->id)->orderBy('id', 'asc')->first();
     }
+
+
 }

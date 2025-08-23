@@ -80,18 +80,14 @@ class ArticleController extends Controller
     {
         $tags = Tag::all();
 
-        // Check if we have form data from preview
-        $formData = session('article_form_data');
+        // Get form data from session if available
+        $formData = session('article_form_data', []);
 
-        // Debug: Log the form data to see what's being retrieved
-        if ($formData) {
-            \Log::info('Form data from session:', $formData);
-            // Clear the session data after retrieving it
-            session()->forget('article_form_data');
-        }
+        \Log::info('Form data from session (create):', $formData);
 
         return view('article-management.add-article', compact('tags', 'formData'));
     }
+
 
     public function store(StoreArticleRequest $request)
     {
@@ -103,12 +99,13 @@ class ArticleController extends Controller
         // Handle image processing
         $this->processArticleImages($article, $request);
 
-        // Check if this is an AJAX request
+        // ✅ Clear the form data only after successful save
+        $request->session()->forget('article_form_data');
+
         if ($request->expectsJson()) {
             return response()->json(ArticleDTO::fromModel($article), 201);
         }
 
-        // For regular form submissions, redirect to admin articles page
         if (auth()->user()->isAdmin()) {
             return redirect()->route('admin.articles')->with('success', 'Article created successfully!');
         } else {
@@ -116,11 +113,45 @@ class ArticleController extends Controller
         }
     }
 
+
     public function destroy($id)
     {
         $this->articleService->deleteArticle($id);
 
         return redirect()->route('admin.articles')->with('success', 'Article deleted!');
+    }
+
+    public function previewExisting(Article $article)
+    {
+        // Convert existing article images to the format expected by the preview
+        $images = [];
+        if ($article->images && $article->images->count() > 0) {
+            foreach ($article->images->sortBy('order') as $image) {
+                $images[] = [
+                    'name' => basename($image->image_path),
+                    'dataUrl' => asset('storage/' . $image->image_path),
+                    'alt_text' => $image->alt_text ?? $article->title,
+                    'existing' => true, // Flag to indicate this is an existing image
+                    'id' => $image->id
+                ];
+            }
+        }
+
+        // Get tags for the article
+        $tags = $article->tags->pluck('id')->toArray();
+        $tagModels = $article->tags;
+
+        return view('article-management.preview-article', [
+            'title' => $article->title,
+            'summary' => $article->summary,
+            'author' => $article->author,
+            'article' => $article->article,
+            'images' => $images,
+            'tags' => $tags,
+            'tagModels' => $tagModels,
+            'fromManagement' => true,
+            'articleId' => $article->id // Pass article ID for existing articles
+        ]);
     }
 
     public function preview(Request $request)
@@ -136,38 +167,48 @@ class ArticleController extends Controller
 
         return view('article-management.preview-article', [
             'title' => $articleData['title'] ?? '',
+            'author' => $articleData['author'] ?? '',
             'summary' => $articleData['summary'] ?? '',
             'article' => $articleData['article'] ?? '',
             'tags' => $articleData['tags'] ?? '',
             'tagModels' => $tags,
             'images' => $images,
             'formData' => $articleData, // Store all form data for back to editor
+            'fromManagement' => false
         ]);
     }
 
-    public function backToEditor(Request $request): RedirectResponse
+    public function backToEditor(Request $request)
     {
-        // Store form data in session for restoration
-        $formData = $request->all();
+        // Get all the data from the request
+        $data = $request->all();
 
-        // Debug: Log the incoming form data
-        \Log::info('Incoming form data in backToEditor:', $formData);
-
-        // Ensure tags are properly stored as an array
-        if (isset($formData['tags']) && !is_array($formData['tags'])) {
-            $formData['tags'] = [$formData['tags']];
+        // Handle image data properly
+        $images = [];
+        if ($request->has('imageData') && !empty($request->input('imageData'))) {
+            $imageData = json_decode($request->input('imageData'), true);
+            if (is_array($imageData)) {
+                $images = $imageData;
+            }
         }
 
-        $request->session()->put('article_form_data', $formData);
+        // Get tags
+        $selectedTags = $request->input('tags', []);
+        $tags = Tag::all();
 
-        // Debug: Log what's being stored in session
-        \Log::info('Stored form data in session:', $formData);
+        // Determine route prefix based on user role
+        $routePrefix = auth()->user()->isAdmin ? 'admin' : 'writer';
 
-        if (auth()->user()->isAdmin()) {
-            return redirect()->route('admin.articles.create');
-        } else {
-            return redirect()->route('writer.articles.create');
-        }
+        return view('article-management.add-article', [
+            'title' => $data['title'] ?? '',
+            'summary' => $data['summary'] ?? '',
+            'author' => $data['author'] ?? '',
+            'article' => $data['article'] ?? '',
+            'tags' => $tags,
+            'selectedTags' => $selectedTags,
+            'images' => $images, // Pass images back to the editor
+            'fromPreview' => true // Flag to indicate we're coming from preview
+        ]);
     }
 
     public function edit($id)
@@ -194,6 +235,7 @@ class ArticleController extends Controller
         // Handle web form request
         $validatedData = $request->validate([
             'title' => 'required|string|max:255',
+            'author' => 'required|string|max:255',
             'summary' => 'required|string|max:255',
             'article' => 'required|string',
             'tags' => 'array', // Optional: Ensure tags are an array
