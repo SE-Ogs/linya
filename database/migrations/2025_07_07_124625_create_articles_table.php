@@ -15,6 +15,7 @@ return new class extends Migration {
             $table->id();
             $table->timestamps();
             $table->string('title');
+            $table->string('author');
             $table->text('summary');
             $table->longText('article');
             $table->enum('status', ['Pending', 'Approved', 'Published', 'Rejected'])->default('Published');

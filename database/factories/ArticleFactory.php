@@ -19,6 +19,7 @@ class ArticleFactory extends Factory
 
         return [
             'title' => $this->faker->sentence(),
+            'author'=> $this->faker->name,
             'article' => $article,
             'summary' => substr($article, 0, 100),
             'status' => $status,
