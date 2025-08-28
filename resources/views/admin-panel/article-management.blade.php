@@ -277,9 +277,17 @@
                 prepareFormForSubmission(); // sync Quill + images
 
                 if (action === 'preview') {
-                    form.action = "{{ route($rolePrefix . '.articles.preview', $article->id) }}";
+                    // Check if article exists before using its ID
+                    const articleId = "{{ $article->id ?? '' }}";
+                    if (articleId) {
+                        form.action = "{{ route($rolePrefix . '.articles.preview', $article->id ?? 0) }}";
+                    } else {
+                        // Handle case where no article exists (maybe disable preview?)
+                        console.error('No article available for preview');
+                        return false;
+                    }
                 } else {
-                    form.action = "{{ route($rolePrefix . '.articles.store') }}"; // or update
+                    form.action = "{{ route($rolePrefix . '.articles.store') }}";
                 }
             }
         </script>
