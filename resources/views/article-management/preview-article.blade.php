@@ -86,7 +86,7 @@
                 margin: 1.5em 0;
             }
 
-            /* Enhanced Carousel Styles */
+            /* Imported Carousel Styles */
             .article-carousel {
                 position: relative;
                 width: 100%;
@@ -101,7 +101,7 @@
             .carousel-container {
                 position: relative;
                 width: 100%;
-                height: 500px;
+                height: 400px;
                 overflow: hidden;
             }
 
@@ -272,7 +272,7 @@
                 display: flex;
                 align-items: center;
                 justify-content: center;
-                height: 500px;
+                height: 400px;
                 background: #f8f9fa;
                 color: #666;
             }
@@ -353,7 +353,7 @@
             <div class="mx-auto mb-10 mt-10 max-w-5xl">
                 <div class="overflow-hidden rounded-lg bg-white shadow-lg">
 
-                    <!-- Enhanced Article Images Carousel -->
+                    <!-- Imported Article Image Carousel Component -->
                     @if (!empty($images) && count($images) > 0)
                         <div class="article-carousel" id="articleCarousel-preview">
                             <!-- Loading State -->
@@ -364,10 +364,10 @@
                             <!-- Main Carousel -->
                             <div class="carousel-container" id="carouselContainer-preview" style="display: none;">
                                 <div class="carousel-track" id="carouselTrack-preview">
-                                    @foreach ($images as $index => $image)
+                                    @foreach($images as $image)
                                         <div class="carousel-slide">
                                             <img src="{{ $image['dataUrl'] }}"
-                                                 alt="{{ $image['alt_text'] ?? ($image['name'] ?? 'Article image ' . ($index + 1)) }}"
+                                                 alt="{{ $image['alt_text'] ?? ($image['name'] ?? 'Article image') }}"
                                                  loading="lazy">
                                         </div>
                                     @endforeach
@@ -541,7 +541,7 @@
             </div>
         </div>
 
-        <!-- Enhanced Carousel JavaScript -->
+        <!-- Imported Carousel JavaScript -->
         @if (!empty($images) && count($images) > 0)
             <script>
                 document.addEventListener('DOMContentLoaded', function() {
@@ -569,11 +569,9 @@
                     function init() {
                         if (slides.length === 0) return;
 
-                        // Show carousel after brief delay for loading effect
-                        setTimeout(() => {
-                            if (loading) loading.style.display = 'none';
-                            if (container) container.style.display = 'block';
-                        }, 500);
+                        // Show carousel
+                        if (loading) loading.style.display = 'none';
+                        if (container) container.style.display = 'block';
 
                         updateCarousel();
                         bindEvents();
@@ -670,18 +668,12 @@
                     function prevSlide() {
                         if (currentIndex > 0) {
                             goToSlide(currentIndex - 1);
-                        } else if (slides.length > 1) {
-                            // Loop to last slide
-                            goToSlide(slides.length - 1);
                         }
                     }
 
                     function nextSlide() {
                         if (currentIndex < slides.length - 1) {
                             goToSlide(currentIndex + 1);
-                        } else if (slides.length > 1) {
-                            // Loop to first slide
-                            goToSlide(0);
                         }
                     }
 
@@ -713,15 +705,20 @@
                             counter.textContent = `${currentIndex + 1} / ${slides.length}`;
                         }
 
-                        // Update navigation buttons (removed disable for looping)
-                        // Navigation buttons are always enabled for continuous looping
+                        // Update navigation buttons
+                        if (prevBtn) prevBtn.disabled = currentIndex === 0;
+                        if (nextBtn) nextBtn.disabled = currentIndex === slides.length - 1;
                     }
 
                     function startAutoPlay(interval = 5000) {
                         if (slides.length <= 1) return;
 
                         let autoPlayInterval = setInterval(() => {
-                            nextSlide();
+                            if (currentIndex >= slides.length - 1) {
+                                goToSlide(0);
+                            } else {
+                                nextSlide();
+                            }
                         }, interval);
 
                         // Pause on hover
@@ -731,7 +728,11 @@
 
                         carousel.addEventListener('mouseleave', () => {
                             autoPlayInterval = setInterval(() => {
-                                nextSlide();
+                                if (currentIndex >= slides.length - 1) {
+                                    goToSlide(0);
+                                } else {
+                                    nextSlide();
+                                }
                             }, interval);
                         });
                     }
