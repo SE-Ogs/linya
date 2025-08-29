@@ -271,15 +271,28 @@
                     document.getElementById('filterDropdown').classList.toggle('hidden');
                 });
             });
-
+            
             function setFormAction(action) {
                 const form = document.getElementById('addArticleForm');
-                prepareFormForSubmission(); // sync Quill + images
-
+                
+                // Only proceed if form exists
+                if (!form) {
+                    console.error('Form not found');
+                    return false;
+                }
+                
+                // Only sync if function exists
+                if (typeof prepareFormForSubmission === 'function') {
+                    prepareFormForSubmission(); // sync Quill + images
+                }
+            
                 if (action === 'preview') {
-                    form.action = "{{ route($rolePrefix . '.articles.preview', $article->id) }}";
+                    // Remove the problematic article ID reference
+                    // This function seems to be for creating new articles, not editing existing ones
+                    console.error('Preview action not available for article management page');
+                    return false;
                 } else {
-                    form.action = "{{ route($rolePrefix . '.articles.store') }}"; // or update
+                    form.action = "{{ route($rolePrefix . '.articles.store') }}";
                 }
             }
         </script>

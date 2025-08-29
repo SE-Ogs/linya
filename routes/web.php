@@ -197,59 +197,56 @@ Route::middleware('auth')->group(function () {
     Route::post('/comments/{comment}/report', [CommentReportController::class, 'store'])->name('comments.report');
     Route::get('/comment-reports/reasons', [CommentReportController::class, 'getReasons'])->name('comment-reports.reasons');
 
-    // Writer/Admin shared…
-    // function writerAndAdminSharedRoutes() {
-    //     Route::get('/articles', function (Request $request) {
-    //         $query = Article::with('tags');
-    //
-    //         if ($request->filled('status') && $request->status !== 'All') {
-    //             $query->where('status', $request->status);
-    //         }
-    //         if ($request->filled('search')) {
-    //             $search = $request->search;
-    //             $query->where(fn($q) => $q->where('title', 'like', "%{$search}%")
-    //                 ->orWhere('summary', 'like', "%{$search}%"));
-    //         }
-    //         if ($request->filled('tags')) {
-    //             $tagIds = $request->tags;
-    //             $query->whereHas('tags', fn($q) => $q->whereIn('tags.id', $tagIds));
-    //         }
-    //
-    //         $articles = $query->get();
-    //         $tags = Tag::all();
-    //
-    //         return view('admin-panel.article-management', compact('articles', 'tags'));
-    //     })->name('articles');
-    //
-    //     Route::get('/dashboard', [AdminDashboardController::class, 'index'])->name('dashboard');
-    //
-    //     Route::get('/add-article', [ArticleController::class, 'create'])->name('articles.create');
-    //     Route::post('/articles', [ArticleController::class, 'store'])->name('articles.store');
-    //     Route::post('/articles/preview', [ArticleController::class, 'preview'])->name('articles.preview');
-    //     Route::post('/articles/back-to-editor', [ArticleController::class, 'backToEditor'])->name('articles.back-to-editor');
-    // }
-
     Route::middleware('writer')->prefix('writer')->name('writer.')->group(function () {
         Route::get('/articles', function (Request $request) {
-            $query = Article::with('tags');
+            try {
+                $query = Article::with('tags');
 
-            if ($request->filled('status') && $request->status !== 'All') {
-                $query->where('status', $request->status);
-            }
-            if ($request->filled('search')) {
-                $search = $request->search;
-                $query->where(fn($q) => $q->where('title', 'like', "%{$search}%")
-                    ->orWhere('summary', 'like', "%{$search}%"));
-            }
-            if ($request->filled('tags')) {
-                $tagIds = $request->tags;
-                $query->whereHas('tags', fn($q) => $q->whereIn('tags.id', $tagIds));
-            }
+                // Status filter
+                if ($request->filled('status') && $request->status !== 'All') {
+                    $query->where('status', $request->status);
+                }
 
-            $articles = $query->get();
-            $tags = Tag::all();
+                // Search filter
+                if ($request->filled('search')) {
+                    $search = $request->search;
+                    $query->where(function ($q) use ($search) {
+                        $q->where('title', 'like', "%{$search}%")
+                            ->orWhere('summary', 'like', "%{$search}%");
+                    });
+                }
 
-            return view('admin-panel.article-management', compact('articles', 'tags'));
+                // Tags filter
+                if ($request->filled('tags')) {
+                    $tagIds = $request->tags;
+                    $query->whereHas('tags', function ($q) use ($tagIds) {
+                        $q->whereIn('tags.id', $tagIds);
+                    });
+                }
+
+                $articles = $query->get();
+                $tags = Tag::all();
+
+                // Add error logging to help debug
+                \Log::info('Articles loaded successfully', [
+                    'count' => $articles->count(),
+                    'tags_count' => $tags->count()
+                ]);
+
+                return view('admin-panel.article-management', compact('articles', 'tags'));
+            } catch (\Exception $e) {
+                // Log the error for debugging
+                \Log::error('Error loading articles page', [
+                    'error' => $e->getMessage(),
+                    'trace' => $e->getTraceAsString()
+                ]);
+
+                // Return with empty collections to prevent crashes
+                return view('admin-panel.article-management', [
+                    'articles' => collect(),
+                    'tags' => collect()
+                ]);
+            }
         })->name('articles');
 
         Route::get('/dashboard', [AdminDashboardController::class, 'index'])->name('dashboard');
@@ -259,30 +256,59 @@ Route::middleware('auth')->group(function () {
         Route::post('/articles/preview', [ArticleController::class, 'preview'])->name('articles.preview');
         Route::post('/articles/back-to-editor', [ArticleController::class, 'backToEditor'])->name('articles.back-to-editor');
         Route::post('/articles/{article}/preview', [ArticleController::class, 'previewExisting'])
-    ->name('articles.previewExisting');
+            ->name('articles.previewExisting');
     });
 
     Route::middleware('admin')->prefix('admin')->name('admin.')->group(function () {
         Route::get('/articles', function (Request $request) {
-            $query = Article::with('tags');
+            try {
+                $query = Article::with('tags');
 
-            if ($request->filled('status') && $request->status !== 'All') {
-                $query->where('status', $request->status);
-            }
-            if ($request->filled('search')) {
-                $search = $request->search;
-                $query->where(fn($q) => $q->where('title', 'like', "%{$search}%")
-                    ->orWhere('summary', 'like', "%{$search}%"));
-            }
-            if ($request->filled('tags')) {
-                $tagIds = $request->tags;
-                $query->whereHas('tags', fn($q) => $q->whereIn('tags.id', $tagIds));
-            }
+                // Status filter
+                if ($request->filled('status') && $request->status !== 'All') {
+                    $query->where('status', $request->status);
+                }
 
-            $articles = $query->get();
-            $tags = Tag::all();
+                // Search filter
+                if ($request->filled('search')) {
+                    $search = $request->search;
+                    $query->where(function ($q) use ($search) {
+                        $q->where('title', 'like', "%{$search}%")
+                            ->orWhere('summary', 'like', "%{$search}%");
+                    });
+                }
 
-            return view('admin-panel.article-management', compact('articles', 'tags'));
+                // Tags filter
+                if ($request->filled('tags')) {
+                    $tagIds = $request->tags;
+                    $query->whereHas('tags', function ($q) use ($tagIds) {
+                        $q->whereIn('tags.id', $tagIds);
+                    });
+                }
+
+                $articles = $query->get();
+                $tags = Tag::all();
+
+                // Add error logging to help debug
+                \Log::info('Articles loaded successfully', [
+                    'count' => $articles->count(),
+                    'tags_count' => $tags->count()
+                ]);
+
+                return view('admin-panel.article-management', compact('articles', 'tags'));
+            } catch (\Exception $e) {
+                // Log the error for debugging
+                \Log::error('Error loading articles page', [
+                    'error' => $e->getMessage(),
+                    'trace' => $e->getTraceAsString()
+                ]);
+
+                // Return with empty collections to prevent crashes
+                return view('admin-panel.article-management', [
+                    'articles' => collect(),
+                    'tags' => collect()
+                ]);
+            }
         })->name('articles');
 
         Route::get('/dashboard', [AdminDashboardController::class, 'index'])->name('dashboard');
@@ -291,7 +317,7 @@ Route::middleware('auth')->group(function () {
         Route::post('/articles', [ArticleController::class, 'store'])->name('articles.store');
         Route::post('/articles/preview', [ArticleController::class, 'preview'])->name('articles.preview');
         Route::post('/articles/{article}/preview', [ArticleController::class, 'previewExisting'])
-    ->name('articles.previewExisting');
+            ->name('articles.previewExisting');
         Route::post('/articles/back-to-editor', [ArticleController::class, 'backToEditor'])->name('articles.back-to-editor');
 
 
