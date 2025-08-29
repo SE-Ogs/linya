@@ -141,17 +141,8 @@ class ArticleController extends Controller
         $tags = $article->tags->pluck('id')->toArray();
         $tagModels = $article->tags;
 
-        return view('article-management.preview-article', [
-            'title' => $article->title,
-            'summary' => $article->summary,
-            'author' => $article->author,
-            'article' => $article->article,
-            'images' => $images,
-            'tags' => $tags,
-            'tagModels' => $tagModels,
-            'fromManagement' => true,
-            'articleId' => $article->id // Pass article ID for existing articles
-        ]);
+
+        return view('article-management.preview-existing-article', compact('article'));
     }
 
     public function preview(Request $request)
