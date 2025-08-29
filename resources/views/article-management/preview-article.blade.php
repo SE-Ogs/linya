@@ -354,8 +354,23 @@
                 <div class="overflow-hidden rounded-lg bg-white shadow-lg">
 
                     <!-- Imported Article Image Carousel Component -->
-                    @if (!empty($images) && count($images) > 0)
-                        <div class="article-carousel" id="articleCarousel-preview">
+                    @php
+                        // Create a mock article object for the carousel component
+                        $mockArticle = (object)[
+                            'id' => 'preview',
+                            'title' => $title ?? 'Article Title',
+                            'images' => collect($images ?? [])->map(function($image, $index) {
+                                return (object)[
+                                    'image_path' => $image['dataUrl'] ?? '', // Use dataUrl for preview
+                                    'alt_text' => $image['alt_text'] ?? ($image['name'] ?? 'Article image'),
+                                    'order' => $index
+                                ];
+                            })
+                        ];
+                    @endphp
+
+                    <div class="article-carousel" id="articleCarousel-preview">
+                        @if($mockArticle->images->count() > 0)
                             <!-- Loading State -->
                             <div class="carousel-loading" id="carouselLoading-preview">
                                 <div class="loading-spinner"></div>
@@ -364,16 +379,16 @@
                             <!-- Main Carousel -->
                             <div class="carousel-container" id="carouselContainer-preview" style="display: none;">
                                 <div class="carousel-track" id="carouselTrack-preview">
-                                    @foreach($images as $image)
+                                    @foreach($mockArticle->images->sortBy('order') as $image)
                                         <div class="carousel-slide">
-                                            <img src="{{ $image['dataUrl'] }}"
-                                                 alt="{{ $image['alt_text'] ?? ($image['name'] ?? 'Article image') }}"
+                                            <img src="{{ $image->image_path }}"
+                                                 alt="{{ $image->alt_text ?? $mockArticle->title }}"
                                                  loading="lazy">
                                         </div>
                                     @endforeach
                                 </div>
 
-                                @if(count($images) > 1)
+                                @if($mockArticle->images->count() > 1)
                                     <!-- Navigation Arrows -->
                                     <button class="carousel-nav prev" id="prevBtn-preview">
                                         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -389,14 +404,14 @@
 
                                 <!-- Image Counter -->
                                 <div class="carousel-counter" id="carouselCounter-preview">
-                                    1 / {{ count($images) }}
+                                    1 / {{ $mockArticle->images->count() }}
                                 </div>
                             </div>
 
-                            @if(count($images) > 1)
+                            @if($mockArticle->images->count() > 1)
                                 <!-- Dot Indicators -->
                                 <div class="carousel-indicators" id="carouselIndicators-preview">
-                                    @foreach ($images as $index => $image)
+                                    @foreach($mockArticle->images->sortBy('order') as $index => $image)
                                         <button class="carousel-dot {{ $index === 0 ? 'active' : '' }}"
                                                 data-slide="{{ $index }}"></button>
                                     @endforeach
@@ -404,31 +419,31 @@
 
                                 <!-- Thumbnail Strip -->
                                 <div class="carousel-thumbnails" id="carouselThumbnails-preview">
-                                    @foreach ($images as $index => $image)
+                                    @foreach($mockArticle->images->sortBy('order') as $index => $image)
                                         <div class="thumbnail {{ $index === 0 ? 'active' : '' }}"
                                              data-slide="{{ $index }}">
-                                            <img src="{{ $image['dataUrl'] }}"
+                                            <img src="{{ $image->image_path }}"
                                                  alt="Thumbnail {{ $index + 1 }}">
                                         </div>
                                     @endforeach
                                 </div>
                             @endif
-                        </div>
-                    @else
-                        <!-- No Images State -->
-                        <div class="no-images-state">
-                            <div class="h-64 flex items-center justify-center bg-gray-100 rounded-lg">
-                                <div class="text-center text-gray-500">
-                                    <svg class="mx-auto h-16 w-16 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                              d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/>
-                                    </svg>
-                                    <p class="text-lg font-medium">No images available</p>
-                                    <p class="text-sm">This article doesn't have any images yet.</p>
+                        @else
+                            <!-- No Images State -->
+                            <div class="no-images-state">
+                                <div class="h-64 flex items-center justify-center bg-gray-100 rounded-lg">
+                                    <div class="text-center text-gray-500">
+                                        <svg class="mx-auto h-16 w-16 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                  d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+                                        </svg>
+                                        <p class="text-lg font-medium">No images available</p>
+                                        <p class="text-sm">This article doesn't have any images yet.</p>
+                                    </div>
                                 </div>
                             </div>
-                        </div>
-                    @endif
+                        @endif
+                    </div>
 
                     <!-- Article Content -->
                     <div class="p-8">
@@ -545,7 +560,8 @@
         @if (!empty($images) && count($images) > 0)
             <script>
                 document.addEventListener('DOMContentLoaded', function() {
-                    const carousel = document.getElementById('articleCarousel-preview');
+                    const articleId = 'preview';
+                    const carousel = document.getElementById(`articleCarousel-${articleId}`);
 
                     if (!carousel) return;
 
