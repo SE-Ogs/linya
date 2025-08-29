@@ -356,12 +356,17 @@
                     <!-- Imported Article Image Carousel Component -->
                     @php
                         // Create a mock article object for the carousel component
+                        // Handle both existing articles and preview articles
                         $mockArticle = (object)[
-                            'id' => 'preview',
+                            'id' => isset($articleId) ? $articleId : 'preview',
                             'title' => $title ?? 'Article Title',
                             'images' => collect($images ?? [])->map(function($image, $index) {
                                 return (object)[
-                                    'image_path' => $image['dataUrl'] ?? '', // Use dataUrl for preview
+                                    // For existing articles, use asset() path from dataUrl
+                                    // For preview articles, use dataUrl directly
+                                    'image_path' => isset($image['existing']) && $image['existing']
+                                        ? $image['dataUrl']
+                                        : ($image['dataUrl'] ?? ''),
                                     'alt_text' => $image['alt_text'] ?? ($image['name'] ?? 'Article image'),
                                     'order' => $index
                                 ];
@@ -369,16 +374,16 @@
                         ];
                     @endphp
 
-                    <div class="article-carousel" id="articleCarousel-preview">
+                    <div class="article-carousel" id="articleCarousel-{{ $mockArticle->id }}">
                         @if($mockArticle->images->count() > 0)
                             <!-- Loading State -->
-                            <div class="carousel-loading" id="carouselLoading-preview">
+                            <div class="carousel-loading" id="carouselLoading-{{ $mockArticle->id }}">
                                 <div class="loading-spinner"></div>
                             </div>
 
                             <!-- Main Carousel -->
-                            <div class="carousel-container" id="carouselContainer-preview" style="display: none;">
-                                <div class="carousel-track" id="carouselTrack-preview">
+                            <div class="carousel-container" id="carouselContainer-{{ $mockArticle->id }}" style="display: none;">
+                                <div class="carousel-track" id="carouselTrack-{{ $mockArticle->id }}">
                                     @foreach($mockArticle->images->sortBy('order') as $image)
                                         <div class="carousel-slide">
                                             <img src="{{ $image->image_path }}"
@@ -390,12 +395,12 @@
 
                                 @if($mockArticle->images->count() > 1)
                                     <!-- Navigation Arrows -->
-                                    <button class="carousel-nav prev" id="prevBtn-preview">
+                                    <button class="carousel-nav prev" id="prevBtn-{{ $mockArticle->id }}">
                                         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                                             <path d="M15 18L9 12L15 6"/>
                                         </svg>
                                     </button>
-                                    <button class="carousel-nav next" id="nextBtn-preview">
+                                    <button class="carousel-nav next" id="nextBtn-{{ $mockArticle->id }}">
                                         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                                             <path d="M9 18L15 12L9 6"/>
                                         </svg>
@@ -403,14 +408,14 @@
                                 @endif
 
                                 <!-- Image Counter -->
-                                <div class="carousel-counter" id="carouselCounter-preview">
+                                <div class="carousel-counter" id="carouselCounter-{{ $mockArticle->id }}">
                                     1 / {{ $mockArticle->images->count() }}
                                 </div>
                             </div>
 
                             @if($mockArticle->images->count() > 1)
                                 <!-- Dot Indicators -->
-                                <div class="carousel-indicators" id="carouselIndicators-preview">
+                                <div class="carousel-indicators" id="carouselIndicators-{{ $mockArticle->id }}">
                                     @foreach($mockArticle->images->sortBy('order') as $index => $image)
                                         <button class="carousel-dot {{ $index === 0 ? 'active' : '' }}"
                                                 data-slide="{{ $index }}"></button>
@@ -418,7 +423,7 @@
                                 </div>
 
                                 <!-- Thumbnail Strip -->
-                                <div class="carousel-thumbnails" id="carouselThumbnails-preview">
+                                <div class="carousel-thumbnails" id="carouselThumbnails-{{ $mockArticle->id }}">
                                     @foreach($mockArticle->images->sortBy('order') as $index => $image)
                                         <div class="thumbnail {{ $index === 0 ? 'active' : '' }}"
                                              data-slide="{{ $index }}">
