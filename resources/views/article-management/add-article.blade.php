@@ -103,7 +103,7 @@
                     </div>
                     <div class="mb-2 text-lg font-medium text-gray-600">Upload Images</div>
                     <div class="text-sm text-gray-500">Click here to select images for your article</div>
-                    <div class="mt-2 text-xs text-gray-400">Supports: JPG, PNG, GIF, WebP (Max 10MB each)</div>
+                    <div class="mt-2 text-xs text-gray-400">Supports: JPG, PNG, GIF, WebP (Max 50MB each)</div>
                 </div>
 
                 <!-- Image Previews -->
@@ -196,7 +196,7 @@
         // Validate image file
         function isValidImageFile(file) {
             const validTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif', 'image/webp'];
-            const maxSize = 10 * 1024 * 1024; // 10MB
+            const maxSize = 50 * 1024 * 1024; // 50MB
 
             if (!validTypes.includes(file.type)) {
                 alert(`Invalid file type: ${file.name}. Please select JPG, PNG, GIF, or WebP images.`);
@@ -204,7 +204,7 @@
             }
 
             if (file.size > maxSize) {
-                alert(`File "${file.name}" is too large. Maximum size is 10MB.`);
+                alert(`File "${file.name}" is too large. Maximum size is 50MB.`);
                 return false;
             }
 

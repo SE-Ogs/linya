@@ -278,7 +278,7 @@
 
             function isValidImageFile(file) {
                 const validTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif', 'image/webp'];
-                const maxSize = 10 * 1024 * 1024; // 10MB
+                const maxSize = 50 * 1024 * 1024; // 50MB
                 if (!validTypes.includes(file.type)) return false;
                 if (file.size > maxSize) return false;
                 const isDuplicate = uploadedImages.some(img => img.name === file.name && img.size === file.size && img.type ===
