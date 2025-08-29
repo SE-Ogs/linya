@@ -99,7 +99,7 @@
                             <div class="swiper-wrapper">
                                 @foreach ($article->images as $image)
                                     <div class="swiper-slide">
-                                        <img src="{{ asset('storage/' . $image->image_path) }}"
+                                        <img src="{{ Storage::url($image->image_path) }}"
                                              alt="{{ $article->title }}"
                                              class="h-96 w-full object-cover">
                                     </div>
