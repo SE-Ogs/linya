@@ -142,7 +142,7 @@ class ArticleController extends Controller
         $tagModels = $article->tags;
 
 
-        return view('article-management.preview-existing-article', compact('article'));
+        return view('article-management.preview-articleExisting', compact('article'));
     }
 
     public function preview(Request $request)
