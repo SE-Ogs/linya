@@ -145,7 +145,7 @@
                                class="flex-1 cursor-pointer overflow-hidden rounded-lg border border-gray-200 bg-white shadow-sm">
                                 <div>
                                     @if ($sub->first_image)
-                                        <img src="{{ asset('storage/' . $sub->first_image->image_path) }}"
+                                        <img src="{{ Storage::url($sub->first_image->image_path) }}"
                                              alt="{{ $sub->title }}"
                                              class="h-48 w-full object-cover">
                                     @else
