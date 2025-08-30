@@ -246,7 +246,7 @@
                        class="max-w-90 flex h-auto w-full flex-shrink-0 flex-col rounded bg-gray-200 p-6">
                         <div>
                             @if ($blog->first_image)
-                                <img src="{{ asset('storage/' . $blog->first_image->image_path) }}"
+                                <img src="{{ Storage::url($blog->first_image->image_path) }}"
                                      alt="{{ $blog->title }}"
                                      class="h-24 w-full object-cover">
                             @else
